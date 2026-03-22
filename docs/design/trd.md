@@ -659,5 +659,4 @@ Discord Bot ──► Nexus API ──► SessionManager
 - [tmux man page](https://man.openbsd.org/tmux)
 - [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui)
 - [AppKit Multi-Window](https://developer.apple.com/documentation/appkit/nswindow)
-- [IDEATION_CHAT.md](../../IDEATION_CHAT.md) - Original ideation transcript
 - [PRD](./prd.md) - Product requirements

@@ -257,4 +257,3 @@ Token counts use heuristic estimation (1 token ≈ 4 characters) in v1.
 ## References
 
 - [get-shit-done (GSD)](https://github.com/gsd-build/get-shit-done) - Reference orchestrator
-- [IDEATION_CHAT.md](../../IDEATION_CHAT.md) - Original ideation transcript
