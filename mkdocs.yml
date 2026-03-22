@@ -1,0 +1,73 @@
+site_name: PlexusOne Nexus
+site_description: Multi-agent orchestration platform for AI CLI tools
+site_url: https://plexusone.github.io/nexus/
+
+repo_name: plexusone/nexus
+repo_url: https://github.com/plexusone/nexus
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Requirements: getting-started/requirements.md
+  - User Guide:
+    - Desktop App:
+      - Overview: guide/desktop/overview.md
+      - Grid Layout: guide/desktop/grid-layout.md
+      - Session Management: guide/desktop/sessions.md
+      - Keyboard Shortcuts: guide/desktop/shortcuts.md
+    - Mobile App:
+      - Overview: guide/mobile/overview.md
+      - Connecting: guide/mobile/connecting.md
+  - Reference:
+    - Configuration: reference/configuration.md
+    - WebSocket Protocol: reference/protocol.md
+  - Development:
+    - Architecture: development/architecture.md
+    - Contributing: development/contributing.md
+    - Design Documents: development/design-docs.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/plexusone/nexus
+
+copyright: Copyright &copy; 2024 PlexusOne
