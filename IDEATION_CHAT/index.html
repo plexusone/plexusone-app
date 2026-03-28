@@ -1,0 +1,3149 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Multi-agent orchestration platform for AI CLI tools">
+      
+      
+      
+        <link rel="canonical" href="https://plexusone.github.io/nexus/IDEATION_CHAT/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>IDEATION CHAT - PlexusOne Nexus</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="PlexusOne Nexus" class="md-header__button md-logo" aria-label="PlexusOne Nexus" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PlexusOne Nexus
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              IDEATION CHAT
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/plexusone/nexus" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    plexusone/nexus
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../guide/desktop/overview/" class="md-tabs__link">
+          
+  
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reference/configuration/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../development/architecture/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/changelog/" class="md-tabs__link">
+          
+  
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="PlexusOne Nexus" class="md-nav__button md-logo" aria-label="PlexusOne Nexus" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PlexusOne Nexus
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/plexusone/nexus" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    plexusone/nexus
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Requirements
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Desktop App
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Desktop App
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/desktop/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/desktop/grid-layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Grid Layout
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/desktop/sessions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Session Management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/desktop/shortcuts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Keyboard Shortcuts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Mobile App
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Mobile App
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/mobile/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/mobile/connecting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Connecting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    WebSocket Protocol
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/design-docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Design Documents
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Releases
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Releases
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../releases/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>IDEATION CHAT</h1>
+
+<p>CLI Agent Orchestrator - how do ochestrators like GSD work https://github.com/gsd-build/get-shit-done. for Gas Town, I'm thinking of building a multi agent monitoring system that we discussed earlier. I'm using tmux and the latest thought is to have a macOS app auto spawn iterm2 or other terminal sessions attach tmux sessions for multiple CLIs, like Codex CLI, Claude Code, Gemini CLI, Kiro CLI, etc. and be able to monitor them. this way the macOS app is controlling the panes vs. using tmux to split iterm2 panes. and then have a mobile app to to with this which is like multiple chat sessions where I can be chatting with an agent in each tmux session. The mobile app can perhaps be Discord where each agent is in a channel. how would this work with GSD and Gas Town, and for standard multiple tmux sessions (which I'm doing now)? Is this a good approach? We can use Discord or build our own mobile app, similar to how we're thinking of building a MacOS app.</p>
+<p>You’re basically converging on a local-first agent orchestrator with UI layers (macOS + mobile)—which is exactly the direction tools like get-shit-done are hinting at, but you’re taking it further by separating execution (tmux) from control (apps). That’s a solid architecture if you do it deliberately.</p>
+<p>Let’s break it down in a practical way.</p>
+<p>🧠 1. How orchestrators like GSD actually work</p>
+<p>Projects like GSD are not “multi-agent magic”—they’re usually:</p>
+<p>Core loop</p>
+<p>Maintain a task graph / plan</p>
+<p>Spawn agents (CLI tools like Codex, Claude, etc.)</p>
+<p>Route:</p>
+<p>prompts</p>
+<p>outputs</p>
+<p>tool calls</p>
+<p>Persist state (files, logs, memory)</p>
+<p>Under the hood</p>
+<p>They rely on:</p>
+<p>subprocesses (spawn CLI tools)</p>
+<p>pseudo-terminals (PTYs)</p>
+<p>queues/event buses</p>
+<p>structured logs</p>
+<p>👉 In other words:
+GSD ≈ process manager + router + memory layer</p>
+<p>🧱 2. Your idea (tmux + macOS app + mobile) — what it REALLY is</p>
+<p>What you're proposing is:</p>
+<p>Layered architecture
+1. Execution Layer (tmux)</p>
+<p>Each pane/session = 1 agent</p>
+<p>Running:</p>
+<p>Codex CLI</p>
+<p>Claude Code</p>
+<p>Gemini CLI</p>
+<p>etc.</p>
+<p>✔️ This is GOOD because:</p>
+<p>tmux already solves process lifecycle + persistence</p>
+<p>easy to restart/reconnect</p>
+<p>battle-tested</p>
+<ol>
+<li>Orchestration Layer (your “Gas Town core”)</li>
+</ol>
+<p>This is the piece you're missing right now.</p>
+<p>Instead of tmux being the orchestrator, you want:</p>
+<p>Task routing</p>
+<p>Agent coordination</p>
+<p>State tracking</p>
+<p>Messaging between agents</p>
+<p>👉 tmux should NOT be the orchestrator
+👉 It should be the runtime substrate</p>
+<ol>
+<li>Control/UI Layer
+macOS app</li>
+</ol>
+<p>Spawns sessions</p>
+<p>Attaches to tmux</p>
+<p>Visualizes:</p>
+<p>logs</p>
+<p>agent state</p>
+<p>outputs</p>
+<p>Sends input to agents</p>
+<p>Mobile (Discord or custom app)</p>
+<p>Acts like:</p>
+<p>chat interface to agents</p>
+<p>notification system</p>
+<p>lightweight control plane</p>
+<p>⚠️ 3. The key mistake to avoid</p>
+<p>Right now your idea risks this:</p>
+<p>“tmux is orchestrating agents”</p>
+<p>That becomes fragile fast.</p>
+<p>Why?</p>
+<p>tmux has no semantic understanding</p>
+<p>no structured messaging</p>
+<p>no state awareness</p>
+<p>no retry logic</p>
+<p>no task graph</p>
+<p>👉 You end up with:
+“a bunch of terminals doing stuff” instead of a system</p>
+<p>✅ 4. The better model (what you should build)
+🧠 Introduce a “Gas Town Orchestrator Core”</p>
+<p>Think of this as your GSD-equivalent.</p>
+<p>Responsibilities:</p>
+<p>Maintain:</p>
+<p>agent registry</p>
+<p>task queue</p>
+<p>state graph</p>
+<p>Communicate with agents via:</p>
+<p>stdin/stdout OR</p>
+<p>sockets (better)</p>
+<p>🔌 Communication model
+Option A (simple, works with tmux now)</p>
+<p>macOS app writes to tmux panes</p>
+<p>parses stdout</p>
+<p>✔️ quick to build
+❌ brittle</p>
+<p>Option B (recommended)</p>
+<p>Wrap each CLI agent with a shim process:</p>
+<p>tmux pane
+  └── agent-wrapper
+        ├── launches Codex CLI
+        ├── parses output
+        ├── exposes JSON API (local socket)</p>
+<p>Now you get:</p>
+<p>structured messages</p>
+<p>streaming events</p>
+<p>control hooks</p>
+<p>🧩 5. How Discord fits in</p>
+<p>Using Discord is actually a strong MVP move.</p>
+<p>Model:</p>
+<p>Each agent = channel</p>
+<p>Messages:</p>
+<p>user → orchestrator → agent</p>
+<p>agent → orchestrator → Discord</p>
+<p>Bonus:</p>
+<p>notifications for long-running tasks</p>
+<p>easy async control</p>
+<p>Downsides:</p>
+<p>noisy</p>
+<p>not structured by default</p>
+<p>hard to visualize workflows</p>
+<p>👉 Good for v1, not ideal long-term</p>
+<p>🖥️ 6. macOS app — your real power move</p>
+<p>This is where you differentiate from GSD.</p>
+<p>Instead of:</p>
+<p>CLI orchestrator</p>
+<p>You’re building:</p>
+<p>visual agent operations system</p>
+<p>Features to aim for:</p>
+<p>agent grid (like tmux, but smarter)</p>
+<p>live logs + diff views</p>
+<p>task graph visualization</p>
+<p>“assign task to agent” UI</p>
+<p>replay/debug runs</p>
+<p>🔁 7. Multi-agent monitoring (your original goal)</p>
+<p>Here’s how it should flow:</p>
+<p>User (mobile/mac)
+   ↓
+Orchestrator Core
+   ↓
+Task Queue
+   ↓
+Agent चयन (routing logic)
+   ↓
+Agent Wrapper (in tmux)
+   ↓
+CLI tool (Codex, Claude, etc.)
+   ↓
+Output → Wrapper → Core → UI
+🧪 8. For your CURRENT tmux setup</p>
+<p>You can upgrade incrementally:</p>
+<p>Step 1</p>
+<p>Keep:</p>
+<p>tmux sessions per agent</p>
+<p>Add:</p>
+<p>naming convention</p>
+<p>log files per pane</p>
+<p>Step 2</p>
+<p>Add a lightweight orchestrator (Node/Python):</p>
+<p>sends commands via tmux send-keys</p>
+<p>captures output via pipes/logs</p>
+<p>Step 3</p>
+<p>Introduce wrappers:</p>
+<p>normalize outputs into JSON</p>
+<p>tag messages:</p>
+<p>task_id</p>
+<p>agent_id</p>
+<p>status</p>
+<p>Step 4</p>
+<p>Build macOS UI on top</p>
+<p>🤖 9. Is your approach “good”?
+Yes — IF you treat it like this:</p>
+<p>✅ tmux = infrastructure
+✅ orchestrator = brain
+✅ macOS app = control panel
+✅ mobile = remote interface</p>
+<p>No — if:</p>
+<p>❌ tmux = orchestrator
+❌ agents are just raw terminals
+❌ no structured messaging</p>
+<p>💡 10. Big opportunity (this is the insight)</p>
+<p>What you’re building isn’t just a tool.</p>
+<p>It’s:</p>
+<p>“Kubernetes for AI agents, but local-first and human-in-the-loop”</p>
+<p>GSD is:</p>
+<p>task runner</p>
+<p>You’re aiming for:</p>
+<p>agent OS</p>
+<p>🚀 If you want, next step</p>
+<p>I can help you design:</p>
+<p>the agent wrapper protocol (JSON schema)</p>
+<p>the orchestrator event system</p>
+<p>or a minimal working architecture (code-level)</p>
+<p>That’s the part that will make or break this system.</p>
+<p>RIght now, the comment on Gas Town and GSD is that they spend a lot of tokens, so there's concern on what agents are actually doing in that scenario. If we build up from our currently manual multiple tmux session approach we can better understand what we are building on, but align with some of the concepts behind Gas Town and GSD so we understand the effects of scale, work coordination an d token usage better.</p>
+<p>You’re thinking about this the right way—and the concern about token usage is very real. Most “multi-agent” systems (including things like get-shit-done) burn tokens not because they’re powerful, but because they’re poorly constrained.</p>
+<p>Let’s ground this in what’s actually happening.</p>
+<p>🔥 1. Why GSD-style systems burn so many tokens</p>
+<p>It usually comes down to 3 things:</p>
+<ol>
+<li>Over-communication between agents</li>
+</ol>
+<p>Agents “talk” too much</p>
+<p>Long context passed repeatedly</p>
+<p>Full transcripts forwarded instead of summaries</p>
+<p>👉 Token explosion pattern:</p>
+<p>Agent A → sends 2k tokens
+Agent B → replies with 3k tokens
+Agent C → gets both → now 5k tokens
+2. No strict task boundaries</p>
+<p>Agents are told:</p>
+<p>“figure this out”</p>
+<p>Instead of:</p>
+<p>“do exactly this small step”</p>
+<p>So they:</p>
+<p>re-plan</p>
+<p>re-think</p>
+<p>re-explain context</p>
+<p>👉 That’s wasted tokens.</p>
+<ol>
+<li>No memory compression</li>
+</ol>
+<p>Full history passed every time</p>
+<p>No summarization layer</p>
+<p>No state extraction</p>
+<p>🧠 2. Why your tmux-first approach is actually smart</p>
+<p>Starting from manual tmux sessions gives you something most orchestrators lack:</p>
+<p>observability of real agent behavior</p>
+<p>You can literally see:</p>
+<p>what prompts work</p>
+<p>where tokens are wasted</p>
+<p>when agents go off rails</p>
+<p>👉 This is huge.</p>
+<p>Most frameworks skip this and go straight to abstraction.</p>
+<p>🧱 3. The principle you’re circling</p>
+<p>You’re basically saying:</p>
+<p>“Let’s understand the physics before building the operating system.”</p>
+<p>That’s exactly right.</p>
+<p>🧪 4. What you should study in your current setup</p>
+<p>Before building Gas Town fully, instrument your tmux workflow.</p>
+<p>Track per agent:
+🔹 Input size</p>
+<p>tokens per prompt</p>
+<p>🔹 Output size</p>
+<p>tokens per response</p>
+<p>🔹 Loop behavior</p>
+<p>does the agent:</p>
+<p>retry?</p>
+<p>replan?</p>
+<p>stall?</p>
+<p>🔹 Task completion efficiency</p>
+<p>tokens → result ratio</p>
+<p>📊 5. Introduce a simple “Token Budget Model”</p>
+<p>This is where most systems fail.</p>
+<p>Give each agent:</p>
+<p>{
+  "task_id": "...",
+  "max_tokens": 3000,
+  "max_turns": 5,
+  "goal": "clear, narrow objective"
+}</p>
+<p>Now you can measure:</p>
+<p>did it finish within budget?</p>
+<p>did it exceed turns?</p>
+<p>did it loop?</p>
+<p>🧩 6. Aligning with Gas Town / GSD concepts (without the bloat)</p>
+<p>Instead of copying them, extract the useful primitives:</p>
+<p>✅ Primitive 1: Task decomposition</p>
+<p>But do it manually first:</p>
+<p>Instead of:</p>
+<p>“build feature X”</p>
+<p>You do:</p>
+<p>write spec</p>
+<p>implement function</p>
+<p>test function</p>
+<p>Each step = separate tmux agent interaction</p>
+<p>✅ Primitive 2: Role specialization</p>
+<p>Assign tmux sessions like:</p>
+<p>coder</p>
+<p>reviewer</p>
+<p>planner</p>
+<p>But keep them strictly scoped</p>
+<p>✅ Primitive 3: Controlled handoffs</p>
+<p>Instead of dumping full context:</p>
+<p>Pass only:</p>
+<p>{
+  "task": "...",
+  "input": "...",
+  "expected_output": "...",
+  "constraints": [...]
+}
+⚙️ 7. The key upgrade: add a “thin orchestrator”</p>
+<p>Not a full system—just enough to learn.</p>
+<p>Responsibilities:</p>
+<p>log everything</p>
+<p>enforce budgets</p>
+<p>route messages</p>
+<p>NOT:</p>
+<p>autonomous planning</p>
+<p>agent chaining (yet)</p>
+<p>🧠 8. The real insight about token efficiency</p>
+<p>The best systems are not “smartest”.</p>
+<p>They are:</p>
+<p>most restrictive</p>
+<p>High-performing pattern:</p>
+<p>small prompts</p>
+<p>short context</p>
+<p>clear outputs</p>
+<p>minimal loops</p>
+<p>Bad (but common) pattern:</p>
+<p>“Here’s the entire repo…”</p>
+<p>“Think step by step…”</p>
+<p>“Collaborate with other agents…”</p>
+<p>💸💸💸</p>
+<p>📱 9. Where your macOS + Discord idea fits in</p>
+<p>Using Discord or a custom app is fine—but:</p>
+<p>👉 UI does NOT solve token problems
+👉 Orchestration discipline does</p>
+<p>🧪 10. A practical experiment to run (this will teach you fast)</p>
+<p>Take one real task.</p>
+<p>Run it 3 ways:
+A. Single agent</p>
+<p>one CLI session</p>
+<p>direct prompt</p>
+<p>B. Manual multi-agent (your tmux setup)</p>
+<p>planner → coder → reviewer</p>
+<p>C. “GSD-style”</p>
+<p>let agents collaborate freely</p>
+<p>Measure:</p>
+<p>total tokens</p>
+<p>time to completion</p>
+<p>quality</p>
+<p>👉 You’ll likely find:</p>
+<p>(A) cheapest</p>
+<p>(B) best balance</p>
+<p>(C) most expensive</p>
+<p>🚀 11. What Gas Town should become (based on this)</p>
+<p>Not:</p>
+<p>“multi-agent system”</p>
+<p>But:</p>
+<p>“token-aware agent orchestration system”</p>
+<p>Core features to build toward:</p>
+<p>token accounting per task</p>
+<p>strict task contracts</p>
+<p>context minimization</p>
+<p>replay + debugging</p>
+<p>💡 Final take</p>
+<p>Your instinct to:</p>
+<p>start with tmux</p>
+<p>observe behavior</p>
+<p>build upward</p>
+<p>…is exactly how you avoid building a flashy but inefficient system like many current orchestrators.</p>
+<p>If you want, I can help you design a minimal token-tracking layer you can bolt onto your current tmux workflow—that’s probably the highest-leverage next step.</p>
+<p>macOS + Discord is a better UI than the current iterm2+tmux+panes setup. Today, the manual orchestrator is still me, and it's okay if macOS + Discord is a better way for me to do manual orchestration because we an automate more with a better human interface with this approach.</p>
+<p>Yes — this is a good direction, and more importantly, it’s a strategically correct phase to stay in.</p>
+<p>What you’re really saying is:</p>
+<p>“I’m the orchestrator, but I want better controls and visibility.”</p>
+<p>That’s not a limitation — that’s actually how you design a good orchestrator before automating it.</p>
+<p>🧠 1. Reframing your setup</p>
+<p>Right now:</p>
+<p>tmux = execution</p>
+<p>you = orchestrator</p>
+<p>iTerm panes = UI (bad one)</p>
+<p>What you’re proposing:</p>
+<p>tmux = execution (unchanged)</p>
+<p>you = orchestrator (still)</p>
+<p>macOS app + Discord = control interface</p>
+<p>👉 That’s a strict upgrade, not a detour.</p>
+<p>🔥 2. Why this is better than iTerm + tmux panes
+Problem with current setup</p>
+<p>visual overload</p>
+<p>no history structure</p>
+<p>hard to track tasks across panes</p>
+<p>no async control (you must “watch everything live”)</p>
+<p>What macOS + Discord gives you
+🧩 Structured conversations</p>
+<p>Each agent becomes:</p>
+<p>a channel (Discord)</p>
+<p>or a panel (macOS app)</p>
+<p>Now you get:</p>
+<p>persistent history</p>
+<p>searchable interactions</p>
+<p>clean separation of roles</p>
+<p>⏱ Async orchestration</p>
+<p>You no longer need to:</p>
+<p>stare at terminals</p>
+<p>context-switch constantly</p>
+<p>Instead:</p>
+<p>send task → come back later</p>
+<p>get pinged on completion</p>
+<p>🧠 Cognitive offloading</p>
+<p>This is huge.</p>
+<p>Instead of remembering:</p>
+<p>what each pane is doing</p>
+<p>what you told each agent</p>
+<p>…the UI remembers for you.</p>
+<p>⚙️ 3. What you’re REALLY building (even manually)</p>
+<p>You’re already creating:</p>
+<p>Human-in-the-loop orchestration system</p>
+<p>With:</p>
+<p>explicit task routing (you decide who does what)</p>
+<p>implicit prioritization</p>
+<p>real-time evaluation</p>
+<p>👉 This is better than most automated systems right now</p>
+<p>🧪 4. Why staying manual (for now) is powerful</p>
+<p>Because you learn:</p>
+<ol>
+<li>Natural coordination patterns</li>
+</ol>
+<p>when to split tasks</p>
+<p>when to reuse context</p>
+<p>when agents fail</p>
+<ol>
+<li>Token intuition</li>
+</ol>
+<p>You start noticing:</p>
+<p>“this prompt is too big”</p>
+<p>“this agent is looping”</p>
+<p>“this task should’ve been split”</p>
+<ol>
+<li>Failure modes</li>
+</ol>
+<p>You’ll see:</p>
+<p>hallucination patterns</p>
+<p>overthinking loops</p>
+<p>redundant work across agents</p>
+<p>👉 None of this is obvious if you jump straight to automation.</p>
+<p>🧩 5. How to structure your macOS + Discord system
+Model: “Agent = Endpoint”</p>
+<p>Each agent has:</p>
+<p>tmux session</p>
+<p>Discord channel</p>
+<p>(later) macOS panel</p>
+<p>Message flow
+You (Discord / macOS)
+   ↓
+Orchestrator (you, for now)
+   ↓
+Send → tmux session
+   ↓
+Agent runs
+   ↓
+Output → back to Discord/macOS
+Key improvement: add light structure</p>
+<p>Even manually, enforce this:</p>
+<p>Task message format
+TASK:
+Goal: <clear objective>
+Input: <minimal context>
+Constraints: <rules>
+Output: <expected format>
+Agent response format
+STATUS: success | blocked | needs_input
+RESULT:</p>
+<output>
+
+NOTES:
+<optional>
+
+👉 This alone will dramatically reduce chaos.
+
+📱 6. Discord vs building your own mobile app
+Using Discord (now)
+Pros:
+
+instant setup
+
+notifications
+
+channels = agents
+
+mobile-first already solved
+
+Cons:
+
+not structured
+
+no deep integration
+
+noisy at scale
+
+Custom app (later)
+
+Build this only after you learn:
+
+what views you actually need
+
+what signals matter (not everything does)
+
+how tasks flow
+
+👉 Otherwise you’ll overbuild.
+
+🖥️ 7. macOS app — what it should do (early version)
+
+Don’t overcomplicate it.
+
+Start with:
+
+Core features:
+
+list of agents (sessions)
+
+send command → tmux
+
+stream output
+
+show last N interactions
+
+Optional (high value):
+
+“assign task” button
+
+quick templates
+
+status indicators:
+
+running
+
+idle
+
+stuck
+
+🚨 8. One critical thing to add NOW
+
+Even before automation:
+
+Add logging
+
+Every interaction should be saved as:
+
+{
+  "agent": "coder-1",
+  "task": "...",
+  "input_tokens": ...,
+  "output_tokens": ...,
+  "timestamp": ...
+}
+
+👉 This becomes your training data for Gas Town
+
+Without it:
+
+you’re guessing later
+
+With it:
+
+you can optimize systematically
+
+💡 9. The deeper insight
+
+You’re not just improving UI.
+
+You’re shifting from:
+
+“terminal multiplexing”
+
+to:
+
+“agent operations interface”
+
+That’s a fundamentally different category.
+
+🚀 10. Bottom line
+
+Yes — this is a very good move, because:
+
+✅ improves human orchestration
+✅ reduces cognitive load
+✅ enables async workflows
+✅ creates structure naturally
+✅ prepares you for automation later
+
+And most importantly:
+
+You’re learning how orchestration should feel before trying to automate it.
+
+If you want next, I can sketch:
+
+a minimal Discord bot + tmux bridge
+
+or a macOS app architecture (Swift + PTY + tmux control)
+
+Those are the two fastest ways to make this real.
+
+{ "agent": "coder-1", "task": "...", "input\_tokens": ..., "output\_tokens": ..., "timestamp": ... }
+
+let's work on the macOS app first. this is where we are today with iterm2+tmux. Once this is working well, we can add Discord which will be a meaningful enhancement.
+
+Perfect — this is exactly the right sequencing.
+
+You’re essentially saying:
+
+“Let’s replace iTerm as the control surface, not reinvent the system yet.”
+
+That keeps scope tight and gives you immediate leverage.
+
+🧱 1. What your macOS app actually needs to be (v1)
+
+Not an orchestrator. Not even “smart.”
+
+It should be:
+
+A structured control + observability layer over tmux
+
+Think:
+
+iTerm replacement (for your use case)
+
+awareness of “agents”
+
+logging
+
+🧠 2. Core mental model
+Each agent = tmux session (or pane)
+
+Your app should treat agents as:
+
+{
+  "id": "coder-1",
+  "tmux_session": "coder-1",
+  "status": "running",
+  "last_activity": "...",
+  "task": "current task"
+}
+⚙️ 3. Absolute minimum features (build THIS first)
+🖥️ A. Agent list panel
+
+shows all tmux sessions
+
+status:
+
+idle
+
+running
+
+no output (⚠️ useful signal)
+
+💬 B. Input box (send to agent)
+
+send command → tmux session
+
+equivalent of:
+
+tmux send-keys -t coder-1 "your prompt" Enter
+📜 C. Output viewer
+
+live stream of pane output
+
+scrollable history
+
+ideally per-agent
+
+🧾 D. Structured logging (THIS is critical)
+
+Every interaction becomes:
+
+{
+  "agent": "coder-1",
+  "task": "implement auth middleware",
+  "input": "Write a Node.js middleware...",
+  "output": "...",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "timestamp": "2026-03-20T10:00:00Z"
+}
+
+👉 Even if token counts are fake at first — log everything.
+
+🔌 4. How to actually talk to tmux (important)
+
+You have 2 realistic options:
+
+Option A (fastest): shell out to tmux
+
+Use:
+
+tmux list-sessions
+tmux capture-pane -pt coder-1
+tmux send-keys -t coder-1 "..." Enter
+
+In Swift:
+
+use Process (NSTask)
+
+✔️ super fast to build
+❌ polling-based (not real-time)
+
+Option B (better): use PTY / attach
+
+attach to tmux session
+
+stream output
+
+✔️ real-time
+❌ more complex
+
+👉 Recommendation: start with Option A
+
+🧩 5. Suggested macOS app architecture
+Stack
+
+Swift + SwiftUI
+
+No Electron (keep it fast/native)
+
+Core modules
+1. TmuxService
+
+Handles:
+
+list sessions
+
+send commands
+
+fetch output
+
+2. AgentStore
+
+In-memory state:
+
+struct Agent {
+    let id: String
+    let session: String
+    var lastOutput: String
+    var lastUpdated: Date
+}
+3. LogStore
+
+Writes JSON logs:
+
+{
+  "agent": "...",
+  "input": "...",
+  "output": "...",
+  "timestamp": "..."
+}
+
+Store as:
+
+JSONL file (append-only)
+
+4. UI Layer
+Left panel:
+
+agents list
+
+Main panel:
+
+output viewer
+
+Bottom:
+
+input box
+
+🧪 6. Add “just enough structure” to inputs
+
+Don’t send raw prompts.
+
+Wrap them:
+
+TASK:
+Goal: ...
+Constraints: ...
+Output: ...
+
+This makes later automation MUCH easier.
+
+📊 7. Token tracking (your specific question)
+
+You mentioned:
+
+{
+  "agent": "coder-1",
+  "task": "...",
+  "input_tokens": ...,
+  "output_tokens": ...,
+  "timestamp": ...
+}
+How to implement (v1)
+Step 1: estimate tokens
+
+Use:
+
+simple heuristic: 1 token ≈ 4 chars
+
+func estimateTokens(_ text: String) -> Int {
+    return text.count / 4
+}
+Step 2: log it
+{
+  "agent": "coder-1",
+  "task": "write API handler",
+  "input_tokens": 120,
+  "output_tokens": 450
+}
+Step 3 (later): real token counting
+
+integrate model-specific tokenizer
+
+🔥 8. One killer feature to add early
+“Last activity heat”
+
+Show:
+
+🟢 active (recent output)
+
+🟡 idle
+
+🔴 stuck (no output for X min)
+
+👉 This replaces “staring at panes”
+
+🚀 9. What this unlocks (immediately)
+
+Once this app works:
+
+you stop using iTerm almost entirely
+
+you can manage 5–10 agents comfortably
+
+you start seeing patterns in:
+
+failures
+
+token waste
+
+task design
+
+🧠 10. Why this step matters before Discord
+
+If you skip this:
+
+Discord becomes noisy chaos
+
+no structure
+
+no logging foundation
+
+If you do this first:
+
+Discord becomes a clean extension of a system
+
+💡 11. The real goal of v1
+
+Not polish.
+
+Not automation.
+
+It’s this:
+
+Make manual orchestration feel clean, trackable, and scalable
+
+👉 If you want next
+
+I can give you:
+
+a minimal SwiftUI project skeleton
+
+or a tmux service implementation (actual code)
+
+That would get you to a working prototype very fast.
+
+what is a good name for this app? that can cover both macOS and Discrod bot, and evetually mobile app
+
+You’re naming something that’s evolving from:
+
+tmux controller → agent orchestrator → multi-surface system (macOS + Discord + mobile)
+
+So the name needs to:
+
+not feel tied to terminals
+
+not feel tied to AI hype
+
+scale to “system / OS / network”
+
+still feel operational, not abstract
+
+Also: it should sit well alongside Gas Town (which already has a strong “place/system” vibe).
+
+🧭 1. Naming directions that actually fit what you're building
+
+You’re in one of these lanes:
+
+A. Operations / Control Systems
+
+feels like command center
+
+grounded, serious
+
+B. Network / City / Infrastructure (fits Gas Town)
+
+agents as “workers in a system”
+
+C. Interface Layer (bridge between human ↔ agents)
+
+control surface vibe
+
+🔥 2. Strong candidates (with reasoning)
+🏆 Best overall fits
+Gas Console
+
+fits Gas Town perfectly
+
+implies control surface
+
+works for:
+
+macOS app
+
+Discord bot
+
+mobile
+
+👉 This is very clean and scalable
+
+Gas Control
+
+more operational / serious
+
+feels like mission control
+
+Gas Grid
+
+agents as nodes
+
+scalable system vibe
+
+nice visual metaphor
+
+Gas Hub
+
+central coordination point
+
+simple, flexible
+
+🧠 Slightly more conceptual (but strong)
+Switchboard
+
+old-school operator vibe
+
+you routing agents manually
+
+VERY aligned with what you’re doing right now
+
+👉 underrated strong option
+
+Dispatch
+
+task routing
+
+orchestration without saying “AI”
+
+Relay
+
+passing tasks between agents
+
+lightweight, modern feel
+
+⚙️ More “system / OS” feeling
+GasOS
+
+bold, but maybe too early
+
+better once automation is real
+
+Control Plane
+
+very accurate technically
+
+maybe too infra-heavy unless you like that
+
+⚠️ 3. Names I would avoid
+
+anything with:
+
+“AI” (too limiting)
+
+“Agent” (too trendy, will age badly)
+
+“Orchestrator” (too technical, not product-y)
+
+💡 4. My recommendation (ranked)
+#1 → Gas Console
+
+Best balance of:
+
+clarity
+
+flexibility
+
+alignment with Gas Town
+
+works across all surfaces
+
+#2 → Switchboard
+
+Best conceptual match for:
+
+manual orchestration
+
+multi-agent routing
+
+#3 → Gas Grid
+
+Best if you lean into:
+
+multi-agent system visualization
+
+🧠 5. A subtle but important insight
+
+You’re not naming:
+
+“a tool”
+
+You’re naming:
+
+the interface layer to your agent system
+
+That’s why something like Console / Control / Grid works better than flashy names.
+
+🚀 If you want
+
+I can also:
+
+design the brand system (Gas Town + this + future components)
+
+or suggest names for:
+
+the orchestrator core
+
+agent types
+
+internal concepts
+
+That helps everything feel like a cohesive system instead of separate tools.
+
+If we're not strictly focused on Gas Town but will adapt their concepts to start, and eventually may formaly supprot Gas Town and GSD, but starting with our own, is using "Gas" in the name limiting?
+
+Short answer: yes, it can be limiting—but whether that matters depends on what role you want this product to play long-term.
+
+Let’s break it down clearly.
+
+🧠 1. What “Gas” does to your positioning
+
+Using “Gas” (from Gas Town) implicitly says:
+
+“This app belongs to that ecosystem.”
+
+That has benefits and constraints.
+
+✅ Upside of using “Gas”
+
+Immediate cohesion with your existing concept (Gas Town)
+
+Feels like part of a bigger system
+
+Good if:
+
+this is primarily your internal OS
+
+or Gas Town becomes the main brand
+
+❌ Downside (this is the important part)
+
+If this evolves into:
+
+a standalone product
+
+a general agent orchestration tool
+
+something others use outside your system
+
+Then “Gas” becomes:
+
+1. Conceptually opaque
+
+People will ask:
+
+“What is Gas?”
+
+2. Ecosystem-locked
+
+It feels like:
+
+a plugin
+
+not a platform
+
+3. Harder to generalize
+
+Especially if you later support:
+
+get-shit-done
+
+other orchestrators
+
+different workflows
+
+🔥 2. Your current trajectory (important insight)
+
+You said:
+
+“start inspired by Gas Town/GSD, but build our own system”
+
+That means you are actually building:
+
+a meta-layer over orchestrators
+
+Not just a component inside one.
+
+👉 That strongly suggests:
+don’t hardcode “Gas” into the core product name
+
+🧭 3. Better naming strategy (recommended)
+Separate:
+🔹 Product name (neutral, scalable)
+🔹 System / ecosystem (Gas Town, optional)
+Example:
+
+Product: Switchboard
+
+System: Gas Town
+
+→ “Switchboard for Gas Town”
+→ “Switchboard supports GSD”
+
+This gives you:
+
+flexibility
+
+cleaner positioning
+
+future-proofing
+
+🧩 4. Think of it like this
+
+You’re building something closer to:
+
+“the UI + control plane for agent systems”
+
+That should feel like:
+
+independent
+
+extensible
+
+system-agnostic
+
+🏗️ 5. What happens if you keep “Gas”
+
+You’ll likely hit this later:
+
+“We should rename this…”
+
+Which is painful once:
+
+codebases grow
+
+users exist
+
+mental models form
+
+🚀 6. My strong recommendation
+Don’t use “Gas” in the core product name.
+
+Instead:
+
+Keep Gas Town as:
+
+internal concept
+
+experimental system
+
+or “mode”
+
+Give the app a neutral, powerful name
+
+💡 7. Names that fit this direction
+
+These work with or without Gas Town:
+
+Top tier
+
+Switchboard → best conceptual fit
+
+Dispatch → task routing focus
+
+Relay → lightweight, scalable
+
+Control → simple, strong
+
+Console → familiar, flexible
+
+More system-like
+
+Grid
+
+Nexus
+
+Hub
+
+🧠 8. Clean mental model going forward
+
+Gas Town = experiment / system philosophy
+
+get-shit-done = reference implementation
+
+Your app = interface + control layer across systems
+
+🔑 Final take
+
+If you think this will stay:
+
+“my personal system”
+
+→ using “Gas” is fine
+
+If you think this could become:
+
+“a real product / platform”
+
+→ drop “Gas” from the name now
+
+If you want, I can narrow this down to 3–5 names that feel like they could realistically become a company/product (not just a project).
+
+We may not want our name tied to Gas Town since Gas Town itself is new and not proven.
+
+That’s a very grounded call—and honestly the safer strategic move.
+
+You’re basically recognizing:
+
+“Gas Town is an experiment. This app might outgrow it.”
+
+That’s exactly when you decouple the name early.
+
+🧠 1. What this decision unlocks
+
+By not tying to Gas Town, your app can become:
+
+a general agent control system
+
+compatible with:
+
+get-shit-done
+
+your own workflows
+
+future systems you haven’t designed yet
+
+👉 That’s a much bigger surface area.
+
+🔑 2. What your name now needs to do
+
+Since it’s no longer anchored to “Gas,” it should:
+
+✔ Be system-level, not feature-level
+
+Avoid:
+
+“tmux manager”
+
+“terminal UI”
+
+✔ Feel like infrastructure
+
+Not:
+
+playful
+
+gimmicky
+
+AI-hype
+
+✔ Work across surfaces
+
+Must feel natural as:
+
+macOS app
+
+Discord bot
+
+mobile app later
+
+🧭 3. Strong naming direction (refined)
+
+Now that “Gas” is out, your best category is:
+
+Control / routing / coordination metaphors
+
+🔥 4. Top recommendations (very intentional)
+🏆 1. Switchboard
+
+This is extremely aligned with what you're doing.
+
+Why it works:
+
+You are literally routing tasks between agents
+
+Human-in-the-loop fits perfectly (old telephone operator model)
+
+Scales to automation later
+
+Works across:
+
+desktop
+
+mobile
+
+chat
+
+👉 This is the most conceptually accurate name
+
+🥈 2. Dispatch
+
+Focuses on task assignment
+
+Operational, clean
+
+Slightly more “active” than Switchboard
+
+🥉 3. Relay
+
+Lightweight
+
+about passing messages between agents
+
+modern feel
+
+🧠 4. Console
+
+familiar mental model
+
+flexible
+
+slightly generic, but very usable
+
+⚙️ 5. Control
+
+strongest “system” vibe
+
+but a bit abstract / broad
+
+⚖️ 5. How to choose between them
+If you want:
+
+human orchestration emphasis
+→ go Switchboard
+
+If you want:
+
+task execution / operations feel
+→ go Dispatch
+
+If you want:
+
+minimal / modern / flexible
+→ go Relay
+
+💡 6. My recommendation (based on everything you’ve said)
+
+You are currently:
+
+manually orchestrating
+
+routing tasks between agents
+
+building toward automation
+
+👉 That maps perfectly to:
+
+👉 Switchboard
+
+It captures:
+
+what you're doing today
+
+and what the system becomes later
+
+🧠 7. Subtle advantage of a neutral name
+
+Later you can say:
+
+“Switchboard supports GSD”
+
+“Switchboard integrates with Gas Town”
+
+“Switchboard runs local agents via tmux”
+
+Instead of being locked into one identity.
+
+🚀 Final take
+
+You’re making the right move:
+
+keep Gas Town as an idea / system
+
+make this app independent and foundational
+
+👉 And name it like infrastructure, not a project.
+
+If you want next, we can:
+
+design the first-run UX of Switchboard
+
+or define the agent model + UI layout for the macOS app (this is the next high-leverage step)
+
+Is there a more modern or abstract name than Switchboard which seems a bit generic and dated?
+
+Yeah—that instinct is right.
+
+“Switchboard” is conceptually perfect but aesthetically dated. It leans industrial / analog, while what you’re building feels more like a modern control layer for distributed intelligence.
+
+So the goal is:
+
+keep the meaning (routing, coordination, control)
+but upgrade the feel (modern, minimal, system-level)
+
+🧭 1. What “modern” should feel like here
+
+For your product, a strong name should feel:
+
+short (1–2 words)
+
+slightly abstract
+
+system/infrastructure oriented
+
+not tied to “AI” explicitly
+
+flexible across macOS + mobile + Discord
+
+🔥 2. Best modern alternatives to “Switchboard”
+🏆 Top tier (very strong fits)
+Relay
+
+Closest modern equivalent to Switchboard.
+
+implies routing + passing control
+
+lightweight, fast, scalable
+
+feels like infrastructure
+
+👉 This is probably the cleanest upgrade
+
+Nexus
+
+central connection point
+
+multiple agents converging
+
+slightly more “system core” feel
+
+Mesh
+
+distributed network of agents
+
+modern systems vibe (mesh networks, etc.)
+
+great if you lean multi-agent
+
+Conduit
+
+controlled flow of information
+
+more intentional than Relay
+
+slightly more “engineered” feel
+
+Vector
+
+direction + intent
+
+feels precise and technical
+
+less obvious meaning, more brandable
+
+🧠 Slightly more abstract / brandable
+Lattice
+
+structured network
+
+elegant, technical
+
+a bit more unique
+
+Weave
+
+interconnection of agents/tasks
+
+softer, but still system-like
+
+Helix
+
+evolving system
+
+coordination + structure
+
+more conceptual
+
+Axis
+
+central control point
+
+strong, minimal
+
+⚙️ 3. If you want “product-grade” feel
+
+These feel like they could become real companies:
+
+Relay
+
+Nexus
+
+Vector
+
+Axis
+
+🧪 4. How they map to your actual system
+Concept Best Name
+Message routing Relay
+Central hub Nexus
+Distributed agents  Mesh
+Controlled flow Conduit
+Precision control   Vector
+💡 5. My recommendation (based on your direction)
+
+You are building:
+
+human-in-the-loop orchestration
+
+multiple agents
+
+message routing
+
+system that scales later
+
+👉 Best matches:
+
+#1 → Relay
+
+Modern, clean, closest to Switchboard without baggage
+
+#2 → Nexus
+
+If you want more “platform / system core” energy
+
+#3 → Mesh
+
+If you want to emphasize multi-agent networks
+
+🧠 6. Subtle but important insight
+
+“Switchboard” describes what you do today
+Names like “Relay / Nexus” describe what the system becomes
+
+🚀 Final take
+
+If you want:
+
+practical + modern → Relay
+
+slightly more ambitious → Nexus
+
+more system/network-oriented → Mesh
+
+If you want, I can:
+
+check name collisions / uniqueness
+
+or design a visual identity direction for your top 2–3 picks (this actually helps a lot in deciding)
+
+This will be under our PlexusOne brand
+
+Nice—that actually simplifies things a lot.
+
+If everything sits under PlexusOne, then your app name doesn’t need to carry all the meaning. The brand already implies:
+
+network
+
+interconnection (plexus)
+
+system-level thinking
+
+👉 That means your product name can be:
+
+shorter
+
+more abstract
+
+more confident
+
+🧠 1. What changes with “PlexusOne”
+
+Instead of:
+
+“Name must explain everything”
+
+You now have:
+
+“Name just needs to feel right inside a system”
+
+So you get:
+
+PlexusOne Relay
+
+PlexusOne Nexus
+
+PlexusOne Mesh
+
+All of these instantly feel more substantial.
+
+🔥 2. Best fits under PlexusOne (refined)
+
+Now that we know the parent brand, here are the strongest options:
+
+🏆 Relay
+
+PlexusOne Relay
+
+Why it works:
+
+clean, modern
+
+action-oriented (things move through it)
+
+closest to your actual behavior today (routing tasks)
+
+👉 This is still the most balanced choice
+
+🥈 Nexus
+
+PlexusOne Nexus
+
+Why it works:
+
+feels like the “core system”
+
+more ambitious / platform-like
+
+less about routing, more about central intelligence
+
+🥉 Mesh
+
+PlexusOne Mesh
+
+Why it works:
+
+emphasizes multi-agent network
+
+aligns deeply with “plexus” concept
+
+slightly more abstract
+
+⚙️ Conduit
+
+PlexusOne Conduit
+
+more engineered feel
+
+controlled flow vs free routing
+
+slightly heavier tone
+
+🧠 Axis
+
+PlexusOne Axis
+
+strong, minimal
+
+feels like a control center
+
+less literal, more brand-forward
+
+⚖️ 3. Subtle differentiation (important)
+Relay
+
+“things pass through here”
+
+orchestration layer
+
+Nexus
+
+“everything connects here”
+
+system core
+
+Mesh
+
+“everything is interconnected”
+
+distributed system
+
+💡 4. My recommendation (with PlexusOne in mind)
+
+Because your brand already conveys network/system, you don’t need something heavy.
+
+👉 Go with:
+
+PlexusOne Relay
+
+It hits the sweet spot:
+
+modern
+
+functional
+
+not overhyped
+
+scales from manual → automated system
+
+🧠 5. Long-term naming flexibility
+
+This also lets you expand cleanly:
+
+PlexusOne Relay → control layer
+
+PlexusOne Nexus → orchestration core (future)
+
+PlexusOne Mesh → distributed agents
+
+👉 You’re accidentally setting up a product ecosystem
+
+🚀 Final take
+
+You made the right call anchoring under PlexusOne.
+
+Now the product name should:
+
+be simple
+
+feel infrastructural
+
+not try too hard
+
+👉 Relay is the strongest, most future-proof choice from here.
+
+If you want, next we can:
+
+define the UI identity for PlexusOne Relay
+
+or map features → naming (agents, tasks, sessions, etc.) so the whole system feels cohesive
+
+which one sounds the most like a Control Plane for agents. Is this what we should be aiming for?
+
+You’re asking exactly the right question, because this is really about positioning the system you’re building.
+
+Let’s separate two things:
+
+🧠 1. Should you aim for a “control plane for agents”?
+
+Short answer: yes — but don’t call it that
+
+Why it’s the right mental model
+
+A “control plane” means:
+
+you don’t do the work directly
+
+you coordinate, route, observe, and enforce rules
+
+That maps perfectly to what you’re building:
+
+tmux sessions = execution plane
+
+your app = control plane
+
+you (for now) = decision engine
+
+But why not name it that?
+
+“Control Plane” is:
+
+too infrastructure-heavy
+
+not product-friendly
+
+feels internal / DevOps
+
+👉 It’s a great internal framing, not a great product name
+
+🔥 2. Which name feels MOST like a control plane?
+
+Let’s evaluate your top options through that lens.
+
+🏆 Nexus → BEST match for control plane
+
+PlexusOne Nexus
+
+Why:
+
+implies central coordination point
+
+everything connects through it
+
+feels like a system core, not just a tool
+
+👉 This is the closest to:
+
+“the brain / center of the system”
+
+🥈 Axis
+
+PlexusOne Axis
+
+Why:
+
+implies central point of control/rotation
+
+minimal and strong
+
+feels like something other systems depend on
+
+👉 More abstract, but very “control plane energy”
+
+🥉 Relay
+
+PlexusOne Relay
+
+Why:
+
+accurate for what you’re doing today (routing)
+
+but…
+
+Limitation:
+
+feels more like a data plane component
+
+less like the brain, more like the pipe
+
+⚙️ Conduit
+
+similar to Relay
+
+more controlled flow
+
+still not “central intelligence”
+
+🌐 Mesh
+
+opposite of control plane
+
+implies decentralization
+
+🧭 3. The real distinction (this is important)
+Control Plane = decision + coordination
+
+→ Nexus / Axis
+
+Data Plane = movement of work/messages
+
+→ Relay / Conduit
+
+👉 So your choice depends on what you want this to become:
+
+🚀 4. What YOU are actually building
+
+Based on everything you’ve said:
+
+manual orchestration (you deciding)
+
+moving toward automation
+
+multi-agent coordination
+
+monitoring + control
+
+👉 This is clearly evolving into:
+
+a control plane for agents
+
+💡 5. My recommendation
+If you want to name it for what it will become:
+
+👉 PlexusOne Nexus
+
+strongest “system core” signal
+
+future-proof
+
+feels like a platform
+
+If you want to name it for what it does today:
+
+👉 PlexusOne Relay
+
+practical
+
+grounded
+
+less ambitious
+
+🧠 6. Subtle but critical insight
+
+Most people name based on:
+
+“what it does right now”
+
+The better move is:
+
+name it for the layer it becomes
+
+🔑 Final take
+
+Yes — you are building a control plane for agents
+
+No — don’t call it that directly
+
+Best name aligned with that vision:
+
+👉 PlexusOne Nexus
+
+If you want next, we can:
+
+define what “control plane” concretely means in your system (features + architecture)
+
+or map your current tmux workflow into a formal control/data plane model (this will sharpen your build a lot
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 PlexusOne
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/plexusone/nexus" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
