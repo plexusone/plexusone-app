@@ -52,13 +52,19 @@ The macOS desktop application provides a native multi-pane terminal interface.
 
 ```
 NexusApp
-├── AppDelegate           # App lifecycle, menu bar
-├── ContentView           # Main window layout
-├── GridLayoutManager     # Pane grid calculations
-├── SessionManager        # tmux session management
-├── TerminalPaneView      # Individual terminal pane
-│   └── SwiftTermView     # SwiftTerm wrapper
-└── StateManager          # Persistence
+├── AppDelegate              # App lifecycle, menu bar, new window handling
+├── AppState (Singleton)     # Shared state across windows
+│   ├── SessionManager       # tmux session management (shared)
+│   └── WindowStateManager   # Multi-window persistence
+├── ContentView              # Per-window layout
+│   ├── PaneManager          # Per-window pane-to-session mappings
+│   └── GridConfig           # Per-window grid layout
+├── GridLayoutView           # Pane grid rendering
+├── TerminalPaneView         # Individual terminal pane
+│   └── SwiftTermView        # SwiftTerm wrapper
+└── Models
+    ├── WindowState          # Window configuration models
+    └── NexusState           # Legacy v1 state (migration)
 ```
 
 **Responsibilities:**
@@ -204,23 +210,44 @@ pty, _ := pty.Start(cmd)
 
 ### Desktop State
 
-Saved to `~/.plexusone/nexus_state.json`:
+Saved to `~/.plexusone/nexus_state.json` (v2 multi-window format):
 
 ```json
 {
-  "gridLayout": "2x2",
-  "sessions": [
-    {"paneIndex": 0, "sessionName": "claude-main"}
-  ]
+  "windows": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "gridColumns": 3,
+      "gridRows": 2,
+      "paneAttachments": {"1": "claude-main", "2": "reviewer"},
+      "frame": {"x": 100, "y": 100, "width": 1200, "height": 800}
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "gridColumns": 2,
+      "gridRows": 1,
+      "paneAttachments": {"1": "tests"}
+    }
+  ],
+  "savedAt": "2024-03-28T12:00:00Z",
+  "version": 2
 }
 ```
 
 **Lifecycle:**
 
 1. On launch, check for state file
-2. If exists, prompt user to restore
-3. On change, save state (debounced)
-4. On quit, save final state
+2. If exists (v1 or v2), migrate to v2 if needed
+3. Prompt user to restore windows
+4. On window change, save state immediately
+5. On window close, unregister and save
+
+**Multi-Window State:**
+
+- Each window has a unique UUID
+- Windows track their own grid config and pane attachments
+- SessionManager is shared across all windows (singleton)
+- Closing one window doesn't affect others
 
 ### Mobile State
 
