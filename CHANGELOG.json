@@ -1,0 +1,76 @@
+{
+  "irVersion": "1.0",
+  "project": "nexus",
+  "repository": "https://github.com/plexusone/nexus",
+  "versioning": "semver",
+  "commitConvention": "conventional",
+  "releases": [
+    {
+      "version": "v0.2.0",
+      "date": "2026-03-28",
+      "highlights": [
+        { "description": "Terminal trackpad/mouse wheel scrolling now works with tmux and other mouse-aware applications" },
+        { "description": "MkDocs documentation site for project documentation" }
+      ],
+      "added": [
+        { "description": "Mouse wheel scrolling for terminal applications (tmux, vim, less) when mouse mode is enabled", "commit": "45c6673" },
+        { "description": "MkDocs documentation site with Material theme", "commit": "4bc02c7" },
+        { "description": "Project tasks tracking in TASKS.md", "commit": "e69ec03" }
+      ],
+      "fixed": [
+        { "description": "App activation on launch - dock clicks and Cmd+Tab now work correctly", "commit": "9639d59" }
+      ],
+      "documentation": [
+        { "description": "Scrollbar research and implementation design documents", "commit": "22cf6cb" },
+        { "description": "AgentPair integration design document", "commit": "5308124" },
+        { "description": "Remove references to internal ideation documents", "commit": "4876460" }
+      ],
+      "build": [
+        { "description": "Update SwiftTerm to main branch for NSScroller Auto Layout fix", "commit": "1594412" },
+        { "description": "Add build artifacts to gitignore", "commit": "f8c52fc" }
+      ]
+    },
+    {
+      "version": "v0.1.0",
+      "date": "2026-03-21",
+      "highlights": [
+        { "description": "Initial release of Nexus - a multi-platform terminal client for AI agent sessions" },
+        { "description": "macOS desktop app with SwiftUI, tmux session management, and multi-pane grid layout" },
+        { "description": "Flutter mobile companion app with WebSocket connectivity" },
+        { "description": "TUI parser backend service for terminal output parsing and WebSocket bridging" }
+      ],
+      "added": [
+        { "description": "macOS desktop app with SwiftUI and SwiftTerm integration", "commit": "54f907b" },
+        { "description": "Terminal controller with SwiftTerm for tmux session attachment", "commit": "ee650e0" },
+        { "description": "Grid layout system with configurable pane arrangements", "commit": "ca82930" },
+        { "description": "Session manager service for tmux session lifecycle", "commit": "d676f25" },
+        { "description": "Session state persistence across app restarts", "commit": "4c4bfb0" },
+        { "description": "New session sheet and settings view", "commit": "2000d08" },
+        { "description": "Status bar with session picker", "commit": "6e65bae" },
+        { "description": "App bundle with PlexusOne icon", "commit": "7a20327" },
+        { "description": "Flutter mobile app with home screen and terminal view", "commit": "511a30e" },
+        { "description": "WebSocket service for mobile-to-backend connectivity", "commit": "d0b4040" },
+        { "description": "Terminal dark theme for mobile", "commit": "d25d4f7" },
+        { "description": "Prompt bar with quick actions", "commit": "e5dfda3" },
+        { "description": "Session tabs widget for mobile navigation", "commit": "8c9938b" },
+        { "description": "Settings screen for mobile configuration", "commit": "7cd827f" },
+        { "description": "TUI parser Go module with WebSocket server", "commit": "b481232" },
+        { "description": "Tmux session manager for backend", "commit": "26a8afb" },
+        { "description": "WebSocket protocol messages for client-server communication", "commit": "dc40003" },
+        { "description": "Debug console for TUI parser development", "commit": "61f5010" }
+      ],
+      "tests": [
+        { "description": "Session manager unit tests", "commit": "d6f934d" }
+      ],
+      "documentation": [
+        { "description": "Product requirements document", "commit": "8ff6818" },
+        { "description": "Technical requirements document", "commit": "8b716bb" },
+        { "description": "Mobile companion app design", "commit": "351501f" },
+        { "description": "Voice note feature design", "commit": "7a0d44e" },
+        { "description": "AgentSentinel integration design", "commit": "d9903bb" },
+        { "description": "Implementation tasks", "commit": "f7b6715" },
+        { "description": "Project README with architecture diagram", "commit": "e84e830" }
+      ]
+    }
+  ]
+}
