@@ -94,9 +94,11 @@ Debug console: http://localhost:9600
 
 ## Documentation
 
+- [Changelog](CHANGELOG.md)
 - [Product Requirements](docs/design/prd.md)
 - [Technical Requirements](docs/design/trd.md)
 - [Mobile App PRD](docs/design/FEAT_MOBILE_PRD.md)
+- [AgentPair Integration](docs/design/FEAT_AGENTPAIR_DESIGN.md)
 - [AgentSentinel Integration](docs/design/FEAT_SENTINEL_PRD.md)
 - [Voice Note Feature](docs/design/FEAT_VOICENOTE_PRD.md)
 

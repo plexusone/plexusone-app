@@ -82,6 +82,16 @@ Each pane has 10,000 lines of scrollback. Scroll up to review:
 - Error messages
 - Full conversation history
 
+**Scrolling with tmux:**
+
+When attached to a tmux session, enable mouse mode for trackpad scrolling:
+
+```bash
+tmux set -g mouse on
+```
+
+Add to `~/.tmux.conf` to make it permanent. With mouse mode enabled, two-finger trackpad scrolling works to navigate through tmux's scrollback buffer.
+
 ### State Persistence
 
 Your workspace is automatically saved:

@@ -12,6 +12,7 @@ Nexus is a terminal multiplexer designed specifically for managing multiple AI c
 - **Session management** - Attach/detach to tmux sessions on the fly
 - **State persistence** - Automatically restore your workspace on restart
 - **Large scrollback** - 10,000 line buffer for reviewing agent output
+- **Trackpad scrolling** - Two-finger scroll works with tmux mouse mode
 
 ### Mobile Companion (iOS/Android)
 
@@ -58,6 +59,9 @@ Nexus is a terminal multiplexer designed specifically for managing multiple AI c
 
 - :material-github: **[Source Code](https://github.com/plexusone/nexus)**
   View on GitHub
+
+- :material-history: **[Changelog](releases/changelog.md)**
+  See what's new
 
 </div>
 

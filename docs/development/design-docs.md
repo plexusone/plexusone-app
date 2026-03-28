@@ -16,8 +16,16 @@ Index of design documents for Nexus features and architecture.
 | Document | Description | Status |
 |----------|-------------|--------|
 | [Mobile App PRD](../design/FEAT_MOBILE_PRD.md) | Mobile companion app design | In Progress |
+| [AgentPair Design](../design/FEAT_AGENTPAIR_DESIGN.md) | AgentPair integration analysis | Planned |
 | [Sentinel PRD](../design/FEAT_SENTINEL_PRD.md) | Agent monitoring feature | Planned |
 | [VoiceNote PRD](../design/FEAT_VOICENOTE_PRD.md) | Voice note integration | Planned |
+
+### Implementation
+
+| Document | Description | Status |
+|----------|-------------|--------|
+| [Scrollbar Research](../design/FEAT_SCROLLBAR_RESEARCH.md) | Terminal scrollbar investigation | Completed |
+| [Scrollbar TRD](../design/FEAT_SCROLLBAR_TRD.md) | Scrollbar fix implementation design | Completed |
 
 ## Document Structure
 
