@@ -42,12 +42,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Multi-Window Restoration
 
     @objc private func handleRestoreComplete(_ notification: Notification) {
-        restoreAdditionalWindows()
+        guard let windowStateManager = notification.userInfo?["windowStateManager"] as? WindowStateManager else {
+            return
+        }
+        restoreAdditionalWindows(windowStateManager: windowStateManager)
     }
 
-    private func restoreAdditionalWindows() {
-        let windowStateManager = AppState.shared.windowStateManager
-
+    private func restoreAdditionalWindows(windowStateManager: WindowStateManager) {
         // Open additional windows for remaining pending configs
         while windowStateManager.hasPendingConfigs {
             // Post notification to open new window

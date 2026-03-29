@@ -131,5 +131,5 @@ struct NewSessionSheet: View {
     NewSessionSheet(
         onSessionCreated: { _ in }
     )
-    .environment(AppState.shared)
+    .environment(AppState())
 }

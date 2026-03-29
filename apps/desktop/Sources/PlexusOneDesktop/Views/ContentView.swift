@@ -196,7 +196,11 @@ struct ContentView: View {
 
         // Notify AppDelegate to open additional windows for remaining pending configs
         if windowStateManager.hasPendingConfigs {
-            NotificationCenter.default.post(name: .restoreComplete, object: nil)
+            NotificationCenter.default.post(
+                name: .restoreComplete,
+                object: nil,
+                userInfo: ["windowStateManager": windowStateManager]
+            )
         }
     }
 
@@ -289,6 +293,6 @@ struct GridStatusBarView: View {
 
 #Preview {
     ContentView()
-        .environment(AppState.shared)
+        .environment(AppState())
         .frame(width: 1000, height: 600)
 }

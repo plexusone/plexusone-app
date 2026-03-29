@@ -4,7 +4,7 @@ import SwiftUI
 struct PlexusOneDesktopApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.openWindow) private var openWindow
-    private let appState = AppState.shared
+    private let appState = AppState()
 
     var body: some Scene {
         WindowGroup(id: "main") {

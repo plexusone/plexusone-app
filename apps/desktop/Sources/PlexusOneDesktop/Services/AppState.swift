@@ -1,12 +1,9 @@
 import Foundation
 import Observation
 
-/// Shared application state singleton for multi-window support
+/// Shared application state for multi-window support
 @Observable
 final class AppState {
-    /// Shared singleton instance
-    static let shared = AppState()
-
     /// Session manager shared across all windows
     let sessionManager: SessionManager
 
@@ -19,9 +16,16 @@ final class AppState {
     /// Pending session to attach in a new pop-out window
     var pendingPopOutSession: Session?
 
-    private init() {
-        self.sessionManager = SessionManager()
-        self.windowStateManager = WindowStateManager()
+    /// Create AppState with injectable dependencies
+    /// - Parameters:
+    ///   - sessionManager: Session manager instance (defaults to new instance)
+    ///   - windowStateManager: Window state manager instance (defaults to new instance)
+    init(
+        sessionManager: SessionManager = SessionManager(),
+        windowStateManager: WindowStateManager = WindowStateManager()
+    ) {
+        self.sessionManager = sessionManager
+        self.windowStateManager = windowStateManager
     }
 
     /// Start monitoring sessions (call once at app launch)
