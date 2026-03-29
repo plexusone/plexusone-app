@@ -2,9 +2,9 @@
 
 ## Overview
 
-This document analyzes integration options for [AgentPair](https://github.com/plexusone/agentpair) with Nexus Desktop and Mobile. AgentPair is a Go-based orchestration tool for agent-to-agent pair programming between Claude and Codex CLI tools.
+This document analyzes integration options for [AgentPair](https://github.com/plexusone/agentpair) with PlexusOne Desktop and Mobile. AgentPair is a Go-based orchestration tool for agent-to-agent pair programming between Claude and Codex CLI tools.
 
-**Goal:** Enable Nexus users to launch, monitor, and control AgentPair sessions across multiple tmux panes with real-time status visibility in both desktop and mobile apps.
+**Goal:** Enable PlexusOne Desktop users to launch, monitor, and control AgentPair sessions across multiple tmux panes with real-time status visibility in both desktop and mobile apps.
 
 ## Background
 
@@ -30,10 +30,10 @@ agentpair CLI (Go)
 └── internal/config    # YAML/JSON configuration
 ```
 
-### Current Nexus Architecture
+### Current PlexusOne Desktop Architecture
 
 ```
-Nexus Desktop (Swift/SwiftUI)
+PlexusOne Desktop (Swift/SwiftUI)
 ├── SessionManager     # tmux session lifecycle
 ├── TerminalView       # SwiftTerm-based terminal emulation
 └── GridLayoutView     # Multi-pane management
@@ -42,7 +42,7 @@ TUI Parser (Go)
 ├── WebSocket server   # Streams tmux output to mobile
 └── PTY attachment     # Reads from tmux sessions
 
-Nexus Mobile (Flutter)
+PlexusOne Mobile (Flutter)
 ├── WebSocket client   # Receives terminal output
 └── Terminal view      # Displays streamed content
 ```
@@ -51,10 +51,10 @@ Nexus Mobile (Flutter)
 
 ### Option 1: No Integration (Composition)
 
-Run AgentPair as a regular command in Nexus-managed tmux sessions.
+Run AgentPair as a regular command in PlexusOne Desktop-managed tmux sessions.
 
 ```
-Nexus Desktop
+PlexusOne Desktop
     └── manages tmux sessions
             └── pane 1: $ agentpair --prompt "implement feature X"
             │               ├── spawns claude CLI
@@ -70,7 +70,7 @@ Nexus Desktop
 
 **Cons:**
 - No structured status (just terminal output)
-- Can't pause/resume from Nexus UI
+- Can't pause/resume from PlexusOne Desktop UI
 - Mobile only sees raw text, not semantic state
 
 **Verdict:** Good starting point, but limited visibility.
@@ -79,10 +79,10 @@ Nexus Desktop
 
 ### Option 2: Swift Port with Direct Integration
 
-Rewrite AgentPair in Swift and embed it directly into Nexus Desktop.
+Rewrite AgentPair in Swift and embed it directly into PlexusOne Desktop.
 
 ```
-Nexus Desktop (Swift)
+PlexusOne Desktop (Swift)
     └── AgentOrchestrator (in-process)
             ├── spawns claude CLI (Process)
             └── spawns codex CLI (Process)
@@ -169,11 +169,11 @@ struct AgentRunsView: View {
 
 ### Option 3: Go Service with API (Recommended)
 
-Keep AgentPair as Go, add a lightweight HTTP/WebSocket API for Nexus integration.
+Keep AgentPair as Go, add a lightweight HTTP/WebSocket API for PlexusOne Desktop integration.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      Nexus Desktop (Swift)                   │
+│                      PlexusOne Desktop (Swift)                   │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐ │
 │  │ Terminal Panes  │  │ AgentPairClient │  │ Status View │ │
 │  │ (tmux attach)   │  │ (WebSocket)     │  │ (SwiftUI)   │ │
@@ -195,7 +195,7 @@ Keep AgentPair as Go, add a lightweight HTTP/WebSocket API for Nexus integration
             │ WebSocket (via TUI Parser)
             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                     Nexus Mobile (Flutter)                   │
+│                     PlexusOne Mobile (Flutter)                   │
 │  ┌─────────────────┐  ┌─────────────────┐                   │
 │  │ Terminal View   │  │ Status Widget   │                   │
 │  └─────────────────┘  └─────────────────┘                   │
@@ -265,7 +265,7 @@ func (s *Server) streamEvents(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-**Nexus Desktop Swift client (~150 lines):**
+**PlexusOne Desktop Swift client (~150 lines):**
 
 ```swift
 @Observable
@@ -367,7 +367,7 @@ struct AgentRunRow: View {
 - **Minimal changes:** ~300 lines Go + ~150 lines Swift
 - **Keeps CLI:** `agentpair` still works standalone
 - **Cross-platform:** Linux, CI/CD, headless servers all work
-- **Crash isolation:** AgentPair crash doesn't affect Nexus UI
+- **Crash isolation:** AgentPair crash doesn't affect PlexusOne Desktop UI
 - **Independent testing:** Each component testable separately
 - **Mobile support:** TUI Parser can proxy API to mobile
 
@@ -396,7 +396,7 @@ Port AgentPair to Swift but keep it as a separate CLI binary.
 
 1. Add `--api-port` flag to agentpair
 2. Implement `/api/runs` and `/api/runs/{id}` endpoints
-3. Add `AgentPairClient` to Nexus Desktop
+3. Add `AgentPairClient` to PlexusOne Desktop
 4. Display run status in sidebar
 
 **Effort:** ~2-3 days
@@ -404,7 +404,7 @@ Port AgentPair to Swift but keep it as a separate CLI binary.
 ### Phase 2: Real-time Updates
 
 1. Add WebSocket `/api/events` endpoint
-2. Stream state changes to Nexus
+2. Stream state changes to PlexusOne Desktop
 3. Add progress indicators and notifications
 
 **Effort:** ~1-2 days
@@ -412,7 +412,7 @@ Port AgentPair to Swift but keep it as a separate CLI binary.
 ### Phase 3: Control Integration
 
 1. Add pause/resume API endpoints
-2. Add control buttons to Nexus UI
+2. Add control buttons to PlexusOne Desktop UI
 3. Add bridge message viewer
 
 **Effort:** ~2-3 days
@@ -420,7 +420,7 @@ Port AgentPair to Swift but keep it as a separate CLI binary.
 ### Phase 4: Mobile Integration
 
 1. Extend TUI Parser to proxy AgentPair API
-2. Add status widget to Nexus Mobile
+2. Add status widget to PlexusOne Mobile
 3. Add basic controls (pause/resume)
 
 **Effort:** ~2-3 days
@@ -496,10 +496,10 @@ Server → Client:
 
 ## Open Questions
 
-1. **Port discovery:** How does Nexus know which port agentpair is using?
+1. **Port discovery:** How does PlexusOne Desktop know which port agentpair is using?
    - Option A: Fixed port (9100)
    - Option B: Write to `~/.agentpair/runs/{id}/api.port`
-   - Option C: Nexus passes `--api-port` when launching
+   - Option C: PlexusOne Desktop passes `--api-port` when launching
 
 2. **Multi-run coordination:** Should there be one API server per run, or a central daemon?
    - Recommendation: One per run (simpler, isolated)
@@ -512,5 +512,5 @@ Server → Client:
 ## References
 
 - [AgentPair Repository](https://github.com/plexusone/agentpair)
-- [Nexus TRD](./trd.md)
-- [Nexus PRD](./prd.md)
+- [PlexusOne Desktop TRD](./trd.md)
+- [PlexusOne Desktop PRD](./prd.md)

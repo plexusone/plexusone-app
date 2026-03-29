@@ -6,7 +6,7 @@
 **Status:** Draft
 **Last Updated:** 2026-03-20
 **Related Projects:**
-- [PlexusOne Nexus](https://github.com/plexusone/nexus) - macOS terminal multiplexer for AI agents
+- [PlexusOne Desktop](https://github.com/plexusone/plexusone-apps) - macOS terminal multiplexer for AI agents
 - [OmniVoice](https://github.com/plexusone/omnivoice) - Go voice pipeline framework (reference)
 
 ## Problem Statement
@@ -90,7 +90,7 @@ Uses macOS built-in speech recognition. No API keys required.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Nexus App                               │
+│                         PlexusOne Desktop App                               │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ VoiceNoteManager                                         │   │
@@ -124,7 +124,7 @@ Records audio, sends to Whisper API for transcription.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Nexus App                               │
+│                         PlexusOne Desktop App                               │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ VoiceNoteManager                                         │   │
@@ -154,20 +154,20 @@ Records audio, sends to Whisper API for transcription.
 
 ### Option C: Embed OmniVoice Binary
 
-Bundle the omnivoice Go binary inside the Nexus app bundle and call it as a subprocess.
+Bundle the omnivoice Go binary inside the PlexusOne Desktop app bundle and call it as a subprocess.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Nexus.app Bundle                             │
+│                    PlexusOne Desktop.app Bundle                             │
 │  Contents/                                                      │
 │  ├── MacOS/                                                     │
-│  │   ├── Nexus                    (main app)                   │
+│  │   ├── PlexusOne Desktop                    (main app)                   │
 │  │   └── omnivoice                (embedded binary)            │
 │  └── Resources/                                                 │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Nexus App                               │
+│                         PlexusOne Desktop App                               │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ VoiceNoteManager (Swift)                                 │   │
 │  │ - Records audio to temp .wav file                        │   │
@@ -202,8 +202,8 @@ GOOS=darwin GOARCH=arm64 go build -o omnivoice-arm64 ./cmd/omnivoice
 GOOS=darwin GOARCH=amd64 go build -o omnivoice-amd64 ./cmd/omnivoice
 lipo -create -output omnivoice omnivoice-arm64 omnivoice-amd64
 
-# Copy to Nexus bundle
-cp omnivoice Nexus.app/Contents/MacOS/
+# Copy to PlexusOne Desktop bundle
+cp omnivoice PlexusOne Desktop.app/Contents/MacOS/
 ```
 
 **Swift Integration:**

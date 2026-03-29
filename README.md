@@ -1,11 +1,11 @@
-# PlexusOne Nexus
+# PlexusOne Apps
 
 A multi-agent orchestration platform for AI CLI tools like Claude Code and Kiro CLI.
 
 ## Repository Structure
 
 ```
-nexus/
+plexusone-apps/
 ├── apps/
 │   ├── desktop/          # macOS app (Swift + SwiftTerm)
 │   └── mobile/           # iOS/Android companion (Flutter)
@@ -17,12 +17,13 @@ nexus/
 
 ## Components
 
-### Desktop App (macOS)
+### PlexusOne Desktop (macOS)
 
 Native macOS terminal multiplexer built with Swift and SwiftTerm.
 
-- Multi-window, multi-pane grid layout (like Chrome tabs)
+- Multi-window, multi-pane grid layout
 - Attach/detach to tmux sessions
+- Pop-out sessions to dedicated windows
 - Session state persistence
 - 10,000 line scrollback buffer
 
@@ -30,10 +31,10 @@ Native macOS terminal multiplexer built with Swift and SwiftTerm.
 ```bash
 cd apps/desktop
 swift build
-./Nexus.app/Contents/MacOS/Nexus
+open "PlexusOne Desktop.app"
 ```
 
-### Mobile App (iOS/Android)
+### PlexusOne Mobile (iOS/Android)
 
 Flutter companion app for monitoring and interacting with agents remotely.
 
@@ -81,13 +82,13 @@ Debug console: http://localhost:9600
 │         ▲                        │                │
 │         │                        │                │
 │  ┌──────┴──────┐                 │                │
-│  │ Nexus       │                 │                │
-│  │ Desktop App │                 │                │
+│  │ PlexusOne   │                 │                │
+│  │ Desktop     │                 │                │
 │  └─────────────┘                 │                │
 └──────────────────────────────────┼────────────────┘
                                    │ WebSocket (LAN)
                           ┌────────▼────────┐
-                          │  Nexus Mobile   │
+                          │ PlexusOne Mobile│
                           │  (Flutter)      │
                           └─────────────────┘
 ```
@@ -106,7 +107,7 @@ Debug console: http://localhost:9600
 
 ### Prerequisites
 
-- macOS 13+
+- macOS 14+
 - Xcode 15+ (for Swift development)
 - Go 1.22+
 - Flutter 3.x
@@ -127,7 +128,7 @@ Debug console: http://localhost:9600
 
 3. Run Desktop App:
    ```bash
-   cd apps/desktop && open Nexus.app
+   cd apps/desktop && open "PlexusOne Desktop.app"
    ```
 
 4. Run Mobile App (same WiFi network):

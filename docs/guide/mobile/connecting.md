@@ -52,7 +52,7 @@ Note this IP address for configuring the mobile app.
 
 ## Configuring the Mobile App
 
-1. Open the Nexus Mobile app
+1. Open the PlexusOne Mobile app
 2. Tap the **Settings** icon (gear)
 3. Enter the server address:
    - Host: Your desktop's IP address (e.g., `192.168.1.100`)

@@ -6,7 +6,7 @@
 **Status:** Draft
 **Last Updated:** 2026-03-20
 **Related Projects:**
-- [PlexusOne Nexus](https://github.com/plexusone/nexus) - macOS terminal multiplexer for AI agents
+- [PlexusOne Desktop](https://github.com/plexusone/plexusone-apps) - macOS terminal multiplexer for AI agents
 - [AgentSentinel](https://github.com/plexusone/agentsentinel) - Auto-approval system for AI CLI tools
 
 ## Problem Statement
@@ -22,14 +22,14 @@ When running multiple AI CLI agents (Claude Code, Codex, Kiro, Gemini CLI), user
 
 ## Goals
 
-1. **Visibility**: Show AgentSentinel status within Nexus UI
-2. **Control**: Enable/disable auto-approval per pane from Nexus
+1. **Visibility**: Show AgentSentinel status within PlexusOne Desktop UI
+2. **Control**: Enable/disable auto-approval per pane from PlexusOne Desktop
 3. **Safety**: Surface blocked dangerous commands to the user
 4. **Simplicity**: Minimal changes to both projects; loose coupling
 
 ## Non-Goals
 
-- Embedding AgentSentinel logic directly in Nexus (keep as separate process)
+- Embedding AgentSentinel logic directly in PlexusOne Desktop (keep as separate process)
 - Real-time streaming of approval events (polling is sufficient)
 - Replacing AgentSentinel's CLI interface
 
@@ -39,7 +39,7 @@ When running multiple AI CLI agents (Claude Code, Codex, Kiro, Gemini CLI), user
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Nexus App                               │
+│                         PlexusOne Desktop App                               │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │                    Grid Layout                           │   │
@@ -71,7 +71,7 @@ When running multiple AI CLI agents (Claude Code, Codex, Kiro, Gemini CLI), user
 │  - Single process watching all tmux panes                       │
 │  - Writes status.json every 2 seconds                          │
 │  - Logs approvals/blocks to stats file                         │
-│  - Runs independently of Nexus                                  │
+│  - Runs independently of PlexusOne Desktop                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -309,7 +309,7 @@ func runStatus(cmd *cobra.Command, args []string) error {
 }
 ```
 
-### Nexus (Swift)
+### PlexusOne Desktop (Swift)
 
 #### New Service: `SentinelManager`
 
@@ -523,14 +523,14 @@ Legend:
 - [ ] Add `--json` flag to `status` command
 - [ ] Clean up status file on graceful shutdown
 
-**Nexus:**
+**PlexusOne Desktop:**
 - [ ] Add `SentinelManager` service
 - [ ] Display sentinel status in pane header
 - [ ] Show global totals in status bar
 
 ### Phase 2: Enhanced Visibility
 
-**Nexus:**
+**PlexusOne Desktop:**
 - [ ] Toast notifications for blocked commands
 - [ ] Sentinel status in Settings
 - [ ] Historical stats view (read from log file)
@@ -542,7 +542,7 @@ Legend:
 - [ ] Pause/resume per session
 - [ ] Dynamic pattern updates
 
-**Nexus:**
+**PlexusOne Desktop:**
 - [ ] Start/stop sentinel from UI
 - [ ] Per-pane enable/disable toggle
 - [ ] Pattern configuration UI
@@ -562,7 +562,7 @@ cat ~/.agentsentinel/status.json
 agentsentinel status --json
 ```
 
-### Nexus
+### PlexusOne Desktop
 
 ```swift
 // Unit test for SentinelManager
@@ -580,10 +580,10 @@ func testStatusParsing() {
 1. **Status file location**: `~/.agentsentinel/status.json` or XDG-compliant path?
 2. **Polling interval**: 2 seconds sufficient? Should it be configurable?
 3. **Multiple instances**: Should we support multiple sentinel processes? (Current design assumes single daemon)
-4. **Startup**: Should Nexus auto-start AgentSentinel if not running?
+4. **Startup**: Should PlexusOne Desktop auto-start AgentSentinel if not running?
 
 ## References
 
 - [AgentSentinel Repository](https://github.com/plexusone/agentsentinel)
-- [Nexus PRD](./prd.md)
-- [Nexus TRD](./trd.md)
+- [PlexusOne Desktop PRD](./prd.md)
+- [PlexusOne Desktop TRD](./trd.md)

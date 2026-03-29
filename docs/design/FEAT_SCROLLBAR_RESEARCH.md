@@ -2,7 +2,7 @@
 
 ## Problem Statement
 
-The Nexus desktop app embeds SwiftTerm's `LocalProcessTerminalView` (an AppKit `NSView`) within SwiftUI using `NSViewControllerRepresentable`. The terminal's built-in scrollbar is visible but not interactive:
+The PlexusOne Desktop desktop app embeds SwiftTerm's `LocalProcessTerminalView` (an AppKit `NSView`) within SwiftUI using `NSViewControllerRepresentable`. The terminal's built-in scrollbar is visible but not interactive:
 
 - Scrollbar appears as a grey bar on the right side of each terminal pane
 - Clicking/dragging the scrollbar does not work
@@ -315,20 +315,20 @@ Based on SwiftTerm's own iOS implementation, we should try using `NSViewRepresen
 
 ```swift
 struct TerminalViewRepresentable: NSViewRepresentable {
-    typealias NSViewType = NexusTerminalView  // Custom subclass
+    typealias NSViewType = AppTerminalView  // Custom subclass
 
-    func makeNSView(context: Context) -> NexusTerminalView {
-        let view = NexusTerminalView(frame: .zero)
+    func makeNSView(context: Context) -> AppTerminalView {
+        let view = AppTerminalView(frame: .zero)
         view.processDelegate = context.coordinator
         return view
     }
 
-    func updateNSView(_ nsView: NexusTerminalView, context: Context) {
+    func updateNSView(_ nsView: AppTerminalView, context: Context) {
         nsView.updateSizeIfNeeded()
     }
 }
 
-class NexusTerminalView: LocalProcessTerminalView {
+class AppTerminalView: LocalProcessTerminalView {
     private var lastAppliedSize: CGSize = .zero
 
     override func layout() {

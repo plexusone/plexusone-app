@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the implementation approach for fixing terminal scrollbar functionality in the Nexus desktop app.
+This document defines the implementation approach for fixing terminal scrollbar functionality in the PlexusOne Desktop desktop app.
 
 ## Background
 
@@ -24,9 +24,9 @@ See [FEAT_SCROLLBAR_RESEARCH.md](FEAT_SCROLLBAR_RESEARCH.md) for problem analysi
 
 ### Component Changes
 
-#### 1. New: `NexusTerminalView` (Custom Subclass)
+#### 1. New: `AppTerminalView` (Custom Subclass)
 
-Location: `Sources/Nexus/Views/NexusTerminalView.swift`
+Location: `Sources/PlexusOneDesktop/Views/AppTerminalView.swift`
 
 ```swift
 import AppKit
@@ -34,7 +34,7 @@ import SwiftTerm
 
 /// Custom LocalProcessTerminalView subclass for SwiftUI integration
 /// Handles explicit size tracking and layout updates
-class NexusTerminalView: LocalProcessTerminalView {
+class AppTerminalView: LocalProcessTerminalView {
     private var lastAppliedSize: CGSize = .zero
 
     /// Callback when session ends
@@ -60,7 +60,7 @@ class NexusTerminalView: LocalProcessTerminalView {
 
     // MARK: - Session Management
 
-    func attach(to session: NexusSession) {
+    func attach(to session: Session) {
         let (tmuxPath, baseArgs) = findTmuxExecutable()
         let args = baseArgs + ["attach", "-t", session.tmuxSession]
 
@@ -107,16 +107,16 @@ import SwiftUI
 import AppKit
 import SwiftTerm
 
-/// SwiftUI wrapper for NexusTerminalView using NSViewRepresentable
+/// SwiftUI wrapper for AppTerminalView using NSViewRepresentable
 struct TerminalViewRepresentable: NSViewRepresentable {
-    typealias NSViewType = NexusTerminalView
+    typealias NSViewType = AppTerminalView
 
-    @Binding var attachedSession: NexusSession?
+    @Binding var attachedSession: Session?
     let sessionManager: SessionManager
     var onSessionEnded: (() -> Void)?
 
-    func makeNSView(context: Context) -> NexusTerminalView {
-        let view = NexusTerminalView(frame: .zero)
+    func makeNSView(context: Context) -> AppTerminalView {
+        let view = AppTerminalView(frame: .zero)
         view.processDelegate = context.coordinator
 
         // Configure appearance
@@ -125,7 +125,7 @@ struct TerminalViewRepresentable: NSViewRepresentable {
         return view
     }
 
-    func updateNSView(_ view: NexusTerminalView, context: Context) {
+    func updateNSView(_ view: AppTerminalView, context: Context) {
         // Ensure layout is current
         view.updateSizeIfNeeded()
 
@@ -144,7 +144,7 @@ struct TerminalViewRepresentable: NSViewRepresentable {
         Coordinator(self)
     }
 
-    private func configureAppearance(_ view: NexusTerminalView) {
+    private func configureAppearance(_ view: AppTerminalView) {
         let fontSize: CGFloat = 13
         let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
         view.font = font
@@ -201,9 +201,9 @@ The `TerminalViewController.swift` file becomes unnecessary and can be deleted.
 
 | File | Action |
 |------|--------|
-| `Sources/Nexus/Views/NexusTerminalView.swift` | Create new |
-| `Sources/Nexus/Views/TerminalViewRepresentable.swift` | Rewrite |
-| `Sources/Nexus/Controllers/TerminalViewController.swift` | Delete |
+| `Sources/PlexusOneDesktop/Views/AppTerminalView.swift` | Create new |
+| `Sources/PlexusOneDesktop/Views/TerminalViewRepresentable.swift` | Rewrite |
+| `Sources/PlexusOneDesktop/Controllers/TerminalViewController.swift` | Delete |
 
 ### No Changes Required
 

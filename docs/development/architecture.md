@@ -64,7 +64,7 @@ PlexusOneDesktopApp
 │   └── SwiftTermView        # SwiftTerm wrapper
 └── Models
     ├── WindowState          # Window configuration models
-    └── NexusState           # Legacy v1 state (migration)
+    └── LegacyState           # Legacy v1 state (migration)
 ```
 
 **Responsibilities:**

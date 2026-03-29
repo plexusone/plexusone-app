@@ -1,15 +1,15 @@
-# PlexusOne Nexus - Technical Requirements Document
+# PlexusOne Desktop - Technical Requirements Document
 
 ## Overview
 
-**Product Name:** PlexusOne Nexus
+**Product Name:** PlexusOne Desktop
 **Version:** 1.0
 **Status:** Draft
 **Last Updated:** 2026-03-20
 
 ## Architecture Overview
 
-Nexus is a **native terminal multiplexer with embedded terminal emulation**, replacing iTerm2 entirely. It uses SwiftTerm for terminal rendering and tmux for session persistence.
+PlexusOne Desktop is a **native terminal multiplexer with embedded terminal emulation**, replacing iTerm2 entirely. It uses SwiftTerm for terminal rendering and tmux for session persistence.
 
 ### Core Concepts
 
@@ -24,7 +24,7 @@ Nexus is a **native terminal multiplexer with embedded terminal emulation**, rep
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      Nexus Application                          │
+│                      PlexusOne Desktop Application                          │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │                    Window 1                              │   │
@@ -96,7 +96,7 @@ Nexus is a **native terminal multiplexer with embedded terminal emulation**, rep
 ```swift
 // MARK: - Core Types
 
-struct NexusSession: Identifiable, Codable {
+struct Session: Identifiable, Codable {
     let id: UUID
     let name: String                    // e.g., "coder-1"
     let tmuxSession: String             // tmux session name
@@ -121,16 +121,16 @@ enum AgentType: String, Codable {
     case custom
 }
 
-struct NexusPane: Identifiable {
+struct PlexusOne DesktopPane: Identifiable {
     let id: UUID
     weak var terminalView: TerminalView?
-    var attachedSession: NexusSession?
+    var attachedSession: Session?
     var isAttached: Bool { attachedSession != nil }
 }
 
-struct NexusWindow: Identifiable {
+struct PlexusOne DesktopWindow: Identifiable {
     let id: UUID
-    var panes: [NexusPane]
+    var panes: [PlexusOne DesktopPane]
     var layout: PaneLayout
     var title: String
 }
@@ -151,25 +151,25 @@ Central service for tmux session lifecycle.
 ```swift
 protocol SessionManagerProtocol {
     // Session discovery
-    func listSessions() async throws -> [NexusSession]
+    func listSessions() async throws -> [Session]
     func refreshStatus() async throws
 
     // Session lifecycle
-    func createSession(name: String, command: String?) async throws -> NexusSession
-    func killSession(_ session: NexusSession) async throws
-    func renameSession(_ session: NexusSession, to newName: String) async throws
+    func createSession(name: String, command: String?) async throws -> Session
+    func killSession(_ session: Session) async throws
+    func renameSession(_ session: Session, to newName: String) async throws
 
     // Attachment
-    func attach(pane: NexusPane, to session: NexusSession) throws -> Process
-    func detach(pane: NexusPane) throws
+    func attach(pane: PlexusOne DesktopPane, to session: Session) throws -> Process
+    func detach(pane: PlexusOne DesktopPane) throws
 }
 
 @Observable
 class SessionManager: SessionManagerProtocol {
-    private(set) var sessions: [NexusSession] = []
+    private(set) var sessions: [Session] = []
     private var attachments: [UUID: Process] = [:]  // pane.id -> tmux process
 
-    func attach(pane: NexusPane, to session: NexusSession) throws -> Process {
+    func attach(pane: PlexusOne DesktopPane, to session: Session) throws -> Process {
         // Launch: tmux attach -t <session>
         // Connect SwiftTerm to the PTY
     }
@@ -202,19 +202,19 @@ Manages application windows and their pane layouts.
 ```swift
 @Observable
 class WindowManager {
-    private(set) var windows: [NexusWindow] = []
+    private(set) var windows: [PlexusOne DesktopWindow] = []
 
     // Window lifecycle
-    func createWindow() -> NexusWindow
-    func closeWindow(_ window: NexusWindow)
+    func createWindow() -> PlexusOne DesktopWindow
+    func closeWindow(_ window: PlexusOne DesktopWindow)
 
     // Pane management within window
-    func addPane(to window: NexusWindow, at position: PanePosition) -> NexusPane
-    func removePane(_ pane: NexusPane, from window: NexusWindow)
-    func splitPane(_ pane: NexusPane, direction: SplitDirection) -> NexusPane
+    func addPane(to window: PlexusOne DesktopWindow, at position: PanePosition) -> PlexusOne DesktopPane
+    func removePane(_ pane: PlexusOne DesktopPane, from window: PlexusOne DesktopWindow)
+    func splitPane(_ pane: PlexusOne DesktopPane, direction: SplitDirection) -> PlexusOne DesktopPane
 
     // Layout
-    func setLayout(_ layout: PaneLayout, for window: NexusWindow)
+    func setLayout(_ layout: PaneLayout, for window: PlexusOne DesktopWindow)
 }
 
 enum SplitDirection {
@@ -241,7 +241,7 @@ class TerminalViewController: NSViewController {
     var onOutput: ((String) -> Void)?
     var onProcessExit: (() -> Void)?
 
-    func attachToSession(_ session: NexusSession) {
+    func attachToSession(_ session: Session) {
         // Detach from current if any
         detach()
 
@@ -292,7 +292,7 @@ struct InteractionLog: Codable {
 }
 
 class LogStore {
-    private let logDir: URL  // ~/Library/Application Support/Nexus/logs/
+    private let logDir: URL  // ~/Library/Application Support/PlexusOne Desktop/logs/
 
     func log(_ interaction: InteractionLog) async throws
     func query(sessionId: UUID?, since: Date?, limit: Int?) async throws -> [InteractionLog]
@@ -462,7 +462,7 @@ User: ⌘T or "New Session..."
          │
          ├──► tmux new-session -d -s <name> <shell>
          │
-         └──► Returns NexusSession
+         └──► Returns Session
                   │
                   ▼
     WindowManager.addPane() OR splitPane()
@@ -514,7 +514,7 @@ User: ⌘⇧A or "Detach"
   "logging": {
     "enabled": true,
     "captureOutput": true,
-    "path": "~/Library/Application Support/Nexus/logs"
+    "path": "~/Library/Application Support/PlexusOne Desktop/logs"
   },
   "windows": {
     "restoreOnLaunch": true,
@@ -526,7 +526,7 @@ User: ⌘⇧A or "Detach"
 ## File Organization
 
 ```
-~/Library/Application Support/Nexus/
+~/Library/Application Support/PlexusOne Desktop/
 ├── config.json               # User preferences
 ├── sessions.json             # Session metadata (name, type, etc.)
 ├── windows.json              # Window/pane layout state (for restore)
@@ -621,12 +621,12 @@ tmux session
 ### Discord Integration
 
 ```
-Nexus (macOS)
+PlexusOne Desktop (macOS)
      │
      ├──► Local API server (localhost:9999)
      │
      ▼
-Discord Bot ──► Nexus API ──► SessionManager
+Discord Bot ──► PlexusOne Desktop API ──► SessionManager
      ▲                              │
      └──────────────────────────────┘
          (session output relay)

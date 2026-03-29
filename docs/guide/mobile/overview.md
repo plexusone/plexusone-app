@@ -1,6 +1,6 @@
 # Mobile App Overview
 
-The Nexus Mobile app provides remote access to your AI agent sessions from iOS and Android devices.
+The PlexusOne Mobile app provides remote access to your AI agent sessions from iOS and Android devices.
 
 ## Status
 

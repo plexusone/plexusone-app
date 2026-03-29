@@ -1,8 +1,8 @@
-# PlexusOne Nexus Mobile Companion App
+# PlexusOne PlexusOne Mobile Companion App
 
 ## Overview
 
-A Flutter-based mobile companion app that connects to the macOS Nexus orchestrator, allowing users to monitor and interact with AI CLI agents (Claude Code, Kiro CLI) from iOS and Android devices.
+A Flutter-based mobile companion app that connects to the macOS PlexusOne Desktop orchestrator, allowing users to monitor and interact with AI CLI agents (Claude Code, Kiro CLI) from iOS and Android devices.
 
 ## Goals
 
@@ -23,7 +23,7 @@ A Flutter-based mobile companion app that connects to the macOS Nexus orchestrat
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  macOS (Nexus Orchestrator)                                     │
+│  macOS (PlexusOne Desktop Orchestrator)                                     │
 │                                                                 │
 │  ┌─────────────┐     ┌─────────────────────────────────────┐   │
 │  │ tmux        │     │ TUI Parser Wrapper (Go)             │   │
@@ -35,7 +35,7 @@ A Flutter-based mobile companion app that connects to the macOS Nexus orchestrat
 │  └─────────────┘     └──────────────┬──────────────────────┘   │
 │                                     │                           │
 │  ┌─────────────────────────────────┐│                           │
-│  │ Nexus Swift App                 ││                           │
+│  │ PlexusOne Desktop Swift App                 ││                           │
 │  │ - Session management            │◀───── Local IPC            │
 │  │ - SwiftTerm panes               ││                           │
 │  │ - State persistence             ││                           │
@@ -261,7 +261,7 @@ A Go binary that wraps tmux sessions, intercepts PTY output, detects TUI pattern
 ### Location
 
 ```
-github.com/plexusone/nexus/tuiparser/
+github.com/plexusone/plexusone-apps/tuiparser/
 ├── cmd/
 │   └── tuiparser/
 │       └── main.go
@@ -343,16 +343,16 @@ The parser should:
 3. Identify inverse/highlight for current selection
 4. Track screen state for multi-line TUI elements
 
-### Integration with Nexus
+### Integration with PlexusOne Desktop
 
-The TUI Parser runs as a daemon alongside Nexus:
+The TUI Parser runs as a daemon alongside PlexusOne Desktop:
 
 ```bash
-# Started by Nexus app or launchd
+# Started by PlexusOne Desktop app or launchd
 tuiparser --port 9600 --tmux-socket /tmp/tmux-501/default
 ```
 
-Nexus Swift app can:
+PlexusOne Desktop Swift app can:
 1. Launch tuiparser on startup
 2. Query session list via WebSocket
 3. Let mobile app connect directly to tuiparser
@@ -650,7 +650,7 @@ class VirtualDpad extends StatelessWidget {
 
 ## Open Questions
 
-1. Should the TUI Parser be a standalone binary or embedded in Nexus Swift app via Go→Swift bridge?
+1. Should the TUI Parser be a standalone binary or embedded in PlexusOne Desktop Swift app via Go→Swift bridge?
 2. How to handle multiple mobile devices connecting simultaneously?
 3. Should we persist terminal output history on the server for mobile reconnection?
 4. What's the fallback when pattern detection fails? (Default to virtual D-pad?)

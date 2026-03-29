@@ -15,7 +15,7 @@ Phase 1 delivers a minimal viable product: a single-window app with one terminal
 
 ### 2. Core Models
 
-- [x] **2.1** Define `NexusSession` model (id, name, tmuxSession, status, lastActivity)
+- [x] **2.1** Define `Session` model (id, name, tmuxSession, status, lastActivity)
 - [x] **2.2** Define `SessionStatus` enum (running, idle, stuck, detached)
 - [x] **2.3** Define `AgentType` enum (claude, codex, gemini, kiro, custom)
 
@@ -98,14 +98,14 @@ Phase 1 is complete when:
 ## Build & Run
 
 ```bash
-cd Nexus
+cd apps/desktop
 swift build
-swift run Nexus
+swift build
 ```
 
 Or open in Xcode:
 
 ```bash
-cd Nexus
+cd apps/desktop
 open Package.swift
 ```

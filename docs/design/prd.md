@@ -1,8 +1,8 @@
-# PlexusOne Nexus - Product Requirements Document
+# PlexusOne Desktop - Product Requirements Document
 
 ## Overview
 
-**Product Name:** PlexusOne Nexus
+**Product Name:** PlexusOne Desktop
 **Version:** 1.0
 **Status:** Draft
 **Last Updated:** 2026-03-20
@@ -21,11 +21,11 @@ Current solutions like get-shit-done (GSD) and Gas Town attempt automation but s
 
 ## Vision
 
-Nexus is a **native terminal multiplexer and control plane for AI agents** - a macOS application that fully replaces iTerm2/Terminal.app for managing AI CLI agents. It embeds terminal emulation directly (via SwiftTerm) while using tmux for session persistence.
+PlexusOne Desktop is a **native terminal multiplexer and control plane for AI agents** - a macOS application that fully replaces iTerm2/Terminal.app for managing AI CLI agents. It embeds terminal emulation directly (via SwiftTerm) while using tmux for session persistence.
 
 **Key differentiators:**
 
-- **Embedded terminals**: No external terminal app needed; Nexus IS the terminal
+- **Embedded terminals**: No external terminal app needed; PlexusOne Desktop IS the terminal
 - **Multi-window/multi-pane**: Browser-like window model with flexible pane layouts
 - **Session persistence**: tmux sessions survive app crashes and restarts
 - **Detach/attach**: Panes can dynamically connect to any tmux session
@@ -47,8 +47,8 @@ The key insight: **manual orchestration first, automation later**. By building a
 
 ## Core Principles
 
-1. **tmux is infrastructure, not orchestrator** - Nexus controls tmux; tmux runs agents
-2. **Human-in-the-loop** - User makes routing decisions; Nexus provides visibility
+1. **tmux is infrastructure, not orchestrator** - PlexusOne Desktop controls tmux; tmux runs agents
+2. **Human-in-the-loop** - User makes routing decisions; PlexusOne Desktop provides visibility
 3. **Log everything** - Every interaction is recorded for analysis
 4. **Structured communication** - Enforce task/response formats even in manual mode
 5. **Token awareness** - Make token costs visible to build intuition
@@ -208,7 +208,7 @@ Token counts use heuristic estimation (1 token ≈ 4 characters) in v1.
 
 ### US-6: Multiple Windows
 
-> As a developer, I want to have multiple Nexus windows so I can organize agents by project or task.
+> As a developer, I want to have multiple PlexusOne Desktop windows so I can organize agents by project or task.
 
 **Acceptance Criteria:**
 
@@ -233,7 +233,7 @@ Token counts use heuristic estimation (1 token ≈ 4 characters) in v1.
 
 | Metric | Target |
 |--------|--------|
-| Replace iTerm entirely | 100% of agent work done in Nexus |
+| Replace iTerm entirely | 100% of agent work done in PlexusOne Desktop |
 | Multi-agent visibility | Can monitor 5+ sessions simultaneously |
 | Session resilience | Sessions survive app crash/restart |
 | Pane flexibility | Split, attach, detach workflows feel natural |
