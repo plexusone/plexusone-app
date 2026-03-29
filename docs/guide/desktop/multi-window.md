@@ -90,7 +90,7 @@ Sessions are shared across all windows:
 All window configurations are saved to:
 
 ```
-~/.plexusone/nexus_state.json
+~/.plexusone/state.json
 ```
 
 ### State Format (v2)

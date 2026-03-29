@@ -9,7 +9,7 @@ Configuration options for PlexusOne Desktop components.
 The desktop app stores session state in:
 
 ```
-~/.plexusone/nexus_state.json
+~/.plexusone/state.json
 ```
 
 This file contains:
@@ -56,7 +56,7 @@ On startup, if a state file exists, PlexusOne Desktop prompts:
 To reset to defaults, delete the state file:
 
 ```bash
-rm ~/.plexusone/nexus_state.json
+rm ~/.plexusone/state.json
 ```
 
 ## TUI Parser
@@ -149,7 +149,7 @@ PlexusOne Desktop displays session names in the pane headers.
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| Desktop state | `~/.plexusone/nexus_state.json` | Session state |
+| Desktop state | `~/.plexusone/state.json` | Session state |
 | tmux sessions | `/tmp/tmux-$UID/` | tmux sockets |
 | Mobile config | Device storage | App settings |
 

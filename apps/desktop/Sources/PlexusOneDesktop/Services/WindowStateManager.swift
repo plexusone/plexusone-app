@@ -19,7 +19,7 @@ final class WindowStateManager {
     init() {
         let homeDir = FileManager.default.homeDirectoryForCurrentUser
         self.stateDirectory = homeDir.appendingPathComponent(".plexusone")
-        self.stateFileURL = stateDirectory.appendingPathComponent("nexus_state.json")
+        self.stateFileURL = stateDirectory.appendingPathComponent("state.json")
 
         loadState()
     }

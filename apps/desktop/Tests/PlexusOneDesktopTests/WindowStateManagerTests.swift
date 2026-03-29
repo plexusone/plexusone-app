@@ -12,7 +12,7 @@ final class WindowStateManagerTests: XCTestCase {
         tempDirectory = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
         try? FileManager.default.createDirectory(at: tempDirectory, withIntermediateDirectories: true)
-        stateFileURL = tempDirectory.appendingPathComponent("nexus_state.json")
+        stateFileURL = tempDirectory.appendingPathComponent("state.json")
     }
 
     override func tearDown() {

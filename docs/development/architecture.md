@@ -210,7 +210,7 @@ pty, _ := pty.Start(cmd)
 
 ### Desktop State
 
-Saved to `~/.plexusone/nexus_state.json` (v2 multi-window format):
+Saved to `~/.plexusone/state.json` (v2 multi-window format):
 
 ```json
 {

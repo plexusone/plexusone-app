@@ -112,7 +112,7 @@ Your workspace is automatically saved:
 
 - Grid layout (columns × rows)
 - Pane-to-session assignments
-- Saved to `~/.plexusone/nexus_state.json`
+- Saved to `~/.plexusone/state.json`
 
 On restart, you're prompted to restore or start fresh.
 

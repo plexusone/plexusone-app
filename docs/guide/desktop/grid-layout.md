@@ -84,7 +84,7 @@ When you switch to a larger layout:
 Your layout choice is saved automatically:
 
 ```json
-// ~/.plexusone/nexus_state.json
+// ~/.plexusone/state.json
 {
   "gridColumns": 3,
   "gridRows": 2,
