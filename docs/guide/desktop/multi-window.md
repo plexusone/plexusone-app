@@ -42,8 +42,23 @@ Use any of these methods:
 
 - **Menu**: File → New Window
 - **Keyboard**: `Cmd+Shift+N`
+- **Pop-out**: Click the pop-out icon (↗) in any pane header
 
 Each new window starts with a default 2×1 layout and can be configured independently.
+
+### Pop-Out Sessions
+
+Pop out a session to a dedicated 1×1 window without disrupting your grid:
+
+1. Find the session in any pane
+2. Click the **pop-out icon** (↗) next to the detach button (✕)
+3. A new window opens with just that session
+
+The original pane keeps the session attached, giving you two views of the same tmux session. This is useful when you need:
+
+- Full-screen space for one agent while monitoring others
+- The same session visible on multiple monitors
+- Side-by-side comparison of the same session at different scroll positions
 
 ### Independent Layouts
 
@@ -154,3 +169,6 @@ Both windows share the same sessions, so you can switch between monitoring and f
 
 !!! tip "Each Window is Independent"
     Closing one window doesn't affect others. Your work in other windows continues uninterrupted.
+
+!!! tip "Pop Out for Focus"
+    Use the pop-out button (↗) to expand a session to its own window without changing your grid layout. Great for when you need temporary full-screen access.

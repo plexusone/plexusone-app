@@ -15,6 +15,7 @@ Keyboard shortcuts for efficient navigation and control.
 
 | Shortcut | Action |
 |----------|--------|
+| `⌘ ⇧ N` | New window |
 | `⌘ M` | Minimize window |
 | `⌘ W` | Close window |
 | `⌘ 1-9` | Switch to pane 1-9 (planned) |
@@ -63,7 +64,6 @@ Future versions will add:
 | `⌘ 1-9` | Focus pane by number |
 | `⌘ [` | Previous pane |
 | `⌘ ]` | Next pane |
-| `⌘ Shift N` | New window |
 | `⌘ T` | New pane in current window |
 
 ## Customization

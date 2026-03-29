@@ -8,7 +8,7 @@ Nexus Desktop is a macOS application for managing multiple AI CLI agent sessions
 
 1. **Toolbar** - Layout picker, new session button, refresh
 2. **Grid Layout** - Configurable panes (1×1 to 4×4)
-3. **Pane Header** - Session dropdown, pane number, detach button
+3. **Pane Header** - Session dropdown, pane number, pop-out button, detach button
 4. **Terminal View** - Embedded terminal showing session output
 5. **Status Bar** - Pane indicators, session count
 
@@ -70,6 +70,20 @@ Need to concentrate on one agent?
 1. Switch to 1×1 layout
 2. Attach the session you're working with
 3. Other sessions continue running in the background
+
+### Pop-Out Session
+
+Need more screen space for one session without disrupting your grid?
+
+1. Click the **pop-out icon** (↗) in the pane header (next to the ✕)
+2. A new 1×1 window opens with that session
+3. The original session stays attached in the grid
+
+This gives you two views of the same tmux session - useful for:
+
+- Expanding one session to full screen while keeping the grid visible
+- Viewing the same session on different monitors
+- Comparing output at different scroll positions
 
 ## Features
 
