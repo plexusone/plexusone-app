@@ -22,7 +22,10 @@ let package = Package(
                 "SwiftTerm",
                 .product(name: "AssistantKit", package: "assistantkit-swift")
             ],
-            path: "Sources/PlexusOneDesktop"
+            path: "Sources/PlexusOneDesktop",
+            resources: [
+                .copy("Resources/AppIcon.icns")
+            ]
         ),
         .testTarget(
             name: "PlexusOneDesktopTests",
