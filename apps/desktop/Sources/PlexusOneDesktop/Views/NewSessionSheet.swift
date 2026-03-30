@@ -112,9 +112,10 @@ struct NewSessionSheet: View {
             do {
                 var session = try await sessionManager.createSession(name: sessionName, command: command)
                 session.agentType = selectedAgentType
+                let createdSession = session  // Immutable copy for concurrent access
 
                 await MainActor.run {
-                    onSessionCreated(session)
+                    onSessionCreated(createdSession)
                     dismiss()
                 }
             } catch {

@@ -23,6 +23,10 @@ let package = Package(
                 .product(name: "AssistantKit", package: "assistantkit-swift")
             ],
             path: "Sources/PlexusOneDesktop",
+            exclude: [
+                "Info.plist",
+                "PlexusOneDesktop.entitlements"
+            ],
             resources: [
                 .copy("Resources/AppIcon.icns")
             ]
