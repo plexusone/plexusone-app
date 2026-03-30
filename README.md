@@ -1,5 +1,13 @@
 # PlexusOne Apps
 
+[![Swift CI][swift-ci-svg]][swift-ci-url]
+[![License][license-svg]][license-url]
+
+ [go-ci-svg]: https://github.com/plexusone/plexusone-app/actions/workflows/desktop.yaml/badge.svg?branch=main
+ [go-ci-url]: https://github.com/plexusone/plexusone-app/actions/workflows/desktop.yaml
+ [license-svg]: https://img.shields.io/badge/license-MIT-blue.svg
+ [license-url]: https://github.com/plexusone/plexusone-app/blob/master/LICENSE
+
 A multi-agent orchestration platform for AI CLI tools like Claude Code and Kiro CLI.
 
 ## Repository Structure
