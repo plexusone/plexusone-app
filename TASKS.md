@@ -4,9 +4,13 @@
 
 ### Desktop App - Current
 
-- [ ] **Scroll position indicator**: Display line position (e.g., "123/615") while scrolling through terminal scrollback. Shows current position relative to total lines.
+- [ ] **Session restore debugging**: Session restore from `~/.plexusone/state.json` may not be attaching saved sessions. Added NSLog debugging but console output not visible in iTerm2. Need to verify restore flow and session matching.
 
-- [ ] **macOS app icon**: Create a polished, "glassy" macOS-friendly icon for PlexusOne/Nexus. Should follow Apple HIG with proper squircle shape, gradients, and depth effects.
+- [ ] **Copy/paste verification**: SwiftTerm should support Cmd+C (copy selected text) and Cmd+V (paste). User reported copy/paste not working - needs investigation of terminal text selection and clipboard integration.
+
+- [ ] **Focus indicator testing**: Blue border/shadow focus indicator implemented but user didn't see visual changes. May need to verify KVO observation is firing and UI updates are applied.
+
+- [ ] **Scroll position indicator**: Display line position (e.g., "123/615") while scrolling through terminal scrollback. Shows current position relative to total lines.
 
 - [ ] **Scrollbar visibility**: Verify scrollbar thumb appears and is draggable when there's scrollback content (native scrollback, not tmux).
 
@@ -364,3 +368,15 @@ Autonomous monitoring and intervention.
 - [x] **Unit test infrastructure**: Added protocol-based dependency injection (CommandExecuting, FileSystemAccessing), mocks, and 78 unit tests for SessionManager, WindowStateManager, and AppState. (2026-03-29)
 
 - [x] **CI/CD pipeline**: Added GitHub Actions workflow for Swift tests using reusable workflow from plexusone/.github. (2026-03-29)
+
+- [x] **AssistantKit integration**: Created AssistantKit Swift package with input detection patterns for Claude, Kiro, and universal patterns. Integrated InputMonitor service for real-time terminal monitoring. (2026-03-29)
+
+- [x] **Input detection UI**: Added InputIndicatorView overlay for showing detected input prompts with suggested actions. (2026-03-29)
+
+- [x] **Edit menu**: Added Edit menu with Select All command (Cmd+A) for terminal text selection. (2026-03-29)
+
+- [x] **App icon**: Generated macOS .icns from mobile icon source. Added to app bundle with CFBundleIconFile configuration. (2026-03-30)
+
+- [x] **Pane focus indicator**: Implemented visual focus indicator with blue border (3px), shadow (8px), header tint, and focus dot. Added KVO observation for real-time focus tracking. (2026-03-30)
+
+- [x] **Release workflow**: Added GitHub Actions workflow for building macOS DMG artifacts (arm64, x86_64, universal) on version tags. (2026-03-30)
