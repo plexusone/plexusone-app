@@ -48,6 +48,17 @@ struct PlexusOneDesktopApp: App {
                 .keyboardShortcut("a", modifiers: [.command, .shift])
             }
 
+            // Edit menu - ensure copy/paste work with terminal
+            CommandGroup(after: .pasteboard) {
+                Divider()
+
+                Button("Select All") {
+                    // Forward to first responder (terminal view handles this)
+                    NSApp.sendAction(#selector(NSText.selectAll(_:)), to: nil, from: nil)
+                }
+                .keyboardShortcut("a", modifiers: .command)
+            }
+
             CommandGroup(after: .windowList) {
                 Divider()
 
