@@ -1,4 +1,4 @@
-site_name: PlexusOne Desktop
+site_name: PlexusOne Apps
 site_description: Multi-agent orchestration platform for AI CLI tools
 site_url: https://plexusone.github.io/plexusone-app/
 
@@ -55,7 +55,7 @@ nav:
       - Session Management: guide/desktop/sessions.md
       - Multi-Window: guide/desktop/multi-window.md
       - Keyboard Shortcuts: guide/desktop/shortcuts.md
-    - Mobile App:
+    - Mobile Apps:
       - Overview: guide/mobile/overview.md
       - Connecting: guide/mobile/connecting.md
   - Reference:
@@ -63,6 +63,8 @@ nav:
     - WebSocket Protocol: reference/protocol.md
   - Development:
     - Architecture: development/architecture.md
+    - Flutter App: development/flutter.md
+    - Native iOS App: development/ios.md
     - Contributing: development/contributing.md
     - Design Documents: development/design-docs.md
   - Releases:
