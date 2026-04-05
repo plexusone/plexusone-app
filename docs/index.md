@@ -32,7 +32,7 @@ PlexusOne Desktop is a terminal multiplexer designed specifically for managing m
 │                                                   │
 │  ┌─────────────┐     ┌─────────────────────────┐  │
 │  │ tmux        │     │ TUI Parser (Go)         │  │
-│  │ sessions    │◄───►│ WebSocket server :9600  │  │
+│  │ sessions    │<───>│ WebSocket server :9600  │  │
 │  └─────────────┘     └───────────┬─────────────┘  │
 │         ▲                        │                │
 │         │                        │                │
