@@ -74,6 +74,7 @@ nav:
     - Design Documents: development/design-docs.md
   - Releases:
     - Changelog: releases/changelog.md
+    - v0.4.1: releases/v0.4.1.md
     - v0.4.0: releases/v0.4.0.md
     - v0.3.0: releases/v0.3.0.md
     - v0.2.0: releases/v0.2.0.md

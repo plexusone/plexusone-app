@@ -6,6 +6,24 @@
   "commitConvention": "conventional",
   "releases": [
     {
+      "version": "v0.4.1",
+      "date": "2026-04-06",
+      "highlights": [
+        { "description": "Session switching fixes - dropdown, pop-out, and grid resize now correctly change terminal sessions" },
+        { "description": "App visibility fix - app now appears in Cmd+Tab and stays running when switching focus" }
+      ],
+      "fixed": [
+        { "description": "Session dropdown in pane header now correctly switches the attached tmux session", "commit": "94502dc" },
+        { "description": "Pop-out windows now show the correct session instead of the first pane's session", "commit": "94502dc" },
+        { "description": "Grid resize no longer causes mismatch between header and terminal session", "commit": "94502dc" },
+        { "description": "App now appears in Cmd+Tab and Dock when running as executable", "commit": "ab66238" },
+        { "description": "App no longer terminates when losing focus", "commit": "ab66238" }
+      ],
+      "documentation": [
+        { "description": "Desktop app development guide with build and run instructions", "commit": "7398753" }
+      ]
+    },
+    {
       "version": "v0.4.0",
       "date": "2026-03-30",
       "highlights": [
