@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var windowId: UUID?
     @State private var showNewSessionSheet = false
     @State private var showRestorePrompt = false
+    @State private var showErrorAlert = false
     @State private var isReady = false
 
     private var sessionManager: SessionManager {
@@ -107,6 +108,18 @@ struct ContentView: View {
             } else {
                 Text("Would you like to restore your previous session?")
             }
+        }
+        .alert("Session Error", isPresented: $showErrorAlert) {
+            Button("OK") {
+                sessionManager.clearError()
+            }
+        } message: {
+            if let error = sessionManager.error {
+                Text(error.localizedDescription)
+            }
+        }
+        .onChange(of: sessionManager.error) { _, newError in
+            showErrorAlert = newError != nil
         }
         .task {
             await initialize()
