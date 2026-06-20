@@ -16,8 +16,6 @@ final class AppStateTests: XCTestCase {
 
     func testAppStateInitializesWithCustomDependencies() {
         let mockExecutor = MockCommandExecutor()
-        mockExecutor.stubWhichTmux(available: true)
-
         let sessionManager = SessionManager(commandExecutor: mockExecutor)
         let mockFileSystem = MockFileSystem()
         let windowStateManager = WindowStateManager(
@@ -39,7 +37,6 @@ final class AppStateTests: XCTestCase {
 
     func testStartMonitoringInitializesOnce() async {
         let mockExecutor = MockCommandExecutor()
-        mockExecutor.stubWhichTmux(available: true)
         mockExecutor.stubNoServerRunning()
 
         let sessionManager = SessionManager(
@@ -65,7 +62,6 @@ final class AppStateTests: XCTestCase {
 
     func testStartMonitoringWithTmuxAvailable() async {
         let mockExecutor = MockCommandExecutor()
-        mockExecutor.stubWhichTmux(available: true)
         mockExecutor.stubNoServerRunning()
 
         let sessionManager = SessionManager(
@@ -78,13 +74,13 @@ final class AppStateTests: XCTestCase {
         await appState.startMonitoring()
 
         XCTAssertTrue(appState.isInitialized)
-        // Should have checked tmux availability
-        XCTAssertTrue(mockExecutor.wasExecuted(path: "/usr/bin/which"))
+        // checkTmuxAvailable now uses TmuxEnvironment.isInstalled() directly
+        // (no command execution needed)
     }
 
-    func testStartMonitoringWithTmuxUnavailable() async {
+    func testStartMonitoringCompletesEvenWithoutTmux() async {
         let mockExecutor = MockCommandExecutor()
-        mockExecutor.stubWhichTmux(available: false)
+        // Don't stub any tmux commands - simulates tmux not available
 
         let sessionManager = SessionManager(
             commandExecutor: mockExecutor,
@@ -122,8 +118,7 @@ final class AppStateTests: XCTestCase {
         let now = Date()
         let timestamp = Int(now.timeIntervalSince1970) - 10
 
-        // Set up mocks for full flow
-        mockExecutor.stubWhichTmux(available: true)
+        // Set up mocks for session listing
         mockExecutor.stubTmuxSuccess(arguments: ["list-sessions"])
         mockExecutor.stubListSessions("session-1|\(timestamp)|0\nsession-2|\(timestamp)|1")
 

@@ -72,24 +72,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func checkTmuxInstallation() {
-        Task {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/which")
-            process.arguments = ["tmux"]
-
-            let pipe = Pipe()
-            process.standardOutput = pipe
-            process.standardError = pipe
-
-            do {
-                try process.run()
-                process.waitUntilExit()
-
-                if process.terminationStatus != 0 {
-                    await showTmuxNotInstalledAlert()
-                }
-            } catch {
-                await showTmuxNotInstalledAlert()
+        // Use TmuxEnvironment to check known installation paths directly,
+        // rather than relying on PATH which may not include Homebrew directories
+        if !TmuxEnvironment.isInstalled() {
+            Task { @MainActor in
+                showTmuxNotInstalledAlert()
             }
         }
     }

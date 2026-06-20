@@ -21,14 +21,10 @@ final class SessionManager {
 
     init(
         commandExecutor: any CommandExecuting = ProcessCommandExecutor(),
-        tmuxPaths: [String] = [
-            "/usr/local/bin/tmux",   // Homebrew Intel
-            "/opt/homebrew/bin/tmux", // Homebrew Apple Silicon
-            "/usr/bin/tmux"           // System
-        ]
+        tmuxPaths: [String]? = nil
     ) {
         self.commandExecutor = commandExecutor
-        self.tmuxPaths = tmuxPaths
+        self.tmuxPaths = tmuxPaths ?? TmuxEnvironment.searchPaths
     }
 
     /// Start periodic refresh (call from view's onAppear)
@@ -42,6 +38,11 @@ final class SessionManager {
     }
 
     // MARK: - Public API
+
+    /// Clear the current error (call after displaying to user)
+    func clearError() {
+        error = nil
+    }
 
     /// Refresh the list of tmux sessions
     func refresh() async {
@@ -106,14 +107,9 @@ final class SessionManager {
         await refresh()
     }
 
-    /// Check if tmux is available
-    func checkTmuxAvailable() async -> Bool {
-        do {
-            let result = try await commandExecutor.execute("/usr/bin/which", arguments: ["tmux"])
-            return result.success && !result.stdout.isEmpty
-        } catch {
-            return false
-        }
+    /// Check if tmux is available by checking known installation paths
+    func checkTmuxAvailable() -> Bool {
+        TmuxEnvironment.isInstalled()
     }
 
     // MARK: - Private Methods
@@ -156,7 +152,7 @@ final class SessionManager {
 
     /// Determine session status based on elapsed time since last activity
     /// Made internal (not private) for direct testing
-    func determineStatus(lastActivity: Date, isAttached: Bool) -> SessionStatus {
+    func determineStatus(lastActivity: Date) -> SessionStatus {
         let elapsed = Date().timeIntervalSince(lastActivity)
 
         if elapsed < idleThreshold {
@@ -193,10 +189,10 @@ final class SessionManager {
 
             let name = String(parts[0])
             let activityTimestamp = TimeInterval(parts[1]) ?? referenceDate.timeIntervalSince1970
-            let attachedCount = Int(parts[2]) ?? 0
+            // parts[2] contains attached count - available for future use if needed
 
             let lastActivity = Date(timeIntervalSince1970: activityTimestamp)
-            let status = determineStatus(lastActivity: lastActivity, isAttached: attachedCount > 0)
+            let status = determineStatus(lastActivity: lastActivity)
 
             let session = Session(
                 name: name,
@@ -233,7 +229,7 @@ struct CommandResult {
     var success: Bool { exitCode == 0 }
 }
 
-enum SessionManagerError: Error, LocalizedError {
+enum SessionManagerError: Error, LocalizedError, Equatable {
     case tmuxNotInstalled
     case listFailed(String)
     case createFailed(String)

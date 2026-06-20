@@ -39,8 +39,7 @@ final class AppState {
         guard !isInitialized else { return }
 
         // Check tmux availability
-        let tmuxAvailable = await sessionManager.checkTmuxAvailable()
-        if !tmuxAvailable {
+        if !sessionManager.checkTmuxAvailable() {
             print("Warning: tmux is not installed")
         }
 

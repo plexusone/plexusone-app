@@ -71,15 +71,6 @@ final class MockCommandExecutor: CommandExecuting, @unchecked Sendable {
         )
     }
 
-    /// Stub `which tmux` command
-    func stubWhichTmux(available: Bool) {
-        stubbedResults["/usr/bin/which"] = CommandResult(
-            exitCode: available ? 0 : 1,
-            stdout: available ? "/opt/homebrew/bin/tmux\n" : "",
-            stderr: ""
-        )
-    }
-
     // MARK: - CommandExecuting
 
     func execute(_ path: String, arguments: [String]) async throws -> CommandResult {

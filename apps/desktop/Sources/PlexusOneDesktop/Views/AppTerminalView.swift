@@ -83,16 +83,9 @@ class AppTerminalView: LocalProcessTerminalView {
 
         currentSessionId = session.id
 
-        let (tmuxPath, baseArgs) = findTmuxExecutable()
+        let (tmuxPath, baseArgs) = TmuxEnvironment.findExecutable()
         let args = baseArgs + ["attach", "-t", session.tmuxSession]
-
-        var env = ProcessInfo.processInfo.environment
-        env["TERM"] = "xterm-256color"
-        if env["LANG"] == nil {
-            env["LANG"] = "en_US.UTF-8"
-        }
-
-        let envArray = env.map { "\($0.key)=\($0.value)" }
+        let envArray = TmuxEnvironment.terminalEnvironmentArray()
 
         startProcess(
             executable: tmuxPath,
@@ -107,22 +100,5 @@ class AppTerminalView: LocalProcessTerminalView {
         // The tmux session itself continues running in background
         terminate()
         currentSessionId = nil
-    }
-
-    private func findTmuxExecutable() -> (path: String, baseArgs: [String]) {
-        let paths = [
-            "/usr/local/bin/tmux",      // Homebrew Intel
-            "/opt/homebrew/bin/tmux",   // Homebrew Apple Silicon
-            "/usr/bin/tmux"             // System
-        ]
-
-        for path in paths {
-            if FileManager.default.fileExists(atPath: path) {
-                return (path, [])
-            }
-        }
-
-        // Fallback - use env to find tmux in PATH
-        return ("/usr/bin/env", ["tmux"])
     }
 }
