@@ -6,8 +6,14 @@ import UserNotifications
 
 /// Monitors terminal content for input prompts from AI assistants.
 /// Uses AssistantKit's pattern detectors to identify when the user needs to respond.
+///
+/// Thread Safety: This class is `@MainActor` isolated since it:
+/// - Updates UI-observable state (`activeAlerts`, `activeSuggestedActions`)
+/// - Posts NotificationCenter notifications
+/// - Interacts with AppKit (NSSound) and UserNotifications
+@MainActor
 @Observable
-final class InputMonitor: @unchecked Sendable {
+final class InputMonitor {
     /// Active alerts by session ID
     private(set) var activeAlerts: [UUID: DetectionResult] = [:]
 
@@ -15,7 +21,7 @@ final class InputMonitor: @unchecked Sendable {
     private(set) var activeSuggestedActions: [UUID: [SuggestedAction]] = [:]
 
     /// Detectors to use for scanning terminal content
-    private let detectors: [any InputDetector]
+    private nonisolated let detectors: [any InputDetector]
 
     /// Whether to show macOS notifications
     var enableNotifications: Bool = false
@@ -26,7 +32,9 @@ final class InputMonitor: @unchecked Sendable {
     /// Minimum confidence threshold for alerts
     var confidenceThreshold: Double = 0.7
 
-    init(requestNotifications: Bool = true) {
+    /// Initialize InputMonitor.
+    /// - Parameter requestNotifications: Whether to request notification permissions (set to false in tests)
+    nonisolated init(requestNotifications: Bool = true) {
         self.detectors = [
             ClaudeDetector(),
             KiroDetector(),
@@ -35,7 +43,9 @@ final class InputMonitor: @unchecked Sendable {
 
         // Request notification permission if needed (skip in test environments)
         if requestNotifications {
-            requestNotificationPermission()
+            Task { @MainActor in
+                self.requestNotificationPermission()
+            }
         }
     }
 

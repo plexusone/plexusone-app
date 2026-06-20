@@ -178,6 +178,9 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
         var scrollMonitor: Any?
         var inputDetectionTimer: Timer?
 
+        /// Cache last content hash to skip redundant input detection
+        private var lastContentHash: Int = 0
+
         init(_ parent: AppTerminalViewRepresentable) {
             self.parent = parent
         }
@@ -192,12 +195,17 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
         /// Start periodic input detection and focus checking
         func startInputDetection() {
             // Poll for input prompts and focus state every 500ms
+            // Timer fires on main thread, checkForInputPrompts is @MainActor
             inputDetectionTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-                self?.checkForInputPrompts()
-                self?.containerView?.updateFocusState()
+                guard let self = self else { return }
+                Task { @MainActor in
+                    self.checkForInputPrompts()
+                }
+                self.containerView?.updateFocusState()
             }
         }
 
+        @MainActor
         private func checkForInputPrompts() {
             guard let terminalView = terminalView,
                   let sessionId = terminalView.attachedSessionId() else {
@@ -207,6 +215,11 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
             // Extract recent terminal content for input detection
             let content = extractRecentContent(from: terminalView, lineCount: 15)
             guard !content.isEmpty else { return }
+
+            // Skip processing if content hasn't changed (performance optimization)
+            let contentHash = content.hashValue
+            guard contentHash != lastContentHash else { return }
+            lastContentHash = contentHash
 
             // Get cursor position
             guard let terminal = terminalView.terminal else { return }
@@ -222,9 +235,7 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
 
             // Notify parent if input detected
             if let result = parent.inputMonitor.alert(for: sessionId) {
-                DispatchQueue.main.async { [weak self] in
-                    self?.parent.onInputDetected?(result)
-                }
+                parent.onInputDetected?(result)
             }
         }
 
