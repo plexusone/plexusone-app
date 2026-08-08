@@ -1,0 +1,67 @@
+version: 2
+
+updates:
+  # PlexusOne Desktop (Swift Package Manager)
+  - package-ecosystem: "swift"
+    directory: "/apps/desktop"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "desktop"
+    commit-message:
+      prefix: "build(desktop)"
+
+  # PlexusOne Mobile - Native iOS (Swift Package Manager)
+  - package-ecosystem: "swift"
+    directory: "/apps/ios"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "ios"
+    commit-message:
+      prefix: "build(ios)"
+
+  # PlexusOne Mobile - Flutter (pub)
+  - package-ecosystem: "pub"
+    directory: "/apps/flutter"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "flutter"
+    commit-message:
+      prefix: "build(flutter)"
+
+  # TUI Parser service (Go modules)
+  - package-ecosystem: "gomod"
+    directory: "/services/tuiparser"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "tuiparser"
+    commit-message:
+      prefix: "build(tuiparser)"
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "ci"
