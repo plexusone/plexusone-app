@@ -2,19 +2,20 @@
 
 **Initiative:** `INIT-PLEXUSONEAPP-001`
 **Repository:** `github.com/plexusone/plexusone-app`
-**Status:** Phase 1 in progress
+**Status:** Phase 1 complete — Phase 2 not started
 
 > RMI IDs are stable and permanent. Commits implementing an item carry the trailer `Refs: RMI-<REPOSLUG>-<NNN>`. Phase status is derived from member RMIs — a phase is complete only when all its required RMIs are complete.
 
 ## Phase 1 — Scroll Integration Fixes
 
 **Theme:** Remove double-dispatch and smooth trackpad scrolling
-**Status:** In progress — 3 of 4 items completed
+**Status:** Complete — 4 of 4 items completed
 
 - [x] `RMI-PLEXUSONEAPP-001` Remove double-dispatched scroll path (NSEvent monitor + custom wheel handler)
   - Delete the app-wide NSEvent.addLocalMonitorForEvents scroll monitor and Coordinator.handleScrollEvent in TerminalViewRepresentable.swift, the custom AppTerminalView.handleMouseWheelEvent, and the TerminalContainerView.scrollWheel forward. SwiftTerm's built-in scrollWheel already handles mouse reporting, alternate-screen conversion, and native scrollback; the current setup processes every wheel event twice and installs one app-wide monitor per pane.
-- [ ] `RMI-PLEXUSONEAPP-002` Fractional scroll-delta accumulation for trackpad smoothness
+- [x] `RMI-PLEXUSONEAPP-002` Fractional scroll-delta accumulation for trackpad smoothness
   - SwiftTerm's scrollWheel truncates event.deltaY to whole lines and drops small fractional trackpad deltas, causing steppy scrolling. Accumulate fractional deltas in the AppTerminalView subclass and emit line scrolls when the accumulator crosses a cell height. Consider upstreaming to SwiftTerm.
+  - Resolved upstream instead of in-app: SwiftTerm 1.16.0's `TerminalView.scrollWheel` (Mac/MacTerminalView.swift) now carries a `scrollAccumulator` across precise-delta events, dividing by cell height and keeping the remainder, plus an optional `scrollSensitivity` multiplier — the same fix this item called for. Since RMI-001 already left AppTerminalView with no scrollWheel override of its own (confirmed: no `scrollWheel`/`scrollSensitivity` references anywhere under `Sources/PlexusOneDesktop`), the app inherits this behavior with zero code changes once bumped to 1.16.0 (see the SwiftTerm 1.16.0 bump commit). Applies across all three scroll destinations (tmux mouse-reporting, alternate-screen key emulation, native scrollback). Worth a quick manual trackpad-feel pass to confirm subjectively, but the code match is exact.
 - [x] `RMI-PLEXUSONEAPP-003` Stable Session identity across 5s refresh cycles
   - SessionManager.parseSessionOutput mints a new UUID for every Session on every refresh, breaking SwiftUI ForEach identity and the session-picker checkmark, and forcing needless view rebuilds. Derive identity deterministically from the tmux session name.
 - [x] `RMI-PLEXUSONEAPP-004` Pin SwiftTerm to a fixed revision instead of branch main
