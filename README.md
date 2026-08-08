@@ -6,7 +6,7 @@
  [swift-ci-svg]: https://github.com/plexusone/plexusone-app/actions/workflows/desktop.yaml/badge.svg?branch=main
  [swift-ci-url]: https://github.com/plexusone/plexusone-app/actions/workflows/desktop.yaml
  [license-svg]: https://img.shields.io/badge/license-MIT-blue.svg
- [license-url]: https://github.com/plexusone/plexusone-app/blob/master/LICENSE
+ [license-url]: https://github.com/plexusone/plexusone-app/blob/main/LICENSE
 
 A multi-agent orchestration platform for AI CLI tools like Claude Code and Kiro CLI.
 
@@ -18,7 +18,8 @@ A multi-agent orchestration platform for AI CLI tools like Claude Code and Kiro 
 plexusone-app/
 ├── apps/
 │   ├── desktop/          # macOS app (Swift + SwiftTerm)
-│   └── mobile/           # iOS/Android companion (Flutter)
+│   ├── flutter/          # iOS/Android/web/macOS companion (Flutter)
+│   └── ios/              # Native iOS/iPadOS companion (Swift + SwiftTerm)
 ├── services/
 │   └── tuiparser/        # WebSocket bridge for mobile streaming (Go)
 └── docs/
@@ -35,6 +36,7 @@ Native macOS terminal multiplexer built with Swift and SwiftTerm.
 - Attach/detach to tmux sessions
 - Pop-out sessions to dedicated windows
 - **Input detection** for AI assistant prompts (Claude, Kiro, etc.)
+- **PTY wrapper detection** - warns if a session is running behind a shell-autocomplete PTY shim (Kiro CLI, Fig, Amazon Q) known to freeze terminal panes
 - Visual focus indicator for active pane
 - Session state persistence
 - 10,000 line scrollback buffer
@@ -48,9 +50,9 @@ swift build
 open "PlexusOne Desktop.app"
 ```
 
-### PlexusOne Mobile (iOS/Android)
+### PlexusOne Mobile - Flutter (iOS/Android/Web/macOS)
 
-Flutter companion app for monitoring and interacting with agents remotely.
+Cross-platform companion app for monitoring and interacting with agents remotely.
 
 - Terminal-styled output view
 - Session tabs
@@ -60,9 +62,23 @@ Flutter companion app for monitoring and interacting with agents remotely.
 
 **Build & Run:**
 ```bash
-cd apps/mobile
+cd apps/flutter
 flutter pub get
 flutter run
+```
+
+### PlexusOne Mobile - Native iOS
+
+Native iOS/iPadOS companion app using SwiftTerm (same terminal library as Desktop).
+
+**Build & Run:**
+```bash
+cd apps/ios
+xcodebuild -project PlexusOneiOS.xcodeproj \
+  -scheme PlexusOneiOS \
+  -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+  build
 ```
 
 ### TUI Parser (WebSocket Bridge)
@@ -101,10 +117,10 @@ Debug console: http://localhost:9600
 │  └─────────────┘                 │                │
 └──────────────────────────────────┼────────────────┘
                                    │ WebSocket (LAN)
-                          ┌────────▼────────┐
-                          │ PlexusOne Mobile│
-                          │  (Flutter)      │
-                          └─────────────────┘
+                         ┌─────────▼────────┐
+                         │ PlexusOne Mobile │
+                         │ (Flutter or iOS) │
+                         └──────────────────┘
 ```
 
 ## Documentation
@@ -147,7 +163,7 @@ Debug console: http://localhost:9600
 
 4. Run Mobile App (same WiFi network):
    ```bash
-   cd apps/mobile && flutter run
+   cd apps/flutter && flutter run
    ```
 
 ## License

@@ -152,6 +152,10 @@ For agents that run for hours:
 
 ## Troubleshooting
 
+### "Session Error" Alert
+
+If PlexusOne Desktop can't complete a session operation (for example, tmux isn't installed or a command failed), a **Session Error** alert now appears describing the problem instead of failing silently. Click **OK** to dismiss it; the underlying error is cleared.
+
 ### Session Not Appearing
 
 1. Refresh the session list (↻ button)
@@ -164,6 +168,31 @@ The process inside the session exited. Options:
 
 1. Reattach and start a new command
 2. Kill and recreate the session
+
+### Pane Frozen / Warning Triangle Next to Session Name
+
+If you see an amber warning triangle (⚠) next to a session name, or a dismissible banner at the top of the window, PlexusOne Desktop has detected that the session's shell is running behind an autocomplete PTY shim from one of:
+
+- **Kiro CLI** (`kiro-cli-term`)
+- **Fig** (`figterm`)
+- **Amazon Q** (`qterm`)
+
+These tools re-exec your shell inside a PTY wrapper so they can watch keystrokes for inline completions. It's a known cause of frozen panes — when the shim deadlocks, the agent running inside blocks on I/O and the pane hangs for every attached client, including PlexusOne Desktop.
+
+**Fix:** remove the wrapper's shell integration, then open a new shell/session:
+
+```bash
+# Kiro CLI
+kiro-cli integration uninstall dotfiles
+
+# Fig
+fig integrations uninstall dotfiles
+
+# Amazon Q
+q integrations uninstall dotfiles
+```
+
+Hover the warning triangle or the banner's "Copy" button to get the exact command for the detected tool. Use **Don't show again** on the banner once you've addressed it, or **✕** to dismiss it for the current session only.
 
 ### Multiple tmux Servers
 

@@ -6,6 +6,51 @@
   "commitConvention": "conventional",
   "releases": [
     {
+      "version": "v0.5.0",
+      "date": "2026-08-08",
+      "highlights": [
+        { "description": "PTY autocomplete wrapper detection - warns when a session is running behind a figterm-style shim (Kiro CLI, Fig, Amazon Q) known to freeze terminal panes" },
+        { "description": "Session error alert UI - SessionManager errors now surface in the app instead of failing silently" },
+        { "description": "Fixed a startup hang that could leave the app stuck on the loading screen indefinitely on machines with many running processes" },
+        { "description": "Smoother, double-dispatch-free trackpad scrolling, and SwiftTerm upgraded to the tagged v1.16.0 release" },
+        { "description": "Session identity is now stable across the 5s refresh cycle - the session picker no longer loses track of the active session" }
+      ],
+      "added": [
+        { "description": "Detect figterm-style PTY autocomplete wrappers (Kiro CLI, Fig, Amazon Q) in tmux panes and warn with a dismissible banner plus a per-session badge showing the fix command", "commit": "1b5c3e5" },
+        { "description": "Error alert UI surfacing SessionManager errors in the app instead of failing silently", "commit": "031432a" }
+      ],
+      "fixed": [
+        { "description": "Fixed a startup hang where SessionManager.refresh() could deadlock indefinitely once a command's output exceeded the ~64KB pipe buffer, leaving the app stuck on \"Loading...\"", "commit": "fbfa656" },
+        { "description": "Session identity is now derived deterministically from the tmux session name instead of a new random UUID every refresh, fixing SwiftUI view churn and a session-picker checkmark that could lose track of the active session", "commit": "8a06173" },
+        { "description": "Added @MainActor thread safety to InputMonitor", "commit": "587ea1d" },
+        { "description": "Fixed terminal scrollback getting stuck when the user types while scrolled up", "commit": "a5afebe" }
+      ],
+      "performance": [
+        { "description": "Removed the double-dispatched scroll path (an app-wide NSEvent monitor plus a custom wheel handler) that processed every trackpad/mouse wheel event twice; SwiftTerm's built-in scrollWheel now handles mouse reporting, alternate-screen conversion, and native scrollback directly", "commit": "6ec3de2" }
+      ],
+      "changed": [
+        { "description": "Extracted TmuxEnvironment for shared tmux path discovery", "commit": "f987c68" }
+      ],
+      "build": [
+        { "description": "Pinned SwiftTerm to a fixed revision instead of tracking branch main, so its performance characteristics can't shift under us between builds", "commit": "e08c519" },
+        { "description": "Upgraded SwiftTerm from a pinned main-branch commit to the tagged v1.16.0 release, picking up upstream's own fractional trackpad scroll-delta accumulation and several Metal renderer stability fixes", "commit": "8b29091" },
+        { "description": "Bumped github.com/gorilla/websocket from 1.5.1 to 1.5.3 in services/tuiparser", "commit": "9454e58" },
+        { "description": "Bumped github.com/creack/pty from 1.1.21 to 1.1.24 in services/tuiparser", "commit": "edab8a8" },
+        { "description": "Bumped flutter_lints from 4.0.0 to 6.0.0 in apps/flutter", "commit": "328ace8" }
+      ],
+      "infrastructure": [
+        { "description": "Added Dependabot config for weekly dependency-update PRs across Swift (desktop, iOS), pub (Flutter), Go modules (tuiparser), and GitHub Actions", "commit": "62e55b0" },
+        { "description": "Bumped actions/checkout from 4 to 7", "commit": "eb524a9" },
+        { "description": "Bumped actions/upload-artifact from 4 to 7", "commit": "1ea5b17" },
+        { "description": "Bumped actions/download-artifact from 4 to 8", "commit": "482d5a1" },
+        { "description": "Bumped swift-actions/setup-swift from 2 to 3", "commit": "83efd6d" },
+        { "description": "Bumped softprops/action-gh-release from 2 to 3", "commit": "f9a18a1" }
+      ],
+      "documentation": [
+        { "description": "Added the desktop scroll & rendering performance roadmap (INIT-PLEXUSONEAPP-001) tracking Phase 1-3 work", "commit": "e5cacdc" }
+      ]
+    },
+    {
       "version": "v0.4.1",
       "date": "2026-04-06",
       "highlights": [
