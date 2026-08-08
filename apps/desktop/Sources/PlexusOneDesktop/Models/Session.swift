@@ -40,6 +40,11 @@ struct Session: Identifiable, Codable, Hashable {
     var lastActivity: Date
     var metadata: [String: String]
     var inputStatus: InputStatus?
+    /// The `figterm`-style PTY autocomplete wrapper detected in this session's
+    /// panes, if any. Set at refresh time; `nil` means no known wrapper (or not
+    /// yet checked). A non-nil value means the session is at risk of freezing —
+    /// see `TerminalWrapper`.
+    var wrapper: TerminalWrapper?
 
     init(
         id: UUID = UUID(),
@@ -49,7 +54,8 @@ struct Session: Identifiable, Codable, Hashable {
         status: SessionStatus = .detached,
         lastActivity: Date = Date(),
         metadata: [String: String] = [:],
-        inputStatus: InputStatus? = nil
+        inputStatus: InputStatus? = nil,
+        wrapper: TerminalWrapper? = nil
     ) {
         self.id = id
         self.name = name
@@ -59,6 +65,7 @@ struct Session: Identifiable, Codable, Hashable {
         self.lastActivity = lastActivity
         self.metadata = metadata
         self.inputStatus = inputStatus
+        self.wrapper = wrapper
     }
 }
 

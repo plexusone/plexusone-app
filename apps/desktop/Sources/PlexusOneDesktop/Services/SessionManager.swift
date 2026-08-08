@@ -19,12 +19,16 @@ final class SessionManager {
     private let commandExecutor: any CommandExecuting
     private let tmuxPaths: [String]
 
+    private let wrapperDetector: TerminalWrapperDetector
+
     init(
         commandExecutor: any CommandExecuting = ProcessCommandExecutor(),
         tmuxPaths: [String]? = nil
     ) {
+        let paths = tmuxPaths ?? TmuxEnvironment.searchPaths
         self.commandExecutor = commandExecutor
-        self.tmuxPaths = tmuxPaths ?? TmuxEnvironment.searchPaths
+        self.tmuxPaths = paths
+        self.wrapperDetector = TerminalWrapperDetector(commandExecutor: commandExecutor, tmuxPaths: paths)
     }
 
     /// Start periodic refresh (call from view's onAppear)
@@ -50,7 +54,17 @@ final class SessionManager {
         error = nil
 
         do {
-            sessions = try await listTmuxSessions()
+            var listed = try await listTmuxSessions()
+            // Flag sessions whose panes are behind a figterm-style PTY wrapper
+            // (a known cause of hangs). Detection failures yield an empty map and
+            // never break session listing.
+            let wrappers = await wrapperDetector.detectWrappers()
+            if !wrappers.isEmpty {
+                for index in listed.indices {
+                    listed[index].wrapper = wrappers[listed[index].tmuxSession]
+                }
+            }
+            sessions = listed
         } catch let err as SessionManagerError {
             error = err
         } catch {

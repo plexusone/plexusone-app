@@ -10,9 +10,27 @@ struct ContentView: View {
     @State private var showRestorePrompt = false
     @State private var showErrorAlert = false
     @State private var isReady = false
+    @State private var wrapperBannerDismissed = false
+    @AppStorage("suppressWrapperWarning") private var suppressWrapperWarning = false
 
     private var sessionManager: SessionManager {
         appState.sessionManager
+    }
+
+    /// Distinct PTY autocomplete wrappers detected across current sessions,
+    /// in a stable order, for the warning banner.
+    private var detectedWrappers: [TerminalWrapper] {
+        var seen: [TerminalWrapper] = []
+        for session in sessionManager.sessions {
+            if let wrapper = session.wrapper, !seen.contains(wrapper) {
+                seen.append(wrapper)
+            }
+        }
+        return seen
+    }
+
+    private var showWrapperBanner: Bool {
+        isReady && !suppressWrapperWarning && !wrapperBannerDismissed && !detectedWrappers.isEmpty
     }
 
     private var windowStateManager: WindowStateManager {
@@ -25,6 +43,14 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if showWrapperBanner {
+                WrapperWarningBanner(
+                    wrappers: detectedWrappers,
+                    onDismiss: { wrapperBannerDismissed = true },
+                    onSuppress: { suppressWrapperWarning = true }
+                )
+            }
+
             if !isReady {
                 // Loading state
                 VStack {
@@ -278,6 +304,9 @@ struct GridStatusBarView: View {
                             Text(session.name)
                                 .font(.system(size: 10))
                                 .lineLimit(1)
+                            if let wrapper = session.wrapper {
+                                WrapperWarningBadge(wrapper: wrapper)
+                            }
                         }
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
