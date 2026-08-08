@@ -64,6 +64,9 @@ struct SessionPillView: View {
                 Text(session.name)
                     .font(.system(size: 11))
                     .lineLimit(1)
+                if let wrapper = session.wrapper {
+                    WrapperWarningBadge(wrapper: wrapper)
+                }
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 3)
@@ -90,7 +93,11 @@ struct SessionPillView: View {
     private var tooltipText: String {
         let status = session.status.displayName
         let ago = session.lastActivity.timeAgoString()
-        return "\(session.name) - \(status) (\(ago))"
+        var text = "\(session.name) - \(status) (\(ago))"
+        if let wrapper = session.wrapper {
+            text += "\n⚠︎ \(wrapper.warning)"
+        }
+        return text
     }
 }
 

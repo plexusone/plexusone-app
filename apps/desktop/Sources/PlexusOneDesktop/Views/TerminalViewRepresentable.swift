@@ -42,11 +42,6 @@ class TerminalContainerView: NSView {
 
     override var acceptsFirstResponder: Bool { true }
 
-    override func scrollWheel(with event: NSEvent) {
-        // Forward scroll events to SwiftTerm's handler
-        terminalView.scrollWheel(with: event)
-    }
-
     override func becomeFirstResponder() -> Bool {
         // Forward first responder to terminal and notify focus change
         let result = terminalView.becomeFirstResponder()
@@ -115,12 +110,6 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
         // Configure appearance
         configureAppearance(terminalView)
 
-        // Add local event monitor for scroll wheel events (trackpad two-finger scroll)
-        context.coordinator.scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: [.scrollWheel]) { event in
-            context.coordinator.handleScrollEvent(event)
-            return event
-        }
-
         let container = TerminalContainerView(terminalView: terminalView)
         context.coordinator.containerView = container
 
@@ -175,7 +164,6 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
         var parent: AppTerminalViewRepresentable
         weak var terminalView: AppTerminalView?
         weak var containerView: TerminalContainerView?
-        var scrollMonitor: Any?
         var inputDetectionTimer: Timer?
 
         /// Cache last content hash to skip redundant input detection
@@ -187,9 +175,6 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
 
         deinit {
             inputDetectionTimer?.invalidate()
-            if let monitor = scrollMonitor {
-                NSEvent.removeMonitor(monitor)
-            }
         }
 
         /// Start periodic input detection and focus checking
@@ -236,23 +221,6 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
             // Notify parent if input detected
             if let result = parent.inputMonitor.alert(for: sessionId) {
                 parent.onInputDetected?(result)
-            }
-        }
-
-        func handleScrollEvent(_ event: NSEvent) {
-            guard let terminalView = terminalView else { return }
-
-            // Check if the event is within the terminal view's bounds
-            guard terminalView.window != nil else { return }
-            let locationInWindow = event.locationInWindow
-            let locationInView = terminalView.convert(locationInWindow, from: nil)
-
-            guard terminalView.bounds.contains(locationInView) else { return }
-
-            // First try to send mouse wheel events to the terminal app (e.g., tmux)
-            // If mouse reporting is not enabled, fall back to native scrollback
-            if !terminalView.handleMouseWheelEvent(event) {
-                terminalView.scrollWheel(with: event)
             }
         }
 

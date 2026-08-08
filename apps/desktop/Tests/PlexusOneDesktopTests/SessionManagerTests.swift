@@ -160,6 +160,32 @@ final class SessionManagerTests: XCTestCase {
         XCTAssertEqual(sessions[0].status, .running)
     }
 
+    func testParseSessionOutputIdStableAcrossRefreshes() {
+        let manager = SessionManager()
+        let now = Date()
+        let ts = Int(now.timeIntervalSince1970 - 10)
+
+        // Same session parsed on two separate refresh cycles (different activity
+        // timestamps, as tmux would report) must keep the same identity.
+        let first = manager.parseSessionOutput("my-session|\(ts)|1", referenceDate: now)
+        let second = manager.parseSessionOutput("my-session|\(ts + 5)|1", referenceDate: now)
+
+        XCTAssertEqual(first.count, 1)
+        XCTAssertEqual(second.count, 1)
+        XCTAssertEqual(first[0].id, second[0].id, "Session id must be stable across refreshes")
+    }
+
+    func testParseSessionOutputIdDiffersByName() {
+        let manager = SessionManager()
+        let now = Date()
+        let ts = Int(now.timeIntervalSince1970 - 10)
+
+        let sessions = manager.parseSessionOutput("alpha|\(ts)|1\nbeta|\(ts)|1", referenceDate: now)
+
+        XCTAssertEqual(sessions.count, 2)
+        XCTAssertNotEqual(sessions[0].id, sessions[1].id, "Different sessions must have distinct ids")
+    }
+
     func testParseSessionOutputMultipleSessions() {
         let manager = SessionManager()
         let now = Date()
