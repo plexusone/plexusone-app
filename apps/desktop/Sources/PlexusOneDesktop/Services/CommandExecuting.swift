@@ -20,10 +20,27 @@ struct ProcessCommandExecutor: CommandExecuting {
 
             do {
                 try process.run()
-                process.waitUntilExit()
 
-                let stdoutData = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
-                let stderrData = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+                // Drain both pipes concurrently with the process running. Reading
+                // only after waitUntilExit() deadlocks once combined output
+                // exceeds the pipe buffer (~64KB): the child blocks on write()
+                // with nothing reading, so it never exits.
+                var stdoutData = Data()
+                var stderrData = Data()
+                let readGroup = DispatchGroup()
+
+                readGroup.enter()
+                DispatchQueue.global(qos: .utility).async {
+                    stdoutData = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+                    readGroup.leave()
+                }
+                readGroup.enter()
+                DispatchQueue.global(qos: .utility).async {
+                    stderrData = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+                    readGroup.leave()
+                }
+                readGroup.wait()
+                process.waitUntilExit()
 
                 let result = CommandResult(
                     exitCode: process.terminationStatus,
