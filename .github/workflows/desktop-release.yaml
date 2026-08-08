@@ -97,7 +97,7 @@ jobs:
           hdiutil create -volname "${{ env.APP_NAME }}" -srcfolder "${{ env.APP_NAME }}.app" -ov -format UDZO "$DMG_NAME"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: PlexusOneDesktop-macos-${{ matrix.arch }}
           path: apps/desktop/PlexusOneDesktop-*.dmg
@@ -181,7 +181,7 @@ jobs:
           hdiutil create -volname "${{ env.APP_NAME }}" -srcfolder "${{ env.APP_NAME }}.app" -ov -format UDZO "$DMG_NAME"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: PlexusOneDesktop-macos-universal
           path: apps/desktop/PlexusOneDesktop-*.dmg
