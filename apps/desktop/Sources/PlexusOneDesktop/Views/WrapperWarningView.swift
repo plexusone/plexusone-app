@@ -24,8 +24,6 @@ struct WrapperWarningBanner: View {
     let onDismiss: () -> Void
     let onSuppress: () -> Void
 
-    private var primary: TerminalWrapper? { wrappers.first }
-
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
@@ -36,18 +34,19 @@ struct WrapperWarningBanner: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(headline)
                     .font(.system(size: 11, weight: .semibold))
-                if let primary {
+                ForEach(wrappers, id: \.self) { wrapper in
                     HStack(spacing: 6) {
                         Text("Fix:")
                             .font(.system(size: 11))
                             .foregroundColor(.secondary)
-                        Text(primary.remediation)
+                        Text(wrapper.remediation)
                             .font(.system(size: 11, design: .monospaced))
                             .textSelection(.enabled)
-                        Button("Copy") { copyToClipboard(primary.remediation) }
+                        Button("Copy") { copyToClipboard(wrapper.remediation) }
                             .font(.system(size: 10))
                             .buttonStyle(.borderless)
                     }
+                }
                 }
             }
 
