@@ -9,9 +9,9 @@
 ## Phase 1 — Scroll Integration Fixes
 
 **Theme:** Remove double-dispatch and smooth trackpad scrolling
-**Status:** In progress — 2 of 4 items completed
+**Status:** In progress — 3 of 4 items completed
 
-- [ ] `RMI-PLEXUSONEAPP-001` Remove double-dispatched scroll path (NSEvent monitor + custom wheel handler)
+- [x] `RMI-PLEXUSONEAPP-001` Remove double-dispatched scroll path (NSEvent monitor + custom wheel handler)
   - Delete the app-wide NSEvent.addLocalMonitorForEvents scroll monitor and Coordinator.handleScrollEvent in TerminalViewRepresentable.swift, the custom AppTerminalView.handleMouseWheelEvent, and the TerminalContainerView.scrollWheel forward. SwiftTerm's built-in scrollWheel already handles mouse reporting, alternate-screen conversion, and native scrollback; the current setup processes every wheel event twice and installs one app-wide monitor per pane.
 - [ ] `RMI-PLEXUSONEAPP-002` Fractional scroll-delta accumulation for trackpad smoothness
   - SwiftTerm's scrollWheel truncates event.deltaY to whole lines and drops small fractional trackpad deltas, causing steppy scrolling. Accumulate fractional deltas in the AppTerminalView subclass and emit line scrolls when the accumulator crosses a cell height. Consider upstreaming to SwiftTerm.
