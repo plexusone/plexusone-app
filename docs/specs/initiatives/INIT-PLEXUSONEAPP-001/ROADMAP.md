@@ -9,15 +9,15 @@
 ## Phase 1 — Scroll Integration Fixes
 
 **Theme:** Remove double-dispatch and smooth trackpad scrolling
-**Status:** Planned — 0 of 4 items completed
+**Status:** In progress — 2 of 4 items completed
 
 - [ ] `RMI-PLEXUSONEAPP-001` Remove double-dispatched scroll path (NSEvent monitor + custom wheel handler)
   - Delete the app-wide NSEvent.addLocalMonitorForEvents scroll monitor and Coordinator.handleScrollEvent in TerminalViewRepresentable.swift, the custom AppTerminalView.handleMouseWheelEvent, and the TerminalContainerView.scrollWheel forward. SwiftTerm's built-in scrollWheel already handles mouse reporting, alternate-screen conversion, and native scrollback; the current setup processes every wheel event twice and installs one app-wide monitor per pane.
 - [ ] `RMI-PLEXUSONEAPP-002` Fractional scroll-delta accumulation for trackpad smoothness
   - SwiftTerm's scrollWheel truncates event.deltaY to whole lines and drops small fractional trackpad deltas, causing steppy scrolling. Accumulate fractional deltas in the AppTerminalView subclass and emit line scrolls when the accumulator crosses a cell height. Consider upstreaming to SwiftTerm.
-- [ ] `RMI-PLEXUSONEAPP-003` Stable Session identity across 5s refresh cycles
+- [x] `RMI-PLEXUSONEAPP-003` Stable Session identity across 5s refresh cycles
   - SessionManager.parseSessionOutput mints a new UUID for every Session on every refresh, breaking SwiftUI ForEach identity and the session-picker checkmark, and forcing needless view rebuilds. Derive identity deterministically from the tmux session name.
-- [ ] `RMI-PLEXUSONEAPP-004` Pin SwiftTerm to a fixed revision instead of branch main
+- [x] `RMI-PLEXUSONEAPP-004` Pin SwiftTerm to a fixed revision instead of branch main
   - Package.swift tracks SwiftTerm branch main, an unpinned moving target whose perf characteristics can shift under us. Pin to a specific revision (currently b6ce28a) or tagged release.
 
 ## Phase 2 — Rendering & Measurement
