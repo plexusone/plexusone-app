@@ -12,7 +12,7 @@ let package = Package(
         .executable(name: "PlexusOneDesktop", targets: ["PlexusOneDesktop"])
     ],
     dependencies: [
-        .package(url: "https://github.com/migueldeicaza/SwiftTerm.git", revision: "b6ce28a4b222b06d76a3fd44e904e00a95044d53"),
+        .package(url: "https://github.com/migueldeicaza/SwiftTerm.git", exact: "1.16.0"),
         .package(url: "https://github.com/plexusone/assistantkit-swift.git", from: "0.1.0")
     ],
     targets: [
