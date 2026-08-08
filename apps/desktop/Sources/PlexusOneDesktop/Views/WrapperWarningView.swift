@@ -47,7 +47,6 @@ struct WrapperWarningBanner: View {
                             .buttonStyle(.borderless)
                     }
                 }
-                }
             }
 
             Spacer()
