@@ -1,5 +1,34 @@
 import Foundation
+import CryptoKit
 import AssistantKit
+
+extension UUID {
+    /// Fixed namespace for PlexusOne tmux-session identities (RFC 4122).
+    private static let tmuxSessionNamespace = UUID(uuidString: "b3f0e6a2-1c4d-5e6f-8a9b-0c1d2e3f4a5b")!
+
+    /// Derive a stable, deterministic UUID (version 5, RFC 4122) from a tmux
+    /// session name. The same name always yields the same UUID, so a session
+    /// keeps one identity across periodic refreshes instead of getting a fresh
+    /// random UUID each cycle (which would churn SwiftUI identity).
+    static func forTmuxSession(named name: String) -> UUID {
+        var hasher = Insecure.SHA1()
+        withUnsafeBytes(of: tmuxSessionNamespace.uuid) { hasher.update(bufferPointer: $0) }
+        hasher.update(data: Data(name.utf8))
+        var digest = Array(hasher.finalize()) // 20 bytes; use the first 16
+
+        // Set the version (5) and variant (RFC 4122) bits.
+        digest[6] = (digest[6] & 0x0F) | 0x50
+        digest[8] = (digest[8] & 0x3F) | 0x80
+
+        let bytes = (
+            digest[0], digest[1], digest[2], digest[3],
+            digest[4], digest[5], digest[6], digest[7],
+            digest[8], digest[9], digest[10], digest[11],
+            digest[12], digest[13], digest[14], digest[15]
+        )
+        return UUID(uuid: bytes)
+    }
+}
 
 /// Represents a tmux session that can be attached to a pane
 struct Session: Identifiable, Codable, Hashable {

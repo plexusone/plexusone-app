@@ -195,6 +195,7 @@ final class SessionManager {
             let status = determineStatus(lastActivity: lastActivity)
 
             let session = Session(
+                id: .forTmuxSession(named: name),
                 name: name,
                 tmuxSession: name,
                 status: status,
