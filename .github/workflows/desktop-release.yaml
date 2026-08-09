@@ -32,10 +32,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v3
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
         with:
-          swift-version: '5.9'
+          xcode-version: 'latest-stable'
 
       - name: Get version
         id: version
@@ -111,10 +111,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v3
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
         with:
-          swift-version: '5.9'
+          xcode-version: 'latest-stable'
 
       - name: Get version
         id: version
