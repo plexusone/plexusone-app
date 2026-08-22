@@ -51,12 +51,51 @@ class TerminalContainerView: NSView {
         return result
     }
 
+    /// Whether this pane already has focus, independent of any in-flight
+    /// event — used by both hitTest(_:) and mouseDown(with:) below.
+    private var isAlreadyFocused: Bool {
+        (window?.isKeyWindow == true) && (window?.firstResponder === terminalView)
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        // AppKit hit-tests every mouse event to the deepest subview under
+        // the cursor — terminalView fills this entire container, so a
+        // normal click routes DIRECTLY to SwiftTerm's own mouseDown,
+        // completely bypassing this view's mouseDown override below.
+        // acceptsFirstMouse doesn't help here either: it only governs
+        // clicks on an *inactive* window, not focus-switches between panes
+        // within an already-active one, which is what a multi-pane click
+        // actually is.
+        //
+        // So: while this pane does not have focus, claim the hit for
+        // OURSELVES (not the terminal subview) — this routes the click to
+        // our mouseDown override instead of SwiftTerm's, letting us consume
+        // it purely for focus. Once focused, hand hit-testing back to the
+        // normal subview chain so the terminal gets full interactivity
+        // (text selection, mouse reporting to the PTY, link clicks).
+        //
+        // This is what actually fixes: clicking an unfocused pane directly
+        // on a rendered Yes/No prompt option was reaching SwiftTerm's
+        // mouseDown, which reports the click position to the PTY
+        // (allowMouseReporting && terminal.mouseMode.sendButtonPress()),
+        // and the CLI interpreted it as selecting that option.
+        if !isAlreadyFocused {
+            return self
+        }
+        return super.hitTest(point)
+    }
+
     override func mouseDown(with event: NSEvent) {
-        // Ensure we become first responder on click
+        // hitTest(_:) above only routes a click here (to the container
+        // itself, instead of the terminal subview) when this pane does not
+        // already have focus. So every click that reaches this override is,
+        // by construction, a focus-switch click: consume it purely for
+        // focus and do NOT forward it into the terminal. Once focused,
+        // hitTest hands subsequent clicks directly to the terminal subview,
+        // bypassing this method entirely — normal text selection / mouse
+        // reporting is unaffected for a pane that already has focus.
         window?.makeFirstResponder(terminalView)
         postFocusChange(focused: true)
-        // Forward to terminal for text selection
-        terminalView.mouseDown(with: event)
     }
 
     override func keyDown(with event: NSEvent) {
