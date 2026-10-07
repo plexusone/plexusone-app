@@ -83,9 +83,7 @@ final class SessionManager {
             throw SessionManagerError.sessionAlreadyExists(sanitizedName)
         }
 
-        let shell = command ?? ProcessInfo.processInfo.environment["SHELL"] ?? "/bin/zsh"
-
-        let result = try await runTmux(["new-session", "-d", "-s", sanitizedName, shell])
+        let result = try await runTmux(Self.newSessionArguments(name: sanitizedName, command: command))
         if !result.success {
             throw SessionManagerError.createFailed(result.stderr)
         }
@@ -185,6 +183,19 @@ final class SessionManager {
         name.replacingOccurrences(of: ".", with: "-")
             .replacingOccurrences(of: ":", with: "-")
             .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Build tmux new-session arguments.
+    /// Without a command, tmux starts the user's default shell as a login shell,
+    /// so /etc/zprofile runs path_helper and PATH matches a login terminal such
+    /// as iTerm2 (an app launched from Finder only inherits launchd's minimal PATH).
+    /// Made internal (not private) for direct testing
+    static func newSessionArguments(name: String, command: String?) -> [String] {
+        var args = ["new-session", "-d", "-s", name]
+        if let command {
+            args.append(command)
+        }
+        return args
     }
 
     /// Parse tmux list-sessions output into Session objects

@@ -83,6 +83,23 @@ final class SessionManagerTests: XCTestCase {
         XCTAssertEqual(result, "valid-session-name")
     }
 
+    // MARK: - New Session Arguments Tests
+
+    func testNewSessionArgumentsWithoutCommandUsesLoginShell() {
+        // No shell argument: tmux then starts default-shell as a login shell
+        XCTAssertEqual(
+            SessionManager.newSessionArguments(name: "work", command: nil),
+            ["new-session", "-d", "-s", "work"]
+        )
+    }
+
+    func testNewSessionArgumentsWithCustomCommand() {
+        XCTAssertEqual(
+            SessionManager.newSessionArguments(name: "work", command: "claude"),
+            ["new-session", "-d", "-s", "work", "claude"]
+        )
+    }
+
     // MARK: - Determine Status Tests
 
     func testDetermineStatusRunning() {
