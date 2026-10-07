@@ -5,12 +5,12 @@ on:
     branches: [main]
     paths:
       - 'apps/desktop/**'
-      - '.github/workflows/desktop.yml'
+      - '.github/workflows/desktop.yaml'
   pull_request:
     branches: [main]
     paths:
       - 'apps/desktop/**'
-      - '.github/workflows/desktop.yml'
+      - '.github/workflows/desktop.yaml'
 
 jobs:
   swift-ci:
