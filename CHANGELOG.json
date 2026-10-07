@@ -4,6 +4,14 @@
   "repository": "https://github.com/plexusone/plexusone-app",
   "versioning": "semver",
   "commitConvention": "conventional",
+  "unreleased": {
+    "fixed": [
+      {
+        "description": "New tmux sessions now start the default shell as a login shell, so they get the same PATH as a login terminal such as iTerm2 (including /usr/local/bin and /etc/paths.d entries) instead of launchd's minimal PATH when the app is launched from Finder or the Dock",
+        "commit": "1a75908"
+      }
+    ]
+  },
   "releases": [
     {
       "version": "v0.5.0",
