@@ -30,23 +30,23 @@
         },
         {
           "description": "New tmux sessions now start the default shell as a login shell, so they get the same PATH as a login terminal such as iTerm2 (including /usr/local/bin and /etc/paths.d entries) instead of launchd's minimal PATH when the app is launched from Finder or the Dock",
-          "commit": "1a75908"
+          "commit": "53e93f1"
         }
       ],
       "build": [
         {
           "description": "Bumped SwiftTerm from 1.18.0 to 1.19.0 in apps/desktop, picking up macOS dictation and IME marked-text overlay improvements and a fix for terminal content hidden under the scroller after a font change",
-          "commit": "a192269"
+          "commit": "bf70176"
         }
       ],
       "infrastructure": [
         {
           "description": "Desktop CI path filters now match desktop.yaml, so changes to the workflow file itself trigger CI",
-          "commit": "98e0e61"
+          "commit": "6e3dbd8"
         },
         {
           "description": "Desktop release builds moved from the deprecated macos-14 runner to macos-26",
-          "commit": "c7d4f99"
+          "commit": "c39ffc4"
         }
       ]
     },
