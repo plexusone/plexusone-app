@@ -74,6 +74,17 @@ jobs:
             cp Sources/PlexusOneDesktop/Resources/AppIcon.icns "$APP_DIR/Contents/Resources/"
           fi
 
+      - name: Sign app bundle
+        working-directory: apps/desktop
+        run: |
+          # Ad-hoc signature over the whole bundle (Info.plist bound, resources
+          # sealed). Without it the bundle carries only the linker's automatic
+          # signature, which Gatekeeper reports as "damaged" on a quarantined
+          # download. Not notarized: first launch still goes through
+          # System Settings > Privacy & Security > Open Anyway.
+          codesign --force --sign - "${{ env.APP_NAME }}.app"
+          codesign --verify --strict --verbose=2 "${{ env.APP_NAME }}.app"
+
       - name: Create DMG
         working-directory: apps/desktop
         run: |
@@ -160,6 +171,13 @@ jobs:
           if [ -f "Sources/PlexusOneDesktop/Resources/AppIcon.icns" ]; then
             cp Sources/PlexusOneDesktop/Resources/AppIcon.icns "$APP_DIR/Contents/Resources/"
           fi
+
+      - name: Sign app bundle
+        working-directory: apps/desktop
+        run: |
+          # See the matching step in build-macos.
+          codesign --force --sign - "${{ env.APP_NAME }}.app"
+          codesign --verify --strict --verbose=2 "${{ env.APP_NAME }}.app"
 
       - name: Create DMG
         working-directory: apps/desktop
