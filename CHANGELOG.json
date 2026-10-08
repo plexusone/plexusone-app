@@ -7,6 +7,26 @@
   "unreleased": {},
   "releases": [
     {
+      "version": "v0.5.2",
+      "date": "2026-10-07",
+      "highlights": [
+        {
+          "description": "Release DMGs install again on macOS 15 - app bundles are now ad-hoc code-signed, so Gatekeeper offers the standard Open Anyway path instead of reporting the download as damaged"
+        }
+      ],
+      "infrastructure": [
+        {
+          "description": "Release workflow ad-hoc signs and verifies the app bundle in both build jobs before packaging the DMG; previously bundles carried only the linker's automatic signature, which Gatekeeper reported as \"damaged\" on quarantined downloads of the thin builds and as unverified for the universal build",
+          "commit": "5284935"
+        }
+      ],
+      "documentation": [
+        {
+          "description": "README install note explaining the first-launch Gatekeeper prompt for ad-hoc signed builds and the System Settings > Privacy & Security > Open Anyway step"
+        }
+      ]
+    },
+    {
       "version": "v0.5.1",
       "date": "2026-10-07",
       "highlights": [

@@ -45,6 +45,8 @@ Native macOS terminal multiplexer built with Swift and SwiftTerm.
 
 **Download:** [Releases](https://github.com/plexusone/plexusone-app/releases)
 
+**Install:** Open the `.dmg` and drag PlexusOne Desktop to Applications. Release builds are ad-hoc signed but not notarized, so on first launch macOS shows "Apple could not verify ... free of malware". Open **System Settings → Privacy & Security**, scroll to the message about PlexusOne Desktop, and click **Open Anyway**; the prompt does not recur. (Alternatively, from Terminal: `xattr -dr com.apple.quarantine "/Applications/PlexusOne Desktop.app"`.)
+
 **Build & Run:**
 ```bash
 cd apps/desktop
