@@ -13,6 +13,11 @@ updates:
       - "desktop"
     commit-message:
       prefix: "build(desktop)"
+    # SwiftTerm 1.99+ needs Swift 6.2 (Xcode 26); CI builds with Xcode 16.2.
+    # Remove once CI moves to Xcode 26.
+    ignore:
+      - dependency-name: "github.com/migueldeicaza/swiftterm"
+        versions: [">= 1.99.0"]
 
   # PlexusOne Mobile - Native iOS (Swift Package Manager)
   - package-ecosystem: "swift"
@@ -26,6 +31,11 @@ updates:
       - "ios"
     commit-message:
       prefix: "build(ios)"
+    # SwiftTerm 1.99+ needs Swift 6.2 (Xcode 26); CI builds with Xcode 16.2.
+    # Remove once CI moves to Xcode 26.
+    ignore:
+      - dependency-name: "github.com/migueldeicaza/swiftterm"
+        versions: [">= 1.99.0"]
 
   # PlexusOne Mobile - Flutter (pub)
   - package-ecosystem: "pub"
