@@ -7,6 +7,125 @@
   "unreleased": {},
   "releases": [
     {
+      "version": "v0.6.0",
+      "date": "2026-10-27",
+      "highlights": [
+        {
+          "description": "Claude Sessions window (Shift-Command-S) lists Claude Code sessions with their tmux session, subject, repositories, last activity, and how each one ended, and restores the ones you pick after a crash or restart"
+        },
+        {
+          "description": "Trackpad scrolls back through a session's history instead of stepping through Claude Code's past prompts"
+        },
+        {
+          "description": "Menu commands and multi-window restore work: New Session, Attach, Detach, and Next/Previous Pane act on the front window, and restoring several saved windows no longer hangs"
+        }
+      ],
+      "added": [
+        {
+          "description": "Claude Sessions window listing Claude Code sessions with session ID, tmux session, subject, first and last prompts, repositories (as github.com/org/repo), branch, and last activity, filterable by time, state, and search",
+          "commit": "5416e52"
+        },
+        {
+          "description": "Session end states: running, exited normally, tmux/terminal closed, system shutdown, crashed/killed, ended cleanly, ended abnormally, and unknown, from Claude Code's live-process and shutdown records, the last boot time, and what the app observes",
+          "commit": "5416e52"
+        },
+        {
+          "description": "Resume one or several sessions into tmux sessions you name; restored sessions open together in one window, with a banner offering to restore sessions that ended abnormally in the last 48 hours",
+          "commit": "5416e52"
+        },
+        {
+          "description": "Attach to Session sheet (Option-Command-A) and working Detach (Shift-Command-A), Next Pane (Command-]), and Previous Pane (Command-[) commands",
+          "commit": "b4c5e0a"
+        },
+        {
+          "description": "Setting to turn off tmux mouse mode for attached sessions",
+          "commit": "342af05"
+        }
+      ],
+      "fixed": [
+        {
+          "description": "Trackpad scrolling sent Up/Down keys, which step through Claude Code's prompt history; attaching a pane now turns on tmux mouse mode for that session so the wheel scrolls tmux history",
+          "commit": "342af05"
+        },
+        {
+          "description": "Restoring two or more saved windows hung the app",
+          "commit": "b4c5e0a"
+        },
+        {
+          "description": "New Window and Pop Out opened one window per window already open",
+          "commit": "b4c5e0a"
+        },
+        {
+          "description": "New Session, Attach, Detach, and Next/Previous Pane menu commands did nothing, and Command-A was assigned to both Attach and Select All",
+          "commit": "b4c5e0a"
+        },
+        {
+          "description": "Pane headers and the status bar kept the session status from when the pane was attached",
+          "commit": "76520b7"
+        },
+        {
+          "description": "The input-needed badge stayed after the prompt was answered, and notifications repeated on every redraw while a prompt was visible",
+          "commit": "76520b7"
+        },
+        {
+          "description": "Scrolling an unfocused pane did nothing, and typing did not scroll a pane back to its latest output",
+          "commit": "76520b7"
+        },
+        {
+          "description": "Switching or detaching a pane left the tmux client as a zombie process",
+          "commit": "76520b7"
+        },
+        {
+          "description": "Session list updates could run off the main thread while SwiftUI read them, and tmux calls blocked threads in Swift's shared async pool",
+          "commit": "c369286"
+        },
+        {
+          "description": "tmux session names containing \"|\" were parsed incorrectly, and blank session names reached tmux",
+          "commit": "f3e3f28"
+        }
+      ],
+      "build": [
+        {
+          "description": "SwiftTerm updated from 1.19.0 to 1.20.0 for the desktop and iOS apps; 1.99 requires Xcode 26, so Dependabot skips it until CI moves to Xcode 26",
+          "commit": "f3c852f"
+        }
+      ],
+      "infrastructure": [
+        {
+          "description": "Release workflow uses docs/releases/v<version>.md as the GitHub release body, followed by the generated notes",
+          "commit": "1496f54"
+        },
+        {
+          "description": "Info.plist version 0.6.0",
+          "commit": "c5f3d1a"
+        }
+      ],
+      "tests": [
+        {
+          "description": "Tests for transcript summaries, tmux target parsing, remote URL normalization, session end-state classification and observation, live-record verification, and restore commands",
+          "commit": "9de97aa"
+        }
+      ],
+      "documentation": [
+        {
+          "description": "Claude Sessions guide and new keyboard shortcuts",
+          "commit": "f4f4be4"
+        },
+        {
+          "description": "Docs organized into docs/guides, docs/design (architecture and decision records), docs/specs, and docs/releases",
+          "commit": "d0190a7"
+        },
+        {
+          "description": "Architecture decision records for session end detection and tmux mouse mode",
+          "commit": "4817013"
+        },
+        {
+          "description": "README describes the Claude Sessions window and lists related projects",
+          "commit": "f10b6e5"
+        }
+      ]
+    },
+    {
       "version": "v0.5.2",
       "date": "2026-10-07",
       "highlights": [
