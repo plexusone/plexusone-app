@@ -77,6 +77,9 @@ final class SessionManager {
     /// Create a new tmux session
     func createSession(name: String, command: String? = nil) async throws -> Session {
         let sanitizedName = sanitizeSessionName(name)
+        guard !sanitizedName.isEmpty else {
+            throw SessionManagerError.invalidSessionName(name)
+        }
 
         // Check if session already exists
         if sessions.contains(where: { $0.tmuxSession == sanitizedName }) {
@@ -111,6 +114,9 @@ final class SessionManager {
     /// Rename a tmux session
     func renameSession(_ session: Session, to newName: String) async throws {
         let sanitizedName = sanitizeSessionName(newName)
+        guard !sanitizedName.isEmpty else {
+            throw SessionManagerError.invalidSessionName(newName)
+        }
         let result = try await runTmux(["rename-session", "-t", session.tmuxSession, sanitizedName])
         if !result.success {
             throw SessionManagerError.renameFailed(result.stderr)
@@ -128,6 +134,8 @@ final class SessionManager {
 
     private func startPeriodicRefresh() {
         refreshTask = Task { [weak self] in
+            // Re-check self each pass so the loop ends once the manager is
+            // released (a main-actor deinit can't cancel this task).
             while !Task.isCancelled {
                 guard let self else { return }
                 await self.refresh()
@@ -136,19 +144,8 @@ final class SessionManager {
             }
         }
     }
-            // Re-check self each pass so the loop ends once the manager is
-            // released (a main-actor deinit can't cancel this task).
 
     private func listTmuxSessions() async throws -> [Session] {
-        // Check if tmux server is running
-        let hasServer = try await runTmux(["list-sessions", "-F", ""])
-        if !hasServer.success {
-            // No server running = no sessions
-            if hasServer.stderr.contains("no server running") {
-                return []
-            }
-        }
-
         // Get session info: name|activity_timestamp|attached_count
         let result = try await runTmux([
             "list-sessions",
@@ -216,9 +213,11 @@ final class SessionManager {
             let parts = line.split(separator: "|", omittingEmptySubsequences: false)
             guard parts.count >= 3 else { continue }
 
-            let name = String(parts[0])
-            let activityTimestamp = TimeInterval(parts[1]) ?? referenceDate.timeIntervalSince1970
-            // parts[2] contains attached count - available for future use if needed
+            // The last two fields are numeric, so take them from the right;
+            // everything before them is the name, which may itself contain "|".
+            let name = parts.dropLast(2).joined(separator: "|")
+            let activityTimestamp = TimeInterval(parts[parts.count - 2]) ?? referenceDate.timeIntervalSince1970
+            // The last field contains attached count - available for future use if needed
 
             let lastActivity = Date(timeIntervalSince1970: activityTimestamp)
             let status = determineStatus(lastActivity: lastActivity)
@@ -266,6 +265,7 @@ enum SessionManagerError: Error, LocalizedError, Equatable {
     case killFailed(String)
     case renameFailed(String)
     case sessionAlreadyExists(String)
+    case invalidSessionName(String)
     case sessionNotFound(String)
     case commandFailed(String)
     case unknown(String)
@@ -284,6 +284,8 @@ enum SessionManagerError: Error, LocalizedError, Equatable {
             return "Failed to rename session: \(msg)"
         case .sessionAlreadyExists(let name):
             return "Session '\(name)' already exists"
+        case .invalidSessionName(let name):
+            return "Invalid session name: '\(name)'"
         case .sessionNotFound(let name):
             return "Session '\(name)' not found"
         case .commandFailed(let msg):

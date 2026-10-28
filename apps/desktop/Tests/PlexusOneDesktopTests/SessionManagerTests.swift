@@ -291,6 +291,49 @@ final class SessionManagerTests: XCTestCase {
         XCTAssertEqual(sessions.count, 1)
     }
 
+    func testParseSessionOutputNameContainingSeparator() {
+        let manager = SessionManager()
+        let now = Date()
+        let timestamp = Int(now.timeIntervalSince1970) - 10
+
+        let sessions = manager.parseSessionOutput("a|b|\(timestamp)|1", referenceDate: now)
+
+        XCTAssertEqual(sessions.count, 1)
+        XCTAssertEqual(sessions[0].name, "a|b")
+        XCTAssertEqual(sessions[0].status, .running)
+    }
+
+    func testCreateSessionRejectsBlankName() async {
+        let mockExecutor = MockCommandExecutor()
+        let manager = SessionManager(
+            commandExecutor: mockExecutor,
+            tmuxPaths: ["/opt/homebrew/bin/tmux"]
+        )
+
+        do {
+            _ = try await manager.createSession(name: "   ")
+            XCTFail("Expected invalidSessionName error")
+        } catch let error as SessionManagerError {
+            XCTAssertEqual(error, .invalidSessionName("   "))
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+        XCTAssertEqual(mockExecutor.tmuxExecutionCount(subcommand: "new-session"), 0)
+    }
+
+    func testRefreshListsSessionsOnce() async {
+        let mockExecutor = MockCommandExecutor()
+        mockExecutor.stubListSessions("session-1|\(Int(Date().timeIntervalSince1970))|1")
+        let manager = SessionManager(
+            commandExecutor: mockExecutor,
+            tmuxPaths: ["/opt/homebrew/bin/tmux"]
+        )
+
+        await manager.refresh()
+
+        XCTAssertEqual(mockExecutor.tmuxExecutionCount(subcommand: "list-sessions"), 1)
+    }
+
     // MARK: - Integration Tests with Mock
 
     // MARK: - TmuxEnvironment Tests
