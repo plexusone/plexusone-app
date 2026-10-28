@@ -7,6 +7,10 @@ class AppTerminalView: LocalProcessTerminalView {
     private var lastAppliedSize: CGSize = .zero
     private var currentSessionId: UUID?
 
+    /// The grid pane this terminal belongs to, so window-level commands
+    /// (next/previous pane, detach) can find the focused pane.
+    var paneId: Int?
+
     override func layout() {
         super.layout()
         updateSizeIfNeeded()
@@ -34,6 +38,12 @@ class AppTerminalView: LocalProcessTerminalView {
         }
     }
 
+    /// Called for all user input headed to the PTY (typing, paste, and so on).
+    /// Jump to the latest output so the user isn't left looking at scrollback.
+    override func send(source: TerminalView, data: ArraySlice<UInt8>) {
+        scrollToBottom()
+        super.send(source: source, data: data)
+    }
 
     // MARK: - Session Management
 
@@ -49,7 +59,7 @@ class AppTerminalView: LocalProcessTerminalView {
         // Terminate any existing process before attaching to a new session
         // This prevents the old tmux attach from continuing to run
         if isSessionAttached {
-            terminate()
+            terminateClient()
         }
 
         currentSessionId = session.id
@@ -69,7 +79,24 @@ class AppTerminalView: LocalProcessTerminalView {
     func detach() {
         // Terminate the tmux attach process
         // The tmux session itself continues running in background
-        terminate()
+        terminateClient()
         currentSessionId = nil
+    }
+
+    /// Stop the `tmux attach` client and reap it.
+    ///
+    /// SwiftTerm's `terminate()` sends SIGTERM but also stops watching the
+    /// child, so nothing calls waitpid() and the client would linger as a
+    /// zombie process until the app quits.
+    private func terminateClient() {
+        let pid = process.running ? process.shellPid : 0
+        terminate()
+        guard pid > 0 else { return }
+        DispatchQueue.global(qos: .utility).async {
+            var status: Int32 = 0
+            // Retry if a signal interrupts the wait; any other failure means
+            // the child is already gone and there is nothing to reap.
+            while waitpid(pid, &status, 0) == -1 && errno == EINTR {}
+        }
     }
 }

@@ -290,12 +290,18 @@ struct GridStatusBarView: View {
     let gridConfig: GridConfig
     let onCreateNew: () -> Void
 
+    /// The pane's session as of the latest refresh, so status stays current.
+    private func liveSession(for paneId: Int) -> Session? {
+        guard let attached = paneManager.session(for: paneId) else { return nil }
+        return sessions.first { $0.id == attached.id } ?? attached
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             // Pane indicators
             HStack(spacing: 8) {
                 ForEach(1...gridConfig.paneCount, id: \.self) { paneId in
-                    if let session = paneManager.session(for: paneId) {
+                    if let session = liveSession(for: paneId) {
                         HStack(spacing: 4) {
                             Text("#\(paneId)")
                                 .font(.system(size: 9))

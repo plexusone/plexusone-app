@@ -98,12 +98,11 @@ class TerminalContainerView: NSView {
         postFocusChange(focused: true)
     }
 
-    override func keyDown(with event: NSEvent) {
-        // When user types, ensure we're showing the latest output
-        // This prevents "stuck in scrollback" issues where old content is visible
-        terminalView.scrollToBottom()
-        // Forward to terminal for processing
-        terminalView.keyDown(with: event)
+    override func scrollWheel(with event: NSEvent) {
+        // hitTest(_:) routes events here while the pane is unfocused. Scrolling
+        // can't select anything, so pass it on rather than letting it climb
+        // the responder chain and get lost.
+        terminalView.scrollWheel(with: event)
     }
 
     /// Check if this terminal has focus and notify if changed
@@ -135,14 +134,17 @@ class TerminalContainerView: NSView {
 struct AppTerminalViewRepresentable: NSViewRepresentable {
     typealias NSViewType = TerminalContainerView
 
+    let paneId: Int
     @Binding var attachedSession: Session?
     let sessionManager: SessionManager
     let inputMonitor: InputMonitor
     var onSessionEnded: (() -> Void)?
-    var onInputDetected: ((DetectionResult) -> Void)?
+    /// Called with the current prompt, or nil once it is gone.
+    var onInputChanged: ((DetectionResult?) -> Void)?
 
     func makeNSView(context: Context) -> TerminalContainerView {
         let terminalView = AppTerminalView(frame: .zero)
+        terminalView.paneId = paneId
         terminalView.processDelegate = context.coordinator
         context.coordinator.terminalView = terminalView
 
@@ -160,6 +162,8 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
 
     func updateNSView(_ container: TerminalContainerView, context: Context) {
         let view = container.terminalView
+        context.coordinator.parent = self
+        view.paneId = paneId
 
         // Ensure layout is current
         view.updateSizeIfNeeded()
@@ -257,10 +261,9 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
                 cursorPosition: cursorPosition
             )
 
-            // Notify parent if input detected
-            if let result = parent.inputMonitor.alert(for: sessionId) {
-                parent.onInputDetected?(result)
-            }
+            // Report the current state, including "no prompt", so the
+            // pane's badge clears once the prompt is answered.
+            parent.onInputChanged?(parent.inputMonitor.alert(for: sessionId))
         }
 
         // MARK: - LocalProcessTerminalViewDelegate
@@ -297,15 +300,15 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
         private func extractRecentContent(from terminalView: AppTerminalView, lineCount: Int) -> String {
             guard let terminal = terminalView.terminal else { return "" }
 
-            let dims = terminal.getDims()
-            let topVisible = terminal.getTopVisibleRow()
-            let totalRows = topVisible + dims.rows
+            // getLine(row:) counts rows from the top of the visible screen,
+            // not from the start of the scrollback buffer.
+            let screenRows = terminal.getDims().rows
 
             // Get the last N visible lines
-            let startRow = max(0, totalRows - lineCount)
+            let startRow = max(0, screenRows - lineCount)
             var lines: [String] = []
 
-            for row in startRow..<totalRows {
+            for row in startRow..<screenRows {
                 if let line = terminal.getLine(row: row) {
                     lines.append(line.translateToString(trimRight: true))
                 }

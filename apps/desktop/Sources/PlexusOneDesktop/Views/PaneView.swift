@@ -14,13 +14,20 @@ struct PaneView: View {
     @State private var currentInputAlert: DetectionResult?
     @State private var isFocused = false
 
+    /// The attached session as of the latest refresh. The binding holds a
+    /// copy taken at attach time, so its status and wrapper go stale.
+    private var liveSession: Session? {
+        guard let attached = attachedSession else { return nil }
+        return sessions.first { $0.id == attached.id } ?? attached
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Compact header with session dropdown
             PaneHeaderView(
                 paneId: paneId,
                 sessions: sessions,
-                currentSession: attachedSession,
+                currentSession: liveSession,
                 isFocused: isFocused,
                 onSelectSession: { session in
                     attachedSession = session
@@ -45,14 +52,18 @@ struct PaneView: View {
             if attachedSession != nil {
                 ZStack(alignment: .topTrailing) {
                     AppTerminalViewRepresentable(
+                        paneId: paneId,
                         attachedSession: $attachedSession,
                         sessionManager: sessionManager,
                         inputMonitor: inputMonitor,
                         onSessionEnded: {
                             attachedSession = nil
                         },
-                        onInputDetected: { result in
-                            currentInputAlert = result
+                        onInputChanged: { result in
+                            if result?.pattern.type != currentInputAlert?.pattern.type
+                                || result?.matchedText != currentInputAlert?.matchedText {
+                                currentInputAlert = result
+                            }
                         }
                     )
 

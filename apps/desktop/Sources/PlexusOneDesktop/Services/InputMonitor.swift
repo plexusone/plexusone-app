@@ -67,12 +67,18 @@ final class InputMonitor {
                 // Check confidence threshold
                 guard result.confidence >= confidenceThreshold else { continue }
 
+                // Notify only when a prompt first appears (or its kind changes),
+                // not on every redraw while the same prompt stays on screen.
+                let previous = activeAlerts[sessionId]
+                let isNewPrompt = previous == nil || previous?.pattern.type != result.pattern.type
+
                 // Update state
                 activeAlerts[sessionId] = result
                 activeSuggestedActions[sessionId] = result.suggestedActions
 
-                // Notify
-                notifyInputDetected(sessionId: sessionId, result: result)
+                if isNewPrompt {
+                    notifyInputDetected(sessionId: sessionId, result: result)
+                }
                 return
             }
         }
@@ -147,9 +153,14 @@ final class InputMonitor {
         }
     }
 
+    /// UNUserNotificationCenter raises an exception when the process has no
+    /// app bundle (tests, or running `.build/debug/PlexusOneDesktop` directly).
+    private var canUseNotificationCenter: Bool {
+        NSApp != nil && Bundle.main.bundleIdentifier != nil
+    }
+
     private func requestNotificationPermission() {
-        // Guard against test environments where UNUserNotificationCenter might crash
-        guard NSApp != nil else { return }
+        guard canUseNotificationCenter else { return }
 
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in
             // Permission result handled silently
@@ -157,8 +168,7 @@ final class InputMonitor {
     }
 
     private func sendSystemNotification(result: DetectionResult) {
-        // Guard against test environments
-        guard NSApp != nil else { return }
+        guard canUseNotificationCenter else { return }
 
         let content = UNMutableNotificationContent()
         content.title = "Input Required"
