@@ -127,6 +127,23 @@ Debug console: http://localhost:9600
                          └──────────────────┘
 ```
 
+## Related Projects
+
+Other tools for running several coding agents side by side:
+
+| Project | Built with | Focus |
+|---------|------------|-------|
+| [cmux](https://github.com/manaflow-ai/cmux) | Swift, Ghostty-based macOS terminal | Vertical tabs and notifications for AI coding agents |
+| [Agent Deck](https://github.com/asheshgoplani/agent-deck) | Go, terminal UI | One session manager for Claude, Gemini, OpenCode, Codex, and others |
+| [workmux](https://github.com/raine/workmux) | Rust, tmux | Git worktrees paired with tmux windows for parallel development |
+| [herdr](https://github.com/herdrdev/herdr) | Rust | A background server keeps agent terminals running; after a restart it restores the layout and resumes supported agent sessions |
+| [Agent of Empires](https://github.com/agent-of-empires/agent-of-empires) | Rust, terminal and web UI | Managing several agents from a terminal UI or a browser, including on mobile |
+| [dmux](https://github.com/standardagents/dmux) | tmux | Git worktrees and parallel agent tasks |
+
+PlexusOne keeps your existing tmux sessions as the backend: a native macOS
+grid of SwiftTerm panes, a mobile companion over WebSocket, and a Claude
+Sessions window that finds and restores sessions lost to a crash or restart.
+
 ## Documentation
 
 - [Changelog](CHANGELOG.md)
