@@ -16,6 +16,10 @@ Keyboard shortcuts for efficient navigation and control.
 | Shortcut | Action |
 |----------|--------|
 | `⌘ ⇧ N` | New window |
+| `⌘ ⇧ S` | Claude Sessions window |
+| `⌥ ⌘ A` | Attach a session to the focused pane |
+| `⌘ ⇧ A` | Detach the focused pane |
+| `⌘ ]` / `⌘ [` | Next / previous pane |
 | `⌘ M` | Minimize window |
 | `⌘ W` | Close window |
 | `⌘ 1-9` | Switch to pane 1-9 (planned) |

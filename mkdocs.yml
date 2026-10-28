@@ -58,6 +58,7 @@ nav:
       - Grid Layout: guide/desktop/grid-layout.md
       - Session Management: guide/desktop/sessions.md
       - Multi-Window: guide/desktop/multi-window.md
+      - Claude Sessions: guide/desktop/claude-sessions.md
       - Keyboard Shortcuts: guide/desktop/shortcuts.md
     - Mobile Apps:
       - Overview: guide/mobile/overview.md
