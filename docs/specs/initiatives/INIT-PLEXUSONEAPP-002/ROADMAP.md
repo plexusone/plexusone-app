@@ -13,9 +13,10 @@
 ## Phase 2 — Installable Releases
 **Theme:** A fix that ships but cannot be installed is not released
 
-- [ ] `RMI-PLEXUSONEAPP-010` Ad-hoc code-sign release app bundles before packaging
+- [x] `RMI-PLEXUSONEAPP-010` Ad-hoc code-sign release app bundles before packaging
   - The release workflow copied the binary and Info.plist into a bundle and never ran `codesign`, so artifacts carried only the linker's automatic signature. On a quarantined download Gatekeeper reports the thin builds as "damaged" (invalid signature, no escape hatch) and the universal build as unverified. Sign the whole bundle ad-hoc in both build jobs and verify it, so every artifact gets the standard "Open Anyway" path.
-  - Acceptance: a freshly downloaded v0.5.2 DMG installs and opens via System Settings > Privacy & Security > Open Anyway on macOS 15 for all three artifacts; none reports "damaged".
+  - Delivered in v0.5.2: a `Sign app bundle` step (`codesign --force --sign -` plus `codesign --verify --strict`) runs between `Create app bundle` and `Create DMG` in both build jobs. The shipped arm64 bundle inspects as `flags=adhoc` with Info.plist bound and sealed resources present; the universal build matches.
+  - Acceptance: a freshly downloaded v0.5.2 DMG installs and opens via System Settings > Privacy & Security > Open Anyway on macOS 15 for all three artifacts; none reports "damaged". Verified on the arm64 artifact on macOS 15.4.1.
 - [ ] `RMI-PLEXUSONEAPP-011` Developer ID signing and notarization
   - Sign with a Developer ID Application certificate from repository secrets (`--options runtime --timestamp`), submit the DMG with `xcrun notarytool submit --wait`, and staple the ticket, so first launch needs no Gatekeeper prompt. Requires an Apple Developer Program membership.
   - Depends on: `RMI-PLEXUSONEAPP-010`
