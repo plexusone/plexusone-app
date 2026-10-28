@@ -112,6 +112,10 @@
           "commit": "f4f4be4"
         },
         {
+          "description": "Maintainers guide covering CI, dependencies, and the release process, including a trial run of the release build before tagging",
+          "commit": "89a3d73"
+        },
+        {
           "description": "Docs organized into docs/guides, docs/design (architecture and decision records), docs/specs, and docs/releases",
           "commit": "d0190a7"
         },
