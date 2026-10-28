@@ -59,6 +59,13 @@ Since PlexusOne Desktop attaches to tmux sessions, tmux shortcuts work:
 | `⌘ ↑` | Scroll to top |
 | `⌘ ↓` | Scroll to bottom |
 
+!!! note "Scrolling inside tmux"
+    PlexusOne Desktop turns on tmux mouse mode for each session it attaches,
+    so the trackpad scrolls back through the session's history. In Claude
+    Code, use `↑` and `↓` to step through past prompts. Hold `Shift` while
+    dragging to select text normally. To keep your own tmux mouse setting,
+    turn off **Settings > Sessions > Trackpad scrolls conversation history**.
+
 ## Planned Shortcuts
 
 Future versions will add:

@@ -291,6 +291,17 @@ final class SessionManagerTests: XCTestCase {
         XCTAssertEqual(sessions.count, 1)
     }
 
+    func testMouseOptionArguments() {
+        XCTAssertEqual(
+            TmuxEnvironment.mouseOptionArguments(session: "work", enabled: true),
+            ["set-option", "-t", "=work:", "mouse", "on"]
+        )
+        XCTAssertEqual(
+            TmuxEnvironment.mouseOptionArguments(session: "work", enabled: false),
+            ["set-option", "-u", "-t", "=work:", "mouse"]
+        )
+    }
+
     func testParseSessionOutputNameContainingSeparator() {
         let manager = SessionManager()
         let now = Date()

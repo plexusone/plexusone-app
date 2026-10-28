@@ -69,6 +69,7 @@ struct SessionSettingsView: View {
     @AppStorage("idleThresholdSeconds") private var idleThreshold: Double = 30
     @AppStorage("stuckThresholdSeconds") private var stuckThreshold: Double = 120
     @AppStorage("defaultShell") private var defaultShell = "/bin/zsh"
+    @AppStorage(TmuxEnvironment.mouseScrollingKey) private var mouseScrolling = true
 
     var body: some View {
         Form {
@@ -90,6 +91,11 @@ struct SessionSettingsView: View {
 
             TextField("Default Shell:", text: $defaultShell)
                 .textFieldStyle(.roundedBorder)
+
+            Toggle("Trackpad scrolls conversation history", isOn: $mouseScrolling)
+            Text("Turns on tmux mouse mode for sessions shown here. Hold Shift to drag-select text. When off, the session uses your own tmux setting. Applies the next time a session is attached.")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
         .padding()
     }

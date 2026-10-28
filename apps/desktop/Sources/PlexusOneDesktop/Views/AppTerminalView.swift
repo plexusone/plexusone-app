@@ -67,6 +67,7 @@ class AppTerminalView: LocalProcessTerminalView {
         let (tmuxPath, baseArgs) = TmuxEnvironment.findExecutable()
         let args = baseArgs + ["attach", "-t", session.tmuxSession]
         let envArray = TmuxEnvironment.terminalEnvironmentArray()
+        applyMouseOption(session: session.tmuxSession)
 
         startProcess(
             executable: tmuxPath,
@@ -81,6 +82,27 @@ class AppTerminalView: LocalProcessTerminalView {
         // The tmux session itself continues running in background
         terminateClient()
         currentSessionId = nil
+    }
+
+    /// Set the session's tmux mouse mode per the user's setting. tmux applies
+    /// it to the attached client as soon as it changes, so this need not
+    /// finish before the client starts.
+    private func applyMouseOption(session: String) {
+        let (tmuxPath, baseArgs) = TmuxEnvironment.findExecutable()
+        let args = baseArgs + TmuxEnvironment.mouseOptionArguments(
+            session: session,
+            enabled: TmuxEnvironment.mouseScrollingEnabled
+        )
+        Task.detached {
+            do {
+                let result = try await ProcessCommandExecutor().execute(tmuxPath, arguments: args)
+                if !result.success {
+                    NSLog("PlexusOne: tmux mouse option for %@ failed: %@", session, result.stderr)
+                }
+            } catch {
+                NSLog("PlexusOne: tmux mouse option for %@ failed: %@", session, error.localizedDescription)
+            }
+        }
     }
 
     /// Stop the `tmux attach` client and reap it.

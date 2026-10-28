@@ -35,6 +35,29 @@ enum TmuxEnvironment {
         searchPaths.first { FileManager.default.fileExists(atPath: $0) }
     }
 
+    /// UserDefaults key: whether attached sessions get tmux mouse mode, so
+    /// the trackpad scrolls tmux history instead of sending arrow keys.
+    static let mouseScrollingKey = "tmuxMouseScrolling"
+
+    /// Whether mouse scrolling is enabled (default on).
+    static var mouseScrollingEnabled: Bool {
+        UserDefaults.standard.object(forKey: mouseScrollingKey) as? Bool ?? true
+    }
+
+    /// Arguments that turn mouse mode on for one tmux session, or remove the
+    /// session's own value so the user's global setting applies again.
+    /// set-option takes a pane target, so "=name:" matches the session
+    /// name exactly (plain "=name" is rejected).
+    ///
+    /// Without mouse mode tmux keeps the terminal on its alternate screen,
+    /// where the wheel becomes Up/Down keys: in Claude Code those step
+    /// through past prompts instead of scrolling the conversation.
+    static func mouseOptionArguments(session: String, enabled: Bool) -> [String] {
+        enabled
+            ? ["set-option", "-t", "=\(session):", "mouse", "on"]
+            : ["set-option", "-u", "-t", "=\(session):", "mouse"]
+    }
+
     /// Environment variables for terminal processes.
     /// Sets TERM and LANG for proper terminal compatibility.
     static func terminalEnvironment() -> [String: String] {
