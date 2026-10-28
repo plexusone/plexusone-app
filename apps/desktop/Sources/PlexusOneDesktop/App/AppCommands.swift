@@ -32,6 +32,7 @@ struct AppCommands: Commands {
                 .disabled(actions == nil)
 
             NewWindowButton()
+            ClaudeSessionsButton()
 
             Divider()
 
@@ -83,3 +84,12 @@ private struct NewWindowButton: View {
     }
 }
 
+/// Opens the Claude Sessions window.
+private struct ClaudeSessionsButton: View {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button("Claude Sessions...") { openWindow(id: ClaudeSessionsView.windowId) }
+            .keyboardShortcut("s", modifiers: [.command, .shift])
+    }
+}

@@ -14,11 +14,17 @@ final class AppState {
     /// Input monitor for detecting AI assistant input prompts
     let inputMonitor: InputMonitor
 
+    /// Claude Code sessions: list, tmux location, and how each ended
+    let claudeSessions: ClaudeSessionCatalog
+
     /// Whether the app has completed initial setup
     private(set) var isInitialized = false
 
     /// Pending session to attach in a new pop-out window
     var pendingPopOutSession: Session?
+
+    /// Sessions to attach in a new window, laid out in a grid that fits them
+    var pendingRestoreSessions: [Session] = []
 
     /// Create AppState with injectable dependencies
     /// - Parameters:
@@ -28,11 +34,13 @@ final class AppState {
     init(
         sessionManager: SessionManager = SessionManager(),
         windowStateManager: WindowStateManager = WindowStateManager(),
-        inputMonitor: InputMonitor = InputMonitor()
+        inputMonitor: InputMonitor = InputMonitor(),
+        claudeSessions: ClaudeSessionCatalog = ClaudeSessionCatalog()
     ) {
         self.sessionManager = sessionManager
         self.windowStateManager = windowStateManager
         self.inputMonitor = inputMonitor
+        self.claudeSessions = claudeSessions
     }
 
     /// Start monitoring sessions (call once at app launch)
@@ -49,6 +57,7 @@ final class AppState {
 
         // Start periodic monitoring
         sessionManager.startMonitoring()
+        claudeSessions.startMonitoring()
 
         isInitialized = true
     }

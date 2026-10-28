@@ -104,6 +104,11 @@ struct ContentView: View {
                     }
                     .help("New Session (⌘N)")
 
+                    Button(action: { openWindow(id: ClaudeSessionsView.windowId) }) {
+                        Image(systemName: "list.bullet.rectangle")
+                    }
+                    .help("Claude Sessions (⇧⌘S)")
+
                     // Refresh button
                     Button(action: { Task { await sessionManager.refresh() } }) {
                         Image(systemName: "arrow.clockwise")
@@ -189,6 +194,14 @@ struct ContentView: View {
 
         guard windowId == nil else { return }
 
+        // Sessions restored from the Claude Sessions window
+        if !appState.pendingRestoreSessions.isEmpty {
+            let restored = appState.pendingRestoreSessions
+            appState.pendingRestoreSessions = []
+            setupAsRestoreWindow(with: restored)
+            return
+        }
+
         // Check for pending pop-out session first
         if let popOutSession = appState.pendingPopOutSession {
             appState.pendingPopOutSession = nil
@@ -227,6 +240,15 @@ struct ContentView: View {
             paneAttachments: ["1": session.tmuxSession]
         )
         registerWindow(config: popOutConfig)
+    }
+
+    private func setupAsRestoreWindow(with sessions: [Session]) {
+        let grid = GridConfig.fitting(sessions.count)
+        var attachments: [String: String] = [:]
+        for (index, session) in sessions.prefix(grid.paneCount).enumerated() {
+            attachments[String(index + 1)] = session.tmuxSession
+        }
+        registerWindow(config: WindowConfig(gridConfig: grid, paneAttachments: attachments))
     }
 
     private func registerWindow(config: WindowConfig? = nil) {

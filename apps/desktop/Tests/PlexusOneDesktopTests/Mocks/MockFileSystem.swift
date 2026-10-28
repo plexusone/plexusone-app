@@ -2,7 +2,7 @@ import Foundation
 @testable import PlexusOneDesktop
 
 /// In-memory mock implementation of FileSystemAccessing for testing
-final class MockFileSystem: FileSystemAccessing {
+final class MockFileSystem: FileSystemAccessing, @unchecked Sendable {
     /// In-memory file storage
     private var files: [String: Data] = [:]
 

@@ -17,6 +17,12 @@ struct PlexusOneDesktopApp: App {
             AppCommands()
         }
 
+        Window("Claude Sessions", id: ClaudeSessionsView.windowId) {
+            ClaudeSessionsView()
+                .environment(appState)
+                .frame(minWidth: 820, minHeight: 480)
+        }
+
         #if os(macOS)
         Settings {
             SettingsView()

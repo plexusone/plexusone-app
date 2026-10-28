@@ -7,6 +7,19 @@ struct GridConfig: Equatable {
 
     var paneCount: Int { columns * rows }
 
+    /// The smallest preset grid that holds `count` panes (at most 3×3).
+    static func fitting(_ count: Int) -> GridConfig {
+        switch count {
+        case ...1: return GridConfig(columns: 1, rows: 1)
+        case 2: return GridConfig(columns: 2, rows: 1)
+        case 3: return GridConfig(columns: 3, rows: 1)
+        case 4: return GridConfig(columns: 2, rows: 2)
+        case 5...6: return GridConfig(columns: 3, rows: 2)
+        case 7...8: return GridConfig(columns: 4, rows: 2)
+        default: return GridConfig(columns: 3, rows: 3)
+        }
+    }
+
     static let presets: [(name: String, config: GridConfig)] = [
         ("1×1", GridConfig(columns: 1, rows: 1)),
         ("2×1", GridConfig(columns: 2, rows: 1)),

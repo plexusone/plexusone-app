@@ -1,7 +1,7 @@
 import Foundation
 
 /// Protocol for file system operations, enabling dependency injection for testing
-protocol FileSystemAccessing {
+protocol FileSystemAccessing: Sendable {
     func fileExists(atPath path: String) -> Bool
     func contents(at url: URL) throws -> Data
     func write(_ data: Data, to url: URL, options: Data.WritingOptions) throws
@@ -12,7 +12,7 @@ protocol FileSystemAccessing {
 
 /// Default implementation wrapping FileManager
 struct DefaultFileSystemAccessing: FileSystemAccessing {
-    private let fileManager = FileManager.default
+    private var fileManager: FileManager { .default }
 
     func fileExists(atPath path: String) -> Bool {
         fileManager.fileExists(atPath: path)
