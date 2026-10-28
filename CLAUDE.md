@@ -273,13 +273,17 @@ Window A                 Window B
 
 ### Prepare a release
 
-1. Update `CHANGELOG.json` with new version
-2. Run `schangelog generate CHANGELOG.json -o CHANGELOG.md`
-3. Copy to docs: `cp CHANGELOG.md docs/releases/changelog.md`
-4. Create `docs/releases/vX.Y.Z.md`
-5. Update `Info.plist` version
-6. Update `mkdocs.yml` navigation
-7. Commit, push, wait for CI, then tag
+Follow the full process in `docs/guides/development/maintaining.md`. In short:
+
+1. Pull and rebase first; write the changelog after the last rebase so its commit hashes are final
+2. Update `CHANGELOG.json`, then `schangelog generate CHANGELOG.json -o CHANGELOG.md` and `cp CHANGELOG.md docs/releases/changelog.md`
+3. Create `docs/releases/vX.Y.Z.md` (it becomes the GitHub release page; use full GitHub URLs for links)
+4. Add it to the `mkdocs.yml` Releases nav
+5. Update the two version strings in `Info.plist` by hand (PlistBuddy reformats the file)
+6. Push `main` and wait for Desktop CI
+7. Trial run: `gh workflow run desktop-release.yaml -f version=X.Y.Z` (builds DMGs, publishes nothing)
+8. Tag and push `vX.Y.Z`; the release workflow builds the DMGs and publishes the release
+9. If a release fails, fix it and release the next patch version; never reuse a pushed tag
 
 ### Debug the Desktop app
 

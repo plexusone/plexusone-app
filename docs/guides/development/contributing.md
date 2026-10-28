@@ -2,6 +2,8 @@
 
 Guidelines for contributing to PlexusOne Desktop.
 
+Maintainers releasing a new version should also read [Maintaining](maintaining.md).
+
 ## Getting Started
 
 ### Prerequisites

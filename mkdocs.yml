@@ -71,6 +71,7 @@ nav:
       - Flutter App: guides/development/flutter.md
       - Native iOS App: guides/development/ios.md
       - Contributing: guides/development/contributing.md
+      - Maintaining: guides/development/maintaining.md
   - Design:
     - Architecture: design/architecture/overview.md
     - Decision Records:
