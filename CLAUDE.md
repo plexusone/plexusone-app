@@ -54,11 +54,18 @@ plexusone-app/
 │       ├── internal/         # Server, session management
 │       └── pkg/              # Protocol definitions
 ├── docs/                     # MkDocs documentation site
-│   ├── guide/desktop/        # Desktop app user guide
-│   ├── guide/mobile/         # Mobile app user guide
-│   ├── development/          # Development guides
-│   ├── design/               # PRDs and design docs
-│   └── releases/             # Release notes
+│   ├── guides/               # User and developer guides
+│   │   ├── getting-started/  # Installation and quick start
+│   │   ├── desktop/          # Desktop app user guide
+│   │   ├── mobile/           # Mobile app user guide
+│   │   ├── reference/        # Configuration and protocol reference
+│   │   └── development/      # Building each app, contributing
+│   ├── design/               # How it is built
+│   │   ├── architecture/     # Architecture overview
+│   │   └── adrs/             # Architecture decision records
+│   ├── specs/                # PRD, TRD, feature specs, initiative roadmaps
+│   ├── images/               # Screenshots and images
+│   └── releases/             # Release notes and changelog
 └── CHANGELOG.json            # Structured changelog (use schangelog to generate CHANGELOG.md)
 ```
 
@@ -262,7 +269,7 @@ Window A                 Window B
 2. Add business logic in `Services/`
 3. Create UI in `Views/`
 4. Add tests in `Tests/PlexusOneDesktopTests/`
-5. Update docs in `docs/guide/desktop/`
+5. Update docs in `docs/guides/desktop/`
 
 ### Prepare a release
 

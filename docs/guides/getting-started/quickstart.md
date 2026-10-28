@@ -75,9 +75,9 @@ Click **Restore** to pick up where you left off.
 
 ## Next Steps
 
-- [Grid Layout Guide](../guide/desktop/grid-layout.md) - Learn about layout configurations
-- [Session Management](../guide/desktop/sessions.md) - Master session workflows
-- [Keyboard Shortcuts](../guide/desktop/shortcuts.md) - Speed up your workflow
+- [Grid Layout Guide](../desktop/grid-layout.md) - Learn about layout configurations
+- [Session Management](../desktop/sessions.md) - Master session workflows
+- [Keyboard Shortcuts](../desktop/shortcuts.md) - Speed up your workflow
 
 ## Mobile Access (Optional)
 
@@ -97,4 +97,4 @@ To monitor agents from your phone:
 
 3. On your phone, open PlexusOne Mobile and connect to `192.168.1.100:9600`
 
-See the [Mobile Guide](../guide/mobile/overview.md) for details.
+See the [Mobile Guide](../mobile/overview.md) for details.

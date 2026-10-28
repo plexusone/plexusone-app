@@ -52,13 +52,13 @@ PlexusOne Desktop is a terminal multiplexer designed specifically for managing m
 
 <div class="grid cards" markdown>
 
-- :material-download: **[Installation](getting-started/installation.md)**
+- :material-download: **[Installation](guides/getting-started/installation.md)**
   Get PlexusOne Desktop running on your Mac
 
-- :material-rocket-launch: **[Quick Start](getting-started/quickstart.md)**
+- :material-rocket-launch: **[Quick Start](guides/getting-started/quickstart.md)**
   Start managing agents in 5 minutes
 
-- :material-book-open-variant: **[User Guide](guide/desktop/overview.md)**
+- :material-book-open-variant: **[User Guide](guides/desktop/overview.md)**
   Learn the full feature set
 
 - :material-github: **[Source Code](https://github.com/plexusone/plexusone-app)**

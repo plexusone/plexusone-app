@@ -659,4 +659,4 @@ Discord Bot ──► PlexusOne Desktop API ──► SessionManager
 - [tmux man page](https://man.openbsd.org/tmux)
 - [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui)
 - [AppKit Multi-Window](https://developer.apple.com/documentation/appkit/nswindow)
-- [PRD](./prd.md) - Product requirements
+- [PRD](PRD.md) - Product requirements

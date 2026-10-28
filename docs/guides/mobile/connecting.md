@@ -150,4 +150,4 @@ Multiple mobile devices can connect to the same TUI Parser simultaneously. All c
 ## Next Steps
 
 - [Mobile Overview](overview.md) - Learn about mobile features
-- [WebSocket Protocol](../../reference/protocol.md) - Technical protocol details
+- [WebSocket Protocol](../reference/protocol.md) - Technical protocol details

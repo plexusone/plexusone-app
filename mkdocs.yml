@@ -48,31 +48,39 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started:
-    - Installation: getting-started/installation.md
-    - Quick Start: getting-started/quickstart.md
-    - Requirements: getting-started/requirements.md
-  - User Guide:
+  - Guides:
+    - Getting Started:
+      - Installation: guides/getting-started/installation.md
+      - Quick Start: guides/getting-started/quickstart.md
+      - Requirements: guides/getting-started/requirements.md
     - Desktop App:
-      - Overview: guide/desktop/overview.md
-      - Grid Layout: guide/desktop/grid-layout.md
-      - Session Management: guide/desktop/sessions.md
-      - Multi-Window: guide/desktop/multi-window.md
-      - Claude Sessions: guide/desktop/claude-sessions.md
-      - Keyboard Shortcuts: guide/desktop/shortcuts.md
+      - Overview: guides/desktop/overview.md
+      - Grid Layout: guides/desktop/grid-layout.md
+      - Session Management: guides/desktop/sessions.md
+      - Multi-Window: guides/desktop/multi-window.md
+      - Claude Sessions: guides/desktop/claude-sessions.md
+      - Keyboard Shortcuts: guides/desktop/shortcuts.md
     - Mobile Apps:
-      - Overview: guide/mobile/overview.md
-      - Connecting: guide/mobile/connecting.md
-  - Reference:
-    - Configuration: reference/configuration.md
-    - WebSocket Protocol: reference/protocol.md
-  - Development:
-    - Architecture: development/architecture.md
-    - Desktop App: development/desktop.md
-    - Flutter App: development/flutter.md
-    - Native iOS App: development/ios.md
-    - Contributing: development/contributing.md
-    - Design Documents: development/design-docs.md
+      - Overview: guides/mobile/overview.md
+      - Connecting: guides/mobile/connecting.md
+    - Reference:
+      - Configuration: guides/reference/configuration.md
+      - WebSocket Protocol: guides/reference/protocol.md
+    - Development:
+      - Desktop App: guides/development/desktop.md
+      - Flutter App: guides/development/flutter.md
+      - Native iOS App: guides/development/ios.md
+      - Contributing: guides/development/contributing.md
+  - Design:
+    - Architecture: design/architecture/overview.md
+    - Decision Records:
+      - Overview: design/adrs/index.md
+      - "0001 Session End Detection": design/adrs/0001-claude-session-end-detection.md
+      - "0002 tmux Mouse Mode": design/adrs/0002-tmux-mouse-mode-for-scrolling.md
+  - Specs:
+    - Overview: specs/index.md
+    - PRD: specs/PRD.md
+    - TRD: specs/TRD.md
   - Releases:
     - Changelog: releases/changelog.md
     - v0.5.2: releases/v0.5.2.md

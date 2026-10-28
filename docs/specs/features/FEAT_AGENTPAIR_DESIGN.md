@@ -512,5 +512,5 @@ Server → Client:
 ## References
 
 - [AgentPair Repository](https://github.com/plexusone/agentpair)
-- [PlexusOne Desktop TRD](./trd.md)
-- [PlexusOne Desktop PRD](./prd.md)
+- [PlexusOne Desktop TRD](../TRD.md)
+- [PlexusOne Desktop PRD](../PRD.md)

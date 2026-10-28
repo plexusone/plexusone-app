@@ -585,5 +585,5 @@ func testStatusParsing() {
 ## References
 
 - [AgentSentinel Repository](https://github.com/plexusone/agentsentinel)
-- [PlexusOne Desktop PRD](./prd.md)
-- [PlexusOne Desktop TRD](./trd.md)
+- [PlexusOne Desktop PRD](../PRD.md)
+- [PlexusOne Desktop TRD](../TRD.md)

@@ -1,6 +1,6 @@
-# Design Documents
+# Specifications
 
-Index of design documents for PlexusOne Desktop features and architecture.
+Index of product, technical, and feature specifications for PlexusOne.
 
 ## Current Documents
 
@@ -8,24 +8,24 @@ Index of design documents for PlexusOne Desktop features and architecture.
 
 | Document | Description | Status |
 |----------|-------------|--------|
-| [PRD](../design/prd.md) | Product Requirements Document | Active |
-| [TRD](../design/trd.md) | Technical Requirements Document | Active |
+| [PRD](PRD.md) | Product Requirements Document | Active |
+| [TRD](TRD.md) | Technical Requirements Document | Active |
 
 ### Features
 
 | Document | Description | Status |
 |----------|-------------|--------|
-| [Mobile App PRD](../design/FEAT_MOBILE_PRD.md) | Mobile companion app design | In Progress |
-| [AgentPair Design](../design/FEAT_AGENTPAIR_DESIGN.md) | AgentPair integration analysis | Planned |
-| [Sentinel PRD](../design/FEAT_SENTINEL_PRD.md) | Agent monitoring feature | Planned |
-| [VoiceNote PRD](../design/FEAT_VOICENOTE_PRD.md) | Voice note integration | Planned |
+| [Mobile App PRD](features/FEAT_MOBILE_PRD.md) | Mobile companion app design | In Progress |
+| [AgentPair Design](features/FEAT_AGENTPAIR_DESIGN.md) | AgentPair integration analysis | Planned |
+| [Sentinel PRD](features/FEAT_SENTINEL_PRD.md) | Agent monitoring feature | Planned |
+| [VoiceNote PRD](features/FEAT_VOICENOTE_PRD.md) | Voice note integration | Planned |
 
 ### Implementation
 
 | Document | Description | Status |
 |----------|-------------|--------|
-| [Scrollbar Research](../design/FEAT_SCROLLBAR_RESEARCH.md) | Terminal scrollbar investigation | Completed |
-| [Scrollbar TRD](../design/FEAT_SCROLLBAR_TRD.md) | Scrollbar fix implementation design | Completed |
+| [Scrollbar Research](features/FEAT_SCROLLBAR_RESEARCH.md) | Terminal scrollbar investigation | Completed |
+| [Scrollbar TRD](features/FEAT_SCROLLBAR_TRD.md) | Scrollbar fix implementation design | Completed |
 
 ## Document Structure
 
@@ -104,7 +104,7 @@ Write a design doc when:
 
 ### Process
 
-1. **Create draft** in `docs/design/`
+1. **Create draft** in `docs/specs/features/`
 2. **Name format**: `FEAT_<NAME>_PRD.md` or `FEAT_<NAME>_TRD.md`
 3. **Review** with stakeholders
 4. **Iterate** based on feedback
@@ -165,9 +165,9 @@ Create new PRDs using this structure:
 
 ## Archived Documents
 
-Documents for completed or abandoned features are moved to `docs/design/archive/`.
+Documents for completed or abandoned features are moved to `docs/specs/archive/`.
 
 ## Related
 
-- [Architecture](architecture.md) - System architecture overview
-- [Contributing](contributing.md) - How to contribute
+- [Architecture](../design/architecture/overview.md) - System architecture overview
+- [Contributing](../guides/development/contributing.md) - How to contribute
