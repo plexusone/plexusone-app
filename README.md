@@ -39,9 +39,11 @@ Native macOS terminal multiplexer built with Swift and SwiftTerm.
 - Pop-out sessions to dedicated windows
 - **Input detection** for AI assistant prompts (Claude, Kiro, etc.)
 - **PTY wrapper detection** - warns if a session is running behind a shell-autocomplete PTY shim (Kiro CLI, Fig, Amazon Q) known to freeze terminal panes
+- **Claude Sessions window** (`⇧⌘S`) - lists Claude Code sessions with their tmux session, subject, repositories, last activity, and whether each ended normally or in a crash, restart, or closed terminal; resumes the ones you pick into tmux sessions you name
+- Trackpad scrolls tmux history (tmux mouse mode per attached session; hold Shift to drag-select)
+- Keyboard pane navigation (`⌘]` / `⌘[`), attach (`⌥⌘A`), and detach (`⇧⌘A`)
 - Visual focus indicator for active pane
 - Session state persistence
-- 10,000 line scrollback buffer
 
 **Download:** [Releases](https://github.com/plexusone/plexusone-app/releases)
 
