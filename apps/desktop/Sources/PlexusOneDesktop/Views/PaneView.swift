@@ -14,6 +14,9 @@ struct PaneView: View {
     @State private var currentInputAlert: DetectionResult?
     @State private var isFocused = false
 
+    @Environment(\.openWindow) private var openWindow
+    @Environment(AppState.self) private var appState
+
     /// The attached session as of the latest refresh. The binding holds a
     /// copy taken at attach time, so its status and wrapper go stale.
     private var liveSession: Session? {
@@ -37,12 +40,9 @@ struct PaneView: View {
                 },
                 onPopOut: {
                     if let session = attachedSession {
-                        // Post notification to pop out session to new window
-                        NotificationCenter.default.post(
-                            name: .popOutSession,
-                            object: nil,
-                            userInfo: ["session": session]
-                        )
+                        // The new window's ContentView picks this up on launch
+                        appState.pendingPopOutSession = session
+                        openWindow(id: "main")
                     }
                 },
                 onNewSession: onRequestNewSession
@@ -297,5 +297,6 @@ struct CompactDetachedView: View {
         attachedSession: .constant(nil),
         onRequestNewSession: {}
     )
+    .environment(AppState())
     .frame(width: 400, height: 300)
 }

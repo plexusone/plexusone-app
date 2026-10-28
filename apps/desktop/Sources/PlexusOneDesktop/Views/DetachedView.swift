@@ -70,7 +70,7 @@ struct DetachedView: View {
             }
 
             // Keyboard shortcut hint
-            Text("Press ⌘A to open session picker")
+            Text("Press ⌥⌘A to open session picker")
                 .font(.caption)
                 .foregroundColor(Color(nsColor: .tertiaryLabelColor))
                 .padding(.top, 16)

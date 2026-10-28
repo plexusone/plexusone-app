@@ -1,12 +1,15 @@
 import SwiftUI
+import AppKit
 
 /// Main content view for a PlexusOne Desktop window
 struct ContentView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.openWindow) private var openWindow
     @State private var paneManager = PaneManager()
     @State private var gridConfig = GridConfig(columns: 2, rows: 1)
     @State private var windowId: UUID?
     @State private var showNewSessionSheet = false
+    @State private var showAttachSheet = false
     @State private var showRestorePrompt = false
     @State private var showErrorAlert = false
     @State private var isReady = false
@@ -106,6 +109,16 @@ struct ContentView: View {
                         Image(systemName: "arrow.clockwise")
                     }
                     .help("Refresh Sessions")
+                }
+            }
+        }
+        .focusedSceneValue(\.windowActions, windowActions)
+        .sheet(isPresented: $showAttachSheet) {
+            AttachSessionSheet(sessions: sessionManager.sessions) { session in
+                if let paneId = focusedPaneId() {
+                    paneManager.attach(session: session, to: paneId)
+                } else {
+                    attachToFirstEmptyPane(session)
                 }
             }
         }
@@ -253,13 +266,10 @@ struct ContentView: View {
                     registerWindow()
                 }
 
-                // Notify AppDelegate to open additional windows for remaining pending configs
-                if windowStateManager.hasPendingConfigs {
-                    NotificationCenter.default.post(
-                        name: .restoreComplete,
-                        object: nil,
-                        userInfo: ["windowStateManager": windowStateManager]
-                    )
+                // Open one more window per remaining config; each new
+                // window's initialize() pops its own config.
+                for _ in windowStateManager.configsToRestore() {
+                    openWindow(id: "main")
                 }
             }
         }
@@ -268,6 +278,56 @@ struct ContentView: View {
     private func saveState() {
         guard isReady, let id = windowId else { return }
         windowStateManager.updateWindow(id: id, gridConfig: gridConfig, paneManager: paneManager)
+    }
+
+    // MARK: - Menu Commands
+
+    /// Actions the app menu runs against this window while it is key.
+    private var windowActions: WindowActions? {
+        guard isReady else { return nil }
+        return WindowActions(
+            newSession: { showNewSessionSheet = true },
+            attachSession: { showAttachSheet = true },
+            detachFocusedPane: {
+                if let paneId = focusedPaneId() {
+                    paneManager.detach(paneId: paneId)
+                }
+            },
+            focusNextPane: { cycleFocus(by: 1) },
+            focusPreviousPane: { cycleFocus(by: -1) }
+        )
+    }
+
+    /// The pane whose terminal has keyboard focus in the key window.
+    /// Menu commands only reach the key window, so that is this window.
+    private func focusedPaneId() -> Int? {
+        (NSApp.keyWindow?.firstResponder as? AppTerminalView)?.paneId
+    }
+
+    /// Move keyboard focus to the next/previous pane that has a terminal.
+    private func cycleFocus(by step: Int) {
+        guard let window = NSApp.keyWindow, let contentView = window.contentView else { return }
+        let terminals = Self.terminalViews(in: contentView)
+            .filter { $0.isSessionAttached && $0.paneId != nil }
+            .sorted { ($0.paneId ?? 0) < ($1.paneId ?? 0) }
+        guard !terminals.isEmpty else { return }
+
+        let next: Int
+        if let current = terminals.firstIndex(where: { $0 === window.firstResponder }) {
+            next = (current + step + terminals.count) % terminals.count
+        } else {
+            next = step > 0 ? 0 : terminals.count - 1
+        }
+        // The pane's container observes firstResponder and updates the
+        // focus highlight.
+        window.makeFirstResponder(terminals[next])
+    }
+
+    private static func terminalViews(in view: NSView) -> [AppTerminalView] {
+        if let terminal = view as? AppTerminalView {
+            return [terminal]
+        }
+        return view.subviews.flatMap { terminalViews(in: $0) }
     }
 
     private func attachToFirstEmptyPane(_ session: Session) {

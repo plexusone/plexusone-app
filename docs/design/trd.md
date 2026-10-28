@@ -365,7 +365,7 @@ Right-click on pane divider or title bar:
 │ Split Horizontal      ⌘D │
 │ Split Vertical        ⌘⇧D│
 ├──────────────────────────┤
-│ Attach to Session...  ⌘A │
+│ Attach to Session... ⌥⌘A │
 │ Detach               ⌘⇧A │
 │ New Session...        ⌘N │
 ├──────────────────────────┤
@@ -411,7 +411,7 @@ Global view of all sessions:
 | Split Horizontal | ⌘D |
 | Split Vertical | ⌘⇧D |
 | Close Pane | ⌘W |
-| Attach to Session | ⌘A |
+| Attach to Session | ⌥⌘A |
 | Detach Pane | ⌘⇧A |
 | Next Pane | ⌘] |
 | Previous Pane | ⌘[ |
@@ -573,7 +573,7 @@ User: ⌘⇧A or "Detach"
 - [ ] SwiftTerm integration in single-pane window
 - [ ] SessionManager: list, create, attach, detach
 - [ ] Basic toolbar: session picker, status indicator
-- [ ] Keyboard shortcuts: ⌘N, ⌘W, ⌘A
+- [ ] Keyboard shortcuts: ⌘N, ⌘W, ⌥⌘A
 
 ### Phase 2: Multi-Pane
 
