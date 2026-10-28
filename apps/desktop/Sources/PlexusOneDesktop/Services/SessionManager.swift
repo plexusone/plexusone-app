@@ -1,7 +1,11 @@
 import Foundation
 import Observation
 
-/// Manages tmux sessions: listing, creating, attaching, and monitoring
+/// Manages tmux sessions: listing, creating, attaching, and monitoring.
+///
+/// Main-actor isolated because SwiftUI observes `sessions` and `error`; the
+/// tmux calls themselves run off the main thread inside `CommandExecuting`.
+@MainActor
 @Observable
 final class SessionManager {
     private(set) var sessions: [Session] = []
@@ -21,7 +25,7 @@ final class SessionManager {
 
     private let wrapperDetector: TerminalWrapperDetector
 
-    init(
+    nonisolated init(
         commandExecutor: any CommandExecuting = ProcessCommandExecutor(),
         tmuxPaths: [String]? = nil
     ) {
@@ -35,10 +39,6 @@ final class SessionManager {
     func startMonitoring() {
         guard refreshTask == nil else { return }
         startPeriodicRefresh()
-    }
-
-    deinit {
-        refreshTask?.cancel()
     }
 
     // MARK: - Public API
@@ -129,11 +129,15 @@ final class SessionManager {
     private func startPeriodicRefresh() {
         refreshTask = Task { [weak self] in
             while !Task.isCancelled {
-                await self?.refresh()
-                try? await Task.sleep(for: .seconds(self?.refreshInterval ?? 5.0))
+                guard let self else { return }
+                await self.refresh()
+                let interval = self.refreshInterval
+                try? await Task.sleep(for: .seconds(interval))
             }
         }
     }
+            // Re-check self each pass so the loop ends once the manager is
+            // released (a main-actor deinit can't cancel this task).
 
     private func listTmuxSessions() async throws -> [Session] {
         // Check if tmux server is running

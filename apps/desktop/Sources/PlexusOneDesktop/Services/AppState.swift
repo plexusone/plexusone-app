@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// Shared application state for multi-window support
+@MainActor
 @Observable
 final class AppState {
     /// Session manager shared across all windows

@@ -1,6 +1,7 @@
 import XCTest
 @testable import PlexusOneDesktop
 
+@MainActor
 final class AppStateTests: XCTestCase {
 
     // MARK: - Initialization Tests

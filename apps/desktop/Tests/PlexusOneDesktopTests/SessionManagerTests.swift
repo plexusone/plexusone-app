@@ -1,6 +1,7 @@
 import XCTest
 @testable import PlexusOneDesktop
 
+@MainActor
 final class SessionManagerTests: XCTestCase {
 
     // MARK: - Model Tests
