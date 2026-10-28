@@ -2,150 +2,186 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://plexusone.github.io/plexusone-app/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/IDEATION_CHAT_MOBILE/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/TASKS/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/design/adrs/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/design/FEAT_AGENTPAIR_DESIGN/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/design/adrs/0001-claude-session-end-detection/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/design/FEAT_MOBILE_PRD/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/design/adrs/0002-tmux-mouse-mode-for-scrolling/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/design/FEAT_SCROLLBAR_RESEARCH/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/design/architecture/overview/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/design/FEAT_SCROLLBAR_TRD/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/desktop/claude-sessions/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/design/FEAT_SENTINEL_PRD/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/desktop/grid-layout/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/design/FEAT_VOICENOTE_PRD/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/desktop/multi-window/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/design/prd/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/desktop/overview/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/design/trd/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/desktop/sessions/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/development/architecture/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/desktop/shortcuts/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/development/contributing/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/development/contributing/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/development/design-docs/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/development/desktop/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/development/desktop/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/development/flutter/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/development/flutter/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/development/ios/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/development/ios/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/development/maintaining/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/getting-started/installation/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/getting-started/installation/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/getting-started/quickstart/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/getting-started/quickstart/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/getting-started/requirements/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/getting-started/requirements/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/guide/desktop/grid-layout/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/mobile/connecting/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/guide/desktop/multi-window/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/mobile/overview/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/guide/desktop/overview/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/reference/configuration/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
-         <loc>https://plexusone.github.io/plexusone-app/guide/desktop/sessions/</loc>
-         <lastmod>2026-08-09</lastmod>
-    </url>
-    <url>
-         <loc>https://plexusone.github.io/plexusone-app/guide/desktop/shortcuts/</loc>
-         <lastmod>2026-08-09</lastmod>
-    </url>
-    <url>
-         <loc>https://plexusone.github.io/plexusone-app/guide/mobile/connecting/</loc>
-         <lastmod>2026-08-09</lastmod>
-    </url>
-    <url>
-         <loc>https://plexusone.github.io/plexusone-app/guide/mobile/overview/</loc>
-         <lastmod>2026-08-09</lastmod>
-    </url>
-    <url>
-         <loc>https://plexusone.github.io/plexusone-app/reference/configuration/</loc>
-         <lastmod>2026-08-09</lastmod>
-    </url>
-    <url>
-         <loc>https://plexusone.github.io/plexusone-app/reference/protocol/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <loc>https://plexusone.github.io/plexusone-app/guides/reference/protocol/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/releases/changelog/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/releases/v0.1.0/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/releases/v0.2.0/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/releases/v0.3.0/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/releases/v0.4.0/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/releases/v0.4.1/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/releases/v0.5.0/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/releases/v0.5.1/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/releases/v0.5.2/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/releases/v0.6.0/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/PRD/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/TASKS/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/TRD/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/features/FEAT_AGENTPAIR_DESIGN/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/features/FEAT_MOBILE_PRD/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/features/FEAT_SCROLLBAR_RESEARCH/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/features/FEAT_SCROLLBAR_TRD/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/features/FEAT_SENTINEL_PRD/</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/features/FEAT_VOICENOTE_PRD/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/plexusone-app/specs/initiatives/INIT-PLEXUSONEAPP-001/ROADMAP/</loc>
-         <lastmod>2026-08-09</lastmod>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/plexusone-app/specs/initiatives/INIT-PLEXUSONEAPP-002/ROADMAP/</loc>
+         <lastmod>2026-10-28</lastmod>
     </url>
 </urlset>
