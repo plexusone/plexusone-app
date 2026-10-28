@@ -10,7 +10,7 @@ Technical architecture of the PlexusOne multi-agent orchestration platform.
 │  ┌──────────────┐              ┌──────────────┐           │
 │  │   Desktop    │              │    Mobile    │           │
 │  │   (macOS)    │              │  (iOS/Andr)  │           │
-│  └──────┬───────┘              └──────┬───────┘           │
+│  └──────┬───────┘              └───────┬──────┘           │
 └─────────┼──────────────────────────────┼──────────────────┘
           │                              │
           │ SwiftTerm                    │ WebSocket
