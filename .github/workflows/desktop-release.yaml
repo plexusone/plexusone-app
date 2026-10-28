@@ -213,6 +213,11 @@ jobs:
       contents: write
 
     steps:
+      # Check out first: checkout cleans the workspace, which would remove
+      # artifacts downloaded before it.
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - name: Download all artifacts
         uses: actions/download-artifact@v8
         with:
@@ -225,12 +230,23 @@ jobs:
           VERSION="${VERSION#desktop-v}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Find release notes
+        id: notes
+        run: |
+          NOTES="docs/releases/v${{ steps.version.outputs.version }}.md"
+          if [ -f "$NOTES" ]; then
+            echo "path=$NOTES" >> $GITHUB_OUTPUT
+          else
+            echo "No $NOTES; using generated release notes only"
+          fi
+
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
           name: PlexusOne Desktop v${{ steps.version.outputs.version }}
           draft: false
           prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+          body_path: ${{ steps.notes.outputs.path }}
           generate_release_notes: true
           files: |
             artifacts/**/*.dmg
