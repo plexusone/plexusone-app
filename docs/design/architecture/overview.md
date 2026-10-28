@@ -5,8 +5,8 @@ Technical architecture of the PlexusOne multi-agent orchestration platform.
 ## System Overview
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│                      User Devices                          │
+┌───────────────────────────────────────────────────────────┐
+│                      User Devices                         │
 │  ┌──────────────┐              ┌──────────────┐           │
 │  │   Desktop    │              │    Mobile    │           │
 │  │   (macOS)    │              │  (iOS/Andr)  │           │
@@ -16,21 +16,21 @@ Technical architecture of the PlexusOne multi-agent orchestration platform.
           │ SwiftTerm                    │ WebSocket
           │                              │
 ┌─────────┼──────────────────────────────┼──────────────────┐
-│         │           Services           │                   │
-│         │                              │                   │
-│         ▼                              ▼                   │
+│         │           Services           │                  │
+│         │                              │                  │
+│         ▼                              ▼                  │
 │  ┌──────────────┐              ┌──────────────┐           │
 │  │     tmux     │◄────PTY─────►│  TUI Parser  │           │
 │  │   Sessions   │              │     (Go)     │           │
 │  └──────┬───────┘              └──────────────┘           │
-│         │                                                  │
-│         ▼                                                  │
+│         │                                                 │
+│         ▼                                                 │
 │  ┌──────────────┐                                         │
 │  │   AI CLIs    │                                         │
 │  │ Claude Code  │                                         │
 │  │  Kiro CLI    │                                         │
 │  └──────────────┘                                         │
-└────────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────┘
 ```
 
 ## Components
