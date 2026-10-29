@@ -13,6 +13,11 @@ final class ClaudeSessionCatalog {
     private(set) var bootTime: Date?
     /// Live Claude sessions by tmux session name, for pane headers.
     private(set) var liveByTmuxSession: [String: ClaudeLiveRecord] = [:]
+    /// Live sessions waiting for the user, ordered by tmux session name.
+    private(set) var waitingSessions: [ClaudeLiveRecord] = []
+    /// Called after each check with the sessions that started waiting
+    /// since the previous one (empty when none did).
+    @ObservationIgnored var onWaitingChanged: ((_ all: [ClaudeLiveRecord], _ newlyWaiting: [ClaudeLiveRecord]) -> Void)?
 
     private var registry = ClaudeSessionRegistry()
     private var latestSnapshot: SessionSnapshot?
@@ -73,6 +78,9 @@ final class ClaudeSessionCatalog {
         latestSnapshot = snap
         bootTime = snap.bootTime
         liveByTmuxSession = Self.liveByTmuxSession(snap.live)
+        let previouslyWaiting = Set(waitingSessions.map(\.sessionId))
+        waitingSessions = Self.waiting(in: snap.live)
+        onWaitingChanged?(waitingSessions, waitingSessions.filter { !previouslyWaiting.contains($0.sessionId) })
         await syncClaudeNameOptions()
         if registry.observe(snap) {
             do {
@@ -95,6 +103,13 @@ final class ClaudeSessionCatalog {
             result[session] = rec
         }
         return result
+    }
+
+    /// Live sessions waiting for the user, ordered by tmux session name
+    /// (sessions outside tmux last).
+    nonisolated static func waiting(in live: [ClaudeLiveRecord]) -> [ClaudeLiveRecord] {
+        live.filter { ClaudeLiveStatus.isWaiting(status: $0.status, waitingFor: $0.waitingFor) }
+            .sorted { ($0.tmuxTarget?.sessionName ?? "\u{10FFFF}") < ($1.tmuxTarget?.sessionName ?? "\u{10FFFF}") }
     }
 
     // MARK: - tmux @claude_name

@@ -23,6 +23,7 @@ extension FocusedValues {
 
 /// File, Edit, and Window menu commands.
 struct AppCommands: Commands {
+    let appState: AppState
     @FocusedValue(\.windowActions) private var actions
 
     var body: some Commands {
@@ -67,6 +68,11 @@ struct AppCommands: Commands {
             Button("Previous Pane") { actions?.focusPreviousPane() }
                 .keyboardShortcut("[", modifiers: .command)
                 .disabled(actions == nil)
+
+            Button("Jump to Next Waiting Session") {
+                Task { await appState.showNextWaitingSession() }
+            }
+            .keyboardShortcut("j", modifiers: .command)
         }
 
         // Remove default "New Window" since we have our own

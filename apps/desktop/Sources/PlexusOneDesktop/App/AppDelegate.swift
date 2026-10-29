@@ -1,8 +1,9 @@
 import AppKit
 import SwiftUI
+import UserNotifications
 
 /// AppDelegate for handling application-level events
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         // Two copies would both write ~/.plexusone state and fight over it.
@@ -34,6 +35,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Check for tmux installation
         checkTmuxInstallation()
+
+        // Route clicks on notifications back to the app. The notification
+        // center needs an app bundle.
+        if Bundle.main.bundleIdentifier != nil {
+            UNUserNotificationCenter.current().delegate = self
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -49,6 +56,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
         return true
+    }
+
+    // MARK: - Notifications
+
+    /// A click on a "Claude needs you" notification shows that session.
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let tmuxSession = response.notification.request.content.userInfo["tmuxSession"] as? String
+        Task { @MainActor in
+            if let tmuxSession {
+                await AppState.shared?.showSession(tmuxName: tmuxSession)
+            }
+            completionHandler()
+        }
+    }
+
+    /// Show notifications even while the app is in front.
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound])
     }
 
     // MARK: - Private Methods

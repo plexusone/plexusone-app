@@ -188,6 +188,7 @@ struct ContentView: View {
 
         // Start the shared app state monitoring (idempotent - only runs once)
         await appState.startMonitoring()
+        appState.openMainWindow = { [openWindow] in openWindow(id: "main") }
 
         // Mark as ready
         isReady = true
@@ -329,7 +330,7 @@ struct ContentView: View {
     /// Move keyboard focus to the next/previous pane that has a terminal.
     private func cycleFocus(by step: Int) {
         guard let window = NSApp.keyWindow, let contentView = window.contentView else { return }
-        let terminals = Self.terminalViews(in: contentView)
+        let terminals = SessionNavigator.terminalViews(in: contentView)
             .filter { $0.isSessionAttached && $0.paneId != nil }
             .sorted { ($0.paneId ?? 0) < ($1.paneId ?? 0) }
         guard !terminals.isEmpty else { return }
@@ -343,13 +344,6 @@ struct ContentView: View {
         // The pane's container observes firstResponder and updates the
         // focus highlight.
         window.makeFirstResponder(terminals[next])
-    }
-
-    private static func terminalViews(in view: NSView) -> [AppTerminalView] {
-        if let terminal = view as? AppTerminalView {
-            return [terminal]
-        }
-        return view.subviews.flatMap { terminalViews(in: $0) }
     }
 
     private func attachToFirstEmptyPane(_ session: Session) {

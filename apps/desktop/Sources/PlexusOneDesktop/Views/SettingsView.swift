@@ -19,7 +19,7 @@ struct SettingsView: View {
                     Label("Sessions", systemImage: "terminal")
                 }
         }
-        .frame(width: 450, height: 300)
+        .frame(width: 480, height: 420)
     }
 }
 
@@ -70,6 +70,7 @@ struct SessionSettingsView: View {
     @AppStorage("stuckThresholdSeconds") private var stuckThreshold: Double = 120
     @AppStorage("defaultShell") private var defaultShell = "/bin/zsh"
     @AppStorage(TmuxEnvironment.mouseScrollingKey) private var mouseScrolling = true
+    @AppStorage(AppState.notifyWaitingKey) private var notifyWaiting = true
 
     var body: some View {
         Form {
@@ -91,6 +92,11 @@ struct SessionSettingsView: View {
 
             TextField("Default Shell:", text: $defaultShell)
                 .textFieldStyle(.roundedBorder)
+
+            Toggle("Notify when a Claude session needs you", isOn: $notifyWaiting)
+            Text("A notification when a session starts waiting, for example at a permission prompt. The Dock badge always counts waiting sessions; Command-J jumps to the next one.")
+                .font(.caption)
+                .foregroundColor(.secondary)
 
             Toggle("Trackpad scrolls conversation history", isOn: $mouseScrolling)
             Text("Turns on tmux mouse mode for sessions shown here. Hold Shift to drag-select text. When off, the session uses your own tmux setting. Applies the next time a session is attached.")

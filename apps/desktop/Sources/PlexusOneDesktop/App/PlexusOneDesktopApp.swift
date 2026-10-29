@@ -14,7 +14,7 @@ struct PlexusOneDesktopApp: App {
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
         .commands {
-            AppCommands()
+            AppCommands(appState: appState)
         }
 
         Window("Claude Sessions", id: ClaudeSessionsView.windowId) {

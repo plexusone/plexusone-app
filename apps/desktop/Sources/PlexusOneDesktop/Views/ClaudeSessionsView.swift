@@ -262,8 +262,14 @@ struct ClaudeSessionsView: View {
     }
 
     /// Ask for tmux names, unless every session is running and just attaches.
+    /// A single running session already in a pane is focused instead.
     private func restore(_ infos: [ClaudeSessionInfo]) {
         guard !infos.isEmpty, !isRestoring else { return }
+        if infos.count == 1, let info = infos.first, info.endState == .running,
+           let tmux = info.tmux?.sessionName,
+           SessionNavigator.focusPane(showingTmuxSession: tmux) {
+            return
+        }
         if infos.allSatisfy({ $0.endState == .running }) {
             performRestore(infos, names: [:])
         } else {

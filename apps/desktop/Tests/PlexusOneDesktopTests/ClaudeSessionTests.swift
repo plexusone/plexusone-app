@@ -490,6 +490,26 @@ final class ClaudeSessionTests: XCTestCase {
         XCTAssertEqual(repos.map { URL(fileURLWithPath: $0.path).lastPathComponent }, ["main", "start"])
     }
 
+    // MARK: - Waiting sessions
+
+    func testWaitingSessionsFilteredAndOrdered() {
+        let waiting = ClaudeSessionCatalog.waiting(in: [
+            liveRecord("1", name: "z-1", tmux: "zeta:@1.%1", status: "waiting", waitingFor: "permission prompt"),
+            liveRecord("2", name: "b-1", tmux: "beta:@2.%2", status: "busy"),
+            liveRecord("3", name: "a-1", tmux: "alpha:@3.%3", status: "idle", waitingFor: "input needed"),
+            liveRecord("4", name: "n-1", tmux: nil, status: "waiting"),
+        ])
+        XCTAssertEqual(waiting.map(\.sessionId), ["3", "1", "4"])
+    }
+
+    @MainActor
+    func testWaitingNotificationBody() {
+        let rec = liveRecord("e36f0e3a-0000", name: "github-com-8b", tmux: "acad:@17.%17", status: "waiting", waitingFor: "permission prompt")
+        XCTAssertEqual(AppState.waitingNotificationBody(rec), "github-com-8b in tmux acad is waiting: permission prompt")
+        let bare = liveRecord("e36f0e3a-0000", name: nil, tmux: nil, status: "waiting")
+        XCTAssertEqual(AppState.waitingNotificationBody(bare), "e36f0e3a is waiting")
+    }
+
     func testGridFitting() {
         XCTAssertEqual(GridConfig.fitting(1), GridConfig(columns: 1, rows: 1))
         XCTAssertEqual(GridConfig.fitting(4), GridConfig(columns: 2, rows: 2))
