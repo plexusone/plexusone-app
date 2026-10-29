@@ -94,6 +94,18 @@
         {
           "description": "Architecture decision record for recording sessions with a Claude Code hook",
           "commit": "98f4bce"
+        },
+        {
+          "description": "Agent guidance moved from CLAUDE.md to AGENTS.md, which CLAUDE.md imports",
+          "commit": "f3a752e"
+        },
+        {
+          "description": "AGENTS.md covers the Claude session features, app files, CI workflows, and architecture",
+          "commit": "ebda2ce"
+        },
+        {
+          "description": "Guides require Xcode 16+, since SwiftTerm 1.20 needs Swift tools 6.0; the configuration reference lists the Claude session files and the tmux status line for Claude names",
+          "commit": "4809026"
         }
       ]
     },
