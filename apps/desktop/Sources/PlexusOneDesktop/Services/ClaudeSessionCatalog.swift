@@ -330,12 +330,15 @@ final class ClaudeSessionCatalog {
         commandExecutor: any CommandExecuting
     ) async -> SessionSnapshot {
         let now = Date()
-        let (live, stale) = readLiveRecords(in: claudeDir.appendingPathComponent("sessions"))
+        var (live, stale) = readLiveRecords(in: claudeDir.appendingPathComponent("sessions"))
         let panes = await tmuxPanes(commandExecutor: commandExecutor)
+        if let panes {
+            live = live.map { withTmuxFromProcessTree($0, panes: panes, parentPid: SystemProbe.parentPid) }
+        }
         return SessionSnapshot(
             live: live,
             stale: stale,
-            tmuxPaneIds: panes ?? [],
+            tmuxPaneIds: Set((panes ?? []).map(\.target.paneId)),
             tmuxServerRunning: panes != nil,
             bootTime: SystemProbe.bootTime(),
             takenAt: now
@@ -374,15 +377,58 @@ final class ClaudeSessionCatalog {
         return (live, stale)
     }
 
-    /// Every tmux pane ID, or nil when no tmux server is running.
-    nonisolated static func tmuxPanes(commandExecutor: any CommandExecuting) async -> Set<String>? {
+    /// A tmux pane and the process tmux started in it.
+    struct TmuxPane: Equatable, Sendable {
+        let target: TmuxTarget
+        let pid: Int32
+    }
+
+    /// Every tmux pane, or nil when no tmux server is running.
+    nonisolated static func tmuxPanes(commandExecutor: any CommandExecuting) async -> [TmuxPane]? {
         let (path, baseArgs) = TmuxEnvironment.findExecutable()
         do {
-            let result = try await commandExecutor.execute(path, arguments: baseArgs + ["list-panes", "-a", "-F", "#{pane_id}"])
+            let format = "#{pane_id}\t#{pane_pid}\t#{window_id}\t#{session_name}"
+            let result = try await commandExecutor.execute(path, arguments: baseArgs + ["list-panes", "-a", "-F", format])
             guard result.success else { return nil }
-            return Set(result.stdout.split(separator: "\n").map(String.init))
+            return parseTmuxPanes(result.stdout)
         } catch {
             return nil
         }
+    }
+
+    /// Parse `list-panes -F "#{pane_id}\t#{pane_pid}\t#{window_id}\t#{session_name}"`.
+    nonisolated static func parseTmuxPanes(_ output: String) -> [TmuxPane] {
+        output.split(separator: "\n").compactMap { line in
+            let parts = line.split(separator: "\t", maxSplits: 3, omittingEmptySubsequences: false)
+            guard parts.count == 4, let pid = Int32(parts[1]) else { return nil }
+            return TmuxPane(
+                target: TmuxTarget(sessionName: String(parts[3]), windowId: String(parts[2]), paneId: String(parts[0])),
+                pid: pid
+            )
+        }
+    }
+
+    /// Fill in a record's tmux location from the process tree when Claude
+    /// Code did not record one: walk up from the Claude process until
+    /// reaching the process tmux started in a pane.
+    nonisolated static func withTmuxFromProcessTree(
+        _ record: ClaudeLiveRecord,
+        panes: [TmuxPane],
+        parentPid: (Int32) -> Int32?
+    ) -> ClaudeLiveRecord {
+        guard record.tmuxTarget == nil else { return record }
+        let byPid = Dictionary(panes.map { ($0.pid, $0.target) }, uniquingKeysWith: { a, _ in a })
+        var pid: Int32? = record.pid
+        var steps = 0
+        while let current = pid, current > 1, steps < 64 {
+            if let target = byPid[current] {
+                var resolved = record
+                resolved.tmux = "\(target.sessionName):\(target.windowId).\(target.paneId)"
+                return resolved
+            }
+            pid = parentPid(current)
+            steps += 1
+        }
+        return record
     }
 }

@@ -430,6 +430,35 @@ final class ClaudeSessionTests: XCTestCase {
         XCTAssertEqual(registry.sessions["a"]?.isRunning, false)
     }
 
+    // MARK: - Process-tree tmux lookup
+
+    func testParseTmuxPanes() {
+        let panes = ClaudeSessionCatalog.parseTmuxPanes("%0\t2470\t@0\tp1app\n%17\t9100\t@17\tacad\nbad line\n")
+        XCTAssertEqual(panes.count, 2)
+        XCTAssertEqual(panes[1].target, TmuxTarget(sessionName: "acad", windowId: "@17", paneId: "%17"))
+        XCTAssertEqual(panes[1].pid, 9100)
+    }
+
+    func testTmuxFromProcessTreeWalksUpToPaneProcess() {
+        let panes = [ClaudeSessionCatalog.TmuxPane(target: TmuxTarget(sessionName: "acad", windowId: "@17", paneId: "%17"), pid: 50)]
+        let parents: [Int32: Int32] = [300: 200, 200: 50, 50: 1]
+        let resolved = ClaudeSessionCatalog.withTmuxFromProcessTree(
+            liveRecord("a", name: "n", tmux: nil), panes: panes, parentPid: { parents[$0] }
+        )
+        XCTAssertNil(resolved.tmuxTarget, "pid 100 is not under a pane")
+        var rec = liveRecord("a", name: "n", tmux: nil)
+        rec = try! JSONDecoder().decode(ClaudeLiveRecord.self, from: Data(#"{"pid":300,"sessionId":"a"}"#.utf8))
+        let found = ClaudeSessionCatalog.withTmuxFromProcessTree(rec, panes: panes, parentPid: { parents[$0] })
+        XCTAssertEqual(found.tmuxTarget?.sessionName, "acad")
+        XCTAssertEqual(found.tmuxTarget?.paneId, "%17")
+    }
+
+    func testTmuxFromProcessTreeKeepsRecordedValue() {
+        let rec = liveRecord("a", name: "n", tmux: "p1app:@0.%0")
+        let result = ClaudeSessionCatalog.withTmuxFromProcessTree(rec, panes: [], parentPid: { _ in nil })
+        XCTAssertEqual(result.tmux, "p1app:@0.%0")
+    }
+
     func testGridFitting() {
         XCTAssertEqual(GridConfig.fitting(1), GridConfig(columns: 1, rows: 1))
         XCTAssertEqual(GridConfig.fitting(4), GridConfig(columns: 2, rows: 2))

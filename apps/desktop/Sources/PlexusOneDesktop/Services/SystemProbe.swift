@@ -15,6 +15,17 @@ enum SystemProbe {
         return Date(timeIntervalSince1970: Double(tv.tv_sec) + Double(tv.tv_usec) / 1_000_000)
     }
 
+    /// The parent process ID, or nil if no such process exists.
+    static func parentPid(of pid: Int32) -> Int32? {
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
+        guard sysctl(&mib, u_int(mib.count), &info, &size, nil, 0) == 0, size > 0 else {
+            return nil
+        }
+        return info.kp_eproc.e_ppid
+    }
+
     /// When the machine last booted.
     static func bootTime() -> Date? {
         var tv = timeval()

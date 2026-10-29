@@ -106,7 +106,9 @@ struct ClaudeLiveRecord: Decodable, Hashable {
     let cwd: String?
     /// Epoch milliseconds.
     let startedAt: Double?
-    let tmux: String?
+    /// "session:@window.%pane". Filled in from the process tree when Claude
+    /// Code does not record it.
+    var tmux: String?
     /// Claude Code's name for the session, e.g. "systemforge-61". Sessions
     /// use it to address each other; it can change while the session runs.
     let name: String?
