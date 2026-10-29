@@ -24,6 +24,12 @@ struct PaneView: View {
         return sessions.first { $0.id == attached.id } ?? attached
     }
 
+    /// The Claude Code session running in this pane's tmux session, if any.
+    private var claudeRecord: ClaudeLiveRecord? {
+        guard let tmux = attachedSession?.tmuxSession else { return nil }
+        return appState.claudeSessions.liveByTmuxSession[tmux]
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Compact header with session dropdown
@@ -31,6 +37,9 @@ struct PaneView: View {
                 paneId: paneId,
                 sessions: sessions,
                 currentSession: liveSession,
+                claudeName: claudeRecord?.name,
+                claudeStatus: ClaudeLiveStatus.text(status: claudeRecord?.status, waitingFor: claudeRecord?.waitingFor),
+                claudeWaiting: ClaudeLiveStatus.isWaiting(status: claudeRecord?.status, waitingFor: claudeRecord?.waitingFor),
                 isFocused: isFocused,
                 onSelectSession: { session in
                     attachedSession = session
@@ -124,6 +133,11 @@ struct PaneHeaderView: View {
     let paneId: Int
     let sessions: [Session]
     let currentSession: Session?
+    /// Claude Code's name for the session in this pane, e.g. "github-com-8b".
+    var claudeName: String? = nil
+    /// Live Claude status, e.g. "busy" or "waiting: permission prompt".
+    var claudeStatus: String? = nil
+    var claudeWaiting: Bool = false
     let isFocused: Bool
     let onSelectSession: (Session) -> Void
     let onDetach: () -> Void
@@ -188,6 +202,24 @@ struct PaneHeaderView: View {
             }
             .menuStyle(.borderlessButton)
             .fixedSize()
+
+            if let claudeName {
+                Text(claudeName)
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                    .help("Claude Code session name\(claudeStatus.map { " — \($0)" } ?? "")")
+            }
+            if claudeWaiting, let claudeStatus {
+                Text(claudeStatus)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .background(Color.orange)
+                    .cornerRadius(3)
+                    .lineLimit(1)
+            }
 
             Spacer()
 

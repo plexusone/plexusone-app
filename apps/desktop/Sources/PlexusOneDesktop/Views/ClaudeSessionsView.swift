@@ -26,7 +26,7 @@ struct ClaudeSessionsView: View {
             guard endingFilter.includes(info) else { return false }
             guard !query.isEmpty else { return true }
             let haystack = [
-                info.subject, info.lastPrompt ?? "", info.tmux?.sessionName ?? "",
+                info.subject, info.lastPrompt ?? "", info.tmux?.sessionName ?? "", info.claudeName ?? "",
                 info.cwd ?? "", info.sessionId, info.gitBranch ?? "",
             ] + info.repos.map(\.displayName)
             return haystack.contains { $0.lowercased().contains(query) }
@@ -149,15 +149,23 @@ struct ClaudeSessionsView: View {
     private var sessionTable: some View {
         Table(filtered, selection: $selection) {
             TableColumn("State") { info in
-                EndStateBadge(state: info.endState)
+                EndStateBadge(state: info.endState, liveStatus: info.liveStatusText)
             }
-            .width(min: 120, ideal: 140)
+            .width(min: 130, ideal: 190)
 
             TableColumn("tmux") { info in
                 Text(info.tmux?.sessionName ?? "—")
                     .foregroundColor(info.tmux == nil ? .secondary : .primary)
             }
             .width(min: 70, ideal: 110)
+
+            TableColumn("Claude Name") { info in
+                Text(info.claudeName ?? "—")
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(info.claudeName == nil ? .secondary : .primary)
+                    .lineLimit(1)
+            }
+            .width(min: 90, ideal: 150)
 
             TableColumn("Subject") { info in
                 Text(info.subject)
@@ -469,6 +477,12 @@ enum EndingFilter: String, CaseIterable, Identifiable {
 
 struct EndStateBadge: View {
     let state: SessionEndState
+    /// Live status of a running session, e.g. "waiting: permission prompt".
+    var liveStatus: String? = nil
+
+    private var isWaiting: Bool {
+        state == .running && (liveStatus?.hasPrefix("waiting") ?? false)
+    }
 
     var body: some View {
         HStack(spacing: 5) {
@@ -477,11 +491,18 @@ struct EndStateBadge: View {
                 .frame(width: 8, height: 8)
             Text(state.displayName)
                 .lineLimit(1)
+            if state == .running, let liveStatus {
+                Text(liveStatus)
+                    .foregroundColor(isWaiting ? .orange : .secondary)
+                    .fontWeight(isWaiting ? .semibold : .regular)
+                    .lineLimit(1)
+            }
         }
         .help(state.explanation)
     }
 
     private var color: Color {
+        if isWaiting { return .orange }
         switch state {
         case .running: return .green
         case .exited, .endedCleanly: return .gray
@@ -514,7 +535,7 @@ private struct SessionDetailView: View {
                 Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 12, verticalSpacing: 6) {
                     row("State") {
                         VStack(alignment: .leading, spacing: 2) {
-                            EndStateBadge(state: info.endState)
+                            EndStateBadge(state: info.endState, liveStatus: info.liveStatusText)
                             Text(info.endState.explanation)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
@@ -525,6 +546,11 @@ private struct SessionDetailView: View {
                             Text(info.sessionId).font(.system(.body, design: .monospaced)).textSelection(.enabled)
                             Button("Copy") { onCopy(info.sessionId) }.controlSize(.small)
                         }
+                    }
+                    row("Claude name") {
+                        Text(info.claudeName ?? "—")
+                            .font(.system(.body, design: .monospaced))
+                            .textSelection(.enabled)
                     }
                     row("tmux") {
                         Text(info.tmux.map { "\($0.sessionName)  (window \($0.windowId), pane \($0.paneId))" } ?? "Not seen in tmux")

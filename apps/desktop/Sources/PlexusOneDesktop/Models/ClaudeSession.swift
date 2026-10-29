@@ -107,8 +107,13 @@ struct ClaudeLiveRecord: Decodable, Hashable {
     /// Epoch milliseconds.
     let startedAt: Double?
     let tmux: String?
+    /// Claude Code's name for the session, e.g. "systemforge-61". Sessions
+    /// use it to address each other; it can change while the session runs.
     let name: String?
+    /// "busy", "idle", "waiting", "shell", ...
     let status: String?
+    /// What a waiting session needs, e.g. "permission prompt".
+    let waitingFor: String?
 
     var startDate: Date? {
         startedAt.map { Date(timeIntervalSince1970: $0 / 1000) }
@@ -166,10 +171,21 @@ struct ClaudeSessionInfo: Identifiable, Hashable {
     /// Current tmux location if running, else the last one observed.
     var tmux: TmuxTarget?
     var pid: Int32?
+    /// Claude Code's name for the session, e.g. "github-com-8b".
+    var claudeName: String?
+    /// Live status while running ("busy", "idle", "waiting", ...).
+    var liveStatus: String?
+    /// What a waiting session needs, e.g. "permission prompt".
+    var waitingFor: String?
     var repos: [RepoRef] = []
     var endState: SessionEndState
     /// When the app saw it end, if it did.
     var endedAt: Date?
+
+    /// Short live status for display, e.g. "waiting: permission prompt".
+    var liveStatusText: String? {
+        ClaudeLiveStatus.text(status: liveStatus, waitingFor: waitingFor)
+    }
 
     var subject: String {
         title ?? firstPrompt ?? lastPrompt ?? "(untitled)"
@@ -182,6 +198,23 @@ struct ClaudeSessionInfo: Identifiable, Hashable {
     var resumeCommand: String {
         let dir = cwd.map { "cd \(ShellQuote.quote($0)) && " } ?? ""
         return "\(dir)claude --resume \(sessionId)"
+    }
+}
+
+enum ClaudeLiveStatus {
+    /// "waiting: permission prompt" when a session is blocked, else the
+    /// status as Claude Code reports it ("busy", "idle", ...).
+    static func text(status: String?, waitingFor: String?) -> String? {
+        if let waitingFor, !waitingFor.isEmpty {
+            return "waiting: \(waitingFor)"
+        }
+        guard let status, !status.isEmpty else { return nil }
+        return status
+    }
+
+    /// Whether the session needs the user.
+    static func isWaiting(status: String?, waitingFor: String?) -> Bool {
+        (waitingFor?.isEmpty == false) || status == "waiting"
     }
 }
 

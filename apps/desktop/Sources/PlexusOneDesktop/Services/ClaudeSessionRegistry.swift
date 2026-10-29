@@ -8,6 +8,8 @@ struct ObservedSession: Codable, Hashable {
     /// resumed under the same tmux name.
     var tmux: TmuxTarget?
     var pid: Int32?
+    /// Claude Code's name for the session, last seen.
+    var name: String?
     var firstSeenAt: Date
     var lastSeenRunningAt: Date
     var isRunning: Bool
@@ -64,6 +66,7 @@ struct ClaudeSessionRegistry: Codable {
             )
             entry.cwd = rec.cwd ?? entry.cwd
             entry.tmux = rec.tmuxTarget ?? entry.tmux
+            entry.name = rec.name ?? entry.name
             entry.pid = rec.pid
             entry.lastSeenRunningAt = snap.takenAt
             entry.isRunning = true

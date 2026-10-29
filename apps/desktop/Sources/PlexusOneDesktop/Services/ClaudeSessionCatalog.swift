@@ -11,11 +11,15 @@ final class ClaudeSessionCatalog {
     private(set) var isLoading = false
     private(set) var lastError: String?
     private(set) var bootTime: Date?
+    /// Live Claude sessions by tmux session name, for pane headers.
+    private(set) var liveByTmuxSession: [String: ClaudeLiveRecord] = [:]
 
     private var registry = ClaudeSessionRegistry()
     private var latestSnapshot: SessionSnapshot?
     private var transcriptCache: [String: CachedTranscript] = [:]
     private var monitorTask: Task<Void, Never>?
+    /// The @claude_name value last set on each tmux session.
+    private var appliedClaudeNames: [String: String] = [:]
 
     private let claudeDir: URL
     private let registryURL: URL
@@ -68,6 +72,8 @@ final class ClaudeSessionCatalog {
         )
         latestSnapshot = snap
         bootTime = snap.bootTime
+        liveByTmuxSession = Self.liveByTmuxSession(snap.live)
+        await syncClaudeNameOptions()
         if registry.observe(snap) {
             do {
                 try registry.save(to: registryURL, fileSystem: fileSystem)
@@ -75,6 +81,62 @@ final class ClaudeSessionCatalog {
                 lastError = "Could not save \(registryURL.path): \(error.localizedDescription)"
             }
         }
+    }
+
+    /// The live record for each tmux session. If several Claude sessions
+    /// share a tmux session, the most recently started one wins.
+    nonisolated static func liveByTmuxSession(_ live: [ClaudeLiveRecord]) -> [String: ClaudeLiveRecord] {
+        var result: [String: ClaudeLiveRecord] = [:]
+        for rec in live {
+            guard let session = rec.tmuxTarget?.sessionName else { continue }
+            if let existing = result[session], (existing.startedAt ?? 0) > (rec.startedAt ?? 0) {
+                continue
+            }
+            result[session] = rec
+        }
+        return result
+    }
+
+    // MARK: - tmux @claude_name
+
+    /// Keep the `@claude_name` user option on each tmux session equal to the
+    /// name of the Claude session running in it, so a tmux status line can
+    /// show it (see the Claude Sessions guide). Only changes call tmux.
+    private func syncClaudeNameOptions() async {
+        var wanted: [String: String] = [:]
+        for (session, rec) in liveByTmuxSession {
+            if let name = rec.name, !name.isEmpty { wanted[session] = name }
+        }
+        for (session, args) in Self.claudeNameOptionChanges(applied: appliedClaudeNames, wanted: wanted) {
+            let (path, baseArgs) = TmuxEnvironment.findExecutable()
+            do {
+                let result = try await commandExecutor.execute(path, arguments: baseArgs + args)
+                if !result.success {
+                    // The tmux session may have closed already; nothing to update.
+                    NSLog("PlexusOne: tmux %@ for %@: %@", args.joined(separator: " "), session, result.stderr)
+                }
+            } catch {
+                NSLog("PlexusOne: tmux @claude_name for %@ failed: %@", session, error.localizedDescription)
+            }
+        }
+        appliedClaudeNames = wanted
+    }
+
+    /// The tmux commands that move the applied @claude_name values to the
+    /// wanted ones: set new or changed names, unset names whose Claude
+    /// session ended.
+    nonisolated static func claudeNameOptionChanges(
+        applied: [String: String],
+        wanted: [String: String]
+    ) -> [(session: String, args: [String])] {
+        var changes: [(session: String, args: [String])] = []
+        for session in wanted.keys.sorted() where applied[session] != wanted[session] {
+            changes.append((session, ["set-option", "-t", "=\(session):", "@claude_name", wanted[session] ?? ""]))
+        }
+        for session in applied.keys.sorted() where wanted[session] == nil {
+            changes.append((session, ["set-option", "-u", "-t", "=\(session):", "@claude_name"]))
+        }
+        return changes
     }
 
     // MARK: - Listing
@@ -200,7 +262,7 @@ final class ClaudeSessionCatalog {
             sessionId: t.sessionId,
             cwd: cwd,
             gitBranch: t.gitBranch,
-            title: t.title ?? live?.name,
+            title: t.title ?? live?.name ?? observed?.name,
             firstPrompt: t.firstPrompt,
             lastPrompt: t.lastPrompt,
             createdAt: t.createdAt,
@@ -208,6 +270,9 @@ final class ClaudeSessionCatalog {
             version: t.version,
             tmux: live?.tmuxTarget ?? stale?.tmuxTarget ?? observed?.tmux,
             pid: live?.pid,
+            claudeName: live?.name ?? stale?.name ?? observed?.name,
+            liveStatus: live?.status,
+            waitingFor: live?.waitingFor,
             repos: resolver.repos(for: repoPaths),
             endState: classify(transcript: t, live: live, stale: stale, observed: observed, bootTime: bootTime),
             endedAt: observed?.endedAt
