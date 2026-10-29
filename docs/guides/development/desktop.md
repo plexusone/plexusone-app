@@ -6,7 +6,7 @@ The desktop app (`apps/desktop`) is a native macOS terminal multiplexer built wi
 
 | Tool | Version | Installation |
 |------|---------|--------------|
-| Xcode | 15+ | App Store |
+| Xcode | 16+ | App Store |
 | macOS | 14+ (Sonoma) | Required for SwiftUI features |
 | tmux | 3.x+ | `brew install tmux` |
 
@@ -82,38 +82,63 @@ apps/desktop/
 ├── Package.swift                           # Swift package manifest
 ├── Sources/PlexusOneDesktop/
 │   ├── App/
-│   │   ├── PlexusOneDesktopApp.swift       # @main entry, menus, window management
-│   │   └── AppDelegate.swift               # App lifecycle, tmux check
+│   │   ├── EntryPoint.swift                # @main: runs the app, or the claude-hook command
+│   │   ├── PlexusOneDesktopApp.swift       # Scenes and windows
+│   │   ├── AppCommands.swift               # Menu commands and shortcuts
+│   │   └── AppDelegate.swift               # Lifecycle, single instance, notifications
 │   ├── Models/
 │   │   ├── Session.swift                   # Session, SessionStatus, AgentType
+│   │   ├── ClaudeSession.swift             # Claude session info, end states, live records
+│   │   ├── TerminalWrapper.swift           # PTY wrapper types
 │   │   ├── WindowState.swift               # WindowConfig, MultiWindowState
 │   │   └── LegacyState.swift               # v1 → v2 state migration
 │   ├── Services/
-│   │   ├── AppState.swift                  # Shared singleton state
+│   │   ├── AppState.swift                  # Shared state, waiting alerts, Dock badge
 │   │   ├── SessionManager.swift            # tmux session orchestration
 │   │   ├── WindowStateManager.swift        # Multi-window persistence
 │   │   ├── InputMonitor.swift              # AI prompt detection
+│   │   ├── ClaudeSessionCatalog.swift      # Lists Claude sessions, polls live state
+│   │   ├── ClaudeSessionRegistry.swift     # Observation log (~/.plexusone/claude-sessions.json)
+│   │   ├── ClaudeSessionRestorer.swift     # Resume and rename sessions in tmux
+│   │   ├── ClaudeTranscriptReader.swift    # Subject, prompts, files, and cost from transcripts
+│   │   ├── ClaudeHookRecorder.swift        # The claude-hook command
+│   │   ├── ClaudeHookInstaller.swift       # Adds and removes the hook in Claude settings
+│   │   ├── GitRepoResolver.swift           # Maps files to github.com/org/repo
+│   │   ├── SessionNavigator.swift          # Focuses the pane showing a session
+│   │   ├── SystemProbe.swift               # Process start times, parents, boot time
+│   │   ├── TerminalWrapperDetector.swift   # PTY wrapper detection
+│   │   ├── TmuxEnvironment.swift           # Finding tmux, mouse mode options
 │   │   ├── CommandExecuting.swift          # Protocol for testing
 │   │   └── FileSystemAccessing.swift       # Protocol for testing
-│   └── Views/
-│       ├── ContentView.swift               # Main window content
-│       ├── GridLayoutView.swift            # Multi-pane grid
-│       ├── PaneView.swift                  # Individual pane UI
-│       ├── AppTerminalView.swift           # SwiftTerm subclass
-│       ├── TerminalViewRepresentable.swift # NSViewRepresentable wrapper
-│       ├── NewSessionSheet.swift           # Create session dialog
-│       ├── InputIndicatorView.swift        # AI prompt overlay
-│       └── SettingsView.swift              # App preferences
-├── Tests/PlexusOneDesktopTests/
-│   ├── SessionManagerTests.swift
-│   ├── WindowStateManagerTests.swift
-│   ├── WindowStateTests.swift
-│   ├── AppStateTests.swift
-│   └── Mocks/
-│       ├── MockCommandExecutor.swift
-│       └── MockFileSystem.swift
-└── Resources/
-    └── PlexusOneDesktop.icns               # App icon
+│   ├── Views/
+│   │   ├── ContentView.swift               # Main window content
+│   │   ├── GridLayoutView.swift            # Multi-pane grid
+│   │   ├── PaneView.swift                  # Pane header and terminal
+│   │   ├── AppTerminalView.swift           # SwiftTerm subclass
+│   │   ├── TerminalViewRepresentable.swift # NSViewRepresentable wrapper
+│   │   ├── ClaudeSessionsView.swift        # Claude Sessions window
+│   │   ├── AttachSessionSheet.swift        # Attach dialog
+│   │   ├── NewSessionSheet.swift           # Create session dialog
+│   │   ├── SessionPickerView.swift         # Session picker for a pane
+│   │   ├── DetachedView.swift              # Pop-out window
+│   │   ├── StatusBarView.swift             # Status bar
+│   │   ├── InputIndicatorView.swift        # AI prompt overlay
+│   │   ├── WrapperWarningView.swift        # PTY wrapper warning
+│   │   └── SettingsView.swift              # App preferences
+│   ├── Resources/
+│   │   └── AppIcon.icns                    # App icon
+│   └── Info.plist                          # Bundle version
+└── Tests/PlexusOneDesktopTests/
+    ├── AppStateTests.swift
+    ├── ClaudeSessionTests.swift
+    ├── CommandExecutingTests.swift
+    ├── SessionManagerTests.swift
+    ├── TerminalWrapperDetectorTests.swift
+    ├── WindowStateManagerTests.swift
+    ├── WindowStateTests.swift
+    └── Mocks/
+        ├── MockCommandExecutor.swift
+        └── MockFileSystem.swift
 ```
 
 ## Key Dependencies
@@ -131,7 +156,8 @@ The app follows a multi-window architecture with shared state:
 AppState (Singleton)
 ├── SessionManager       # Shared - all tmux sessions
 ├── WindowStateManager   # Shared - window persistence
-└── InputMonitor         # Shared - AI prompt detection
+├── InputMonitor         # Shared - AI prompt detection
+└── ClaudeSessionCatalog # Shared - Claude sessions, names, and waiting state
 
 Window A                 Window B
 ├── PaneManager (local)  ├── PaneManager (local)
@@ -139,7 +165,7 @@ Window A                 Window B
 └── ContentView          └── ContentView
 ```
 
-**Key principle**: `SessionManager` is shared across windows (single source of truth for sessions), while `PaneManager` and `GridConfig` are per-window.
+**Key principle**: `SessionManager` and `ClaudeSessionCatalog` are shared across windows (single sources of truth for tmux and Claude sessions), while `PaneManager` and `GridConfig` are per-window.
 
 ## Configuration
 

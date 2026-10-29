@@ -168,7 +168,7 @@ Sessions window that finds and restores sessions lost to a crash or restart.
 ### Prerequisites
 
 - macOS 14+
-- Xcode 15+ (for Swift development)
+- Xcode 16+ (for Swift development)
 - Go 1.22+
 - Flutter 3.x
 - tmux

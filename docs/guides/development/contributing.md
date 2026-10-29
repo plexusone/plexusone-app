@@ -9,7 +9,7 @@ Maintainers releasing a new version should also read [Maintaining](maintaining.m
 ### Prerequisites
 
 - macOS 14+ (for desktop development)
-- Xcode 15+ with Swift 5.9+
+- Xcode 16+ with Swift 6.0+
 - Go 1.21+
 - Flutter 3.16+
 - tmux 3.0+

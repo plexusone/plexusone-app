@@ -6,9 +6,9 @@ PlexusOne Desktop is a macOS application for managing multiple AI CLI agent sess
 
 ### Components
 
-1. **Toolbar** - Layout picker, new session button, refresh
+1. **Toolbar** - Layout picker, new session button, [Claude Sessions](claude-sessions.md) button, refresh
 2. **Grid Layout** - Configurable panes (1×1 to 4×4)
-3. **Pane Header** - Session dropdown, pane number, pop-out button, detach button
+3. **Pane Header** - Session dropdown, the Claude session name with a badge when it is waiting for you, pane number, pop-out button, detach button
 4. **Terminal View** - Embedded terminal showing session output
 5. **Status Bar** - Pane indicators, session count
 

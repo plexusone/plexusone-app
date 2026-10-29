@@ -129,7 +129,16 @@ set -g allow-rename off
 # Start window numbering at 1
 set -g base-index 1
 setw -g pane-base-index 1
+
+# Show the Claude session name next to the tmux session name
+set -g status-left '[#S]#{?@claude_name,[#{@claude_name}],} '
+set -g status-left-length 40
 ```
+
+PlexusOne Desktop turns on mouse mode for each session it attaches, so the
+trackpad scrolls tmux history, unless **Settings > Sessions > Trackpad scrolls
+conversation history** is off. The `@claude_name` option is kept up to date
+while the app runs; see [Claude Sessions](../desktop/claude-sessions.md#claude-names-in-the-tmux-status-line).
 
 ### Session Naming
 
@@ -143,13 +152,16 @@ tmux new-session -s claude-main
 tmux rename-session -t 0 claude-main
 ```
 
-PlexusOne Desktop displays session names in the pane headers.
+PlexusOne Desktop displays session names in the pane headers, followed by the Claude session name when Claude Code runs in the session.
 
 ## File Locations
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| Desktop state | `~/.plexusone/state.json` | Session state |
+| Desktop state | `~/.plexusone/state.json` | Window layouts and pane attachments |
+| Claude session log | `~/.plexusone/claude-sessions.json` | What the app observed about each Claude session: tmux name, Claude name, how it ended |
+| Claude hook events | `~/.plexusone/claude-session-events.jsonl` | Lines written by the optional Claude Code hook while the app is closed |
+| Claude Code settings | `~/.claude/settings.json` | Holds the hook entries when the hook is installed; backed up to `settings.json.plexusone-backup` before each change |
 | tmux sessions | `/tmp/tmux-$UID/` | tmux sockets |
 | Mobile config | Device storage | App settings |
 

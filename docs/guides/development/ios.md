@@ -6,8 +6,8 @@ The native iOS app (`apps/ios`) uses Swift and SwiftTerm for optimal terminal re
 
 | Tool | Version | Installation |
 |------|---------|--------------|
-| Xcode | 15+ | App Store |
-| macOS | 14+ (Sonoma) | Required for Xcode 15 |
+| Xcode | 16+ | App Store |
+| macOS | 14.5+ (Sonoma) | Required for Xcode 16 |
 | iOS Simulator | 16.0+ | Included with Xcode |
 
 ## Project Setup
