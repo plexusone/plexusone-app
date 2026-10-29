@@ -43,12 +43,14 @@ func main() {
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		if _, err := w.Write([]byte("OK")); err != nil {
+			log.Printf("health response: %v", err)
+		}
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
-		w.Write([]byte(`<!DOCTYPE html>
+		if _, err := w.Write([]byte(`<!DOCTYPE html>
 <html>
 <head>
     <title>TUI Parser</title>
@@ -113,7 +115,9 @@ func main() {
         }
     </script>
 </body>
-</html>`))
+</html>`)); err != nil {
+			log.Printf("console response: %v", err)
+		}
 	})
 
 	// Start HTTP server
@@ -132,7 +136,9 @@ func main() {
 
 		log.Println("Shutting down...")
 		sessionManager.Close()
-		server.Close()
+		if err := server.Close(); err != nil {
+			log.Printf("server close: %v", err)
+		}
 	}()
 
 	log.Printf("Server listening on http://localhost%s", addr)

@@ -2,12 +2,16 @@ package session
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/creack/pty"
@@ -65,9 +69,13 @@ func (m *Manager) ListTmuxSessions() ([]protocol.SessionInfo, error) {
 		}
 
 		name := parts[0]
+		// An activity time tmux did not report, or that does not parse,
+		// stays 0: unknown.
 		var lastActivity int64
 		if len(parts) > 1 {
-			fmt.Sscanf(parts[1], "%d", &lastActivity)
+			if v, err := strconv.ParseInt(strings.TrimSpace(parts[1]), 10, 64); err == nil {
+				lastActivity = v
+			}
 		}
 
 		// Determine status based on our tracking
@@ -132,7 +140,9 @@ func (m *Manager) Attach(sessionName string) (*Session, error) {
 
 	// Wait for process to exit
 	go func() {
-		cmd.Wait()
+		if err := cmd.Wait(); err != nil {
+			log.Printf("tmux attach for %s exited: %v", sessionName, err)
+		}
 		m.mu.Lock()
 		delete(m.sessions, sessionName)
 		m.mu.Unlock()
@@ -157,13 +167,16 @@ func (m *Manager) Detach(sessionName string) error {
 	delete(m.sessions, sessionName)
 	m.mu.Unlock()
 
-	// Send detach key sequence (Ctrl-B d)
-	session.pty.Write([]byte{0x02, 'd'}) // Ctrl-B, d
-
-	// Close PTY
-	session.pty.Close()
-
-	return nil
+	// Send detach key sequence (Ctrl-B d), then close the PTY either way.
+	var writeErr error
+	if _, err := session.pty.Write([]byte{0x02, 'd'}); err != nil { // Ctrl-B, d
+		writeErr = fmt.Errorf("send detach keys to %s: %w", sessionName, err)
+	}
+	var closeErr error
+	if err := session.pty.Close(); err != nil {
+		closeErr = fmt.Errorf("close PTY for %s: %w", sessionName, err)
+	}
+	return errors.Join(writeErr, closeErr)
 }
 
 // SendInput sends text input to a session
@@ -244,8 +257,10 @@ func (m *Manager) readOutput(session *Session) {
 	for {
 		n, err := session.pty.Read(buf)
 		if err != nil {
-			if err != io.EOF {
-				// Log error but don't spam
+			// EOF, a closed file, and EIO are how a PTY read ends when the
+			// session detaches or exits; anything else is worth reporting.
+			if !errors.Is(err, io.EOF) && !errors.Is(err, os.ErrClosed) && !errors.Is(err, syscall.EIO) {
+				log.Printf("read output for %s: %v", session.ID, err)
 			}
 			return
 		}
@@ -272,7 +287,9 @@ func (m *Manager) Close() {
 	defer m.mu.Unlock()
 
 	for name, session := range m.sessions {
-		session.pty.Close()
+		if err := session.pty.Close(); err != nil {
+			log.Printf("close PTY for %s: %v", name, err)
+		}
 		delete(m.sessions, name)
 	}
 }

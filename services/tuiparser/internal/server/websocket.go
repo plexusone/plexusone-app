@@ -2,7 +2,9 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
+	"net"
 	"net/http"
 	"sync"
 
@@ -183,7 +185,7 @@ func (s *Server) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 func (c *Client) readPump() {
 	defer func() {
 		c.server.unregister <- c
-		c.conn.Close()
+		c.closeConn()
 	}()
 
 	for {
@@ -199,9 +201,18 @@ func (c *Client) readPump() {
 	}
 }
 
+// closeConn closes the connection. readPump and writePump both close it
+// when they end, so the second close reports an already-closed connection,
+// which is expected and not logged.
+func (c *Client) closeConn() {
+	if err := c.conn.Close(); err != nil && !errors.Is(err, net.ErrClosed) {
+		log.Printf("WebSocket close: %v", err)
+	}
+}
+
 // writePump writes messages to the WebSocket connection
 func (c *Client) writePump() {
-	defer c.conn.Close()
+	defer c.closeConn()
 
 	for message := range c.send {
 		if err := c.conn.WriteMessage(websocket.TextMessage, message); err != nil {
@@ -317,23 +328,33 @@ func (c *Client) handleAction(sessionID, action, value string) {
 	// For now, translate actions to keystrokes
 	switch action {
 	case "yes", "y":
-		c.server.sessionManager.SendKey(sessionID, "y")
-		c.server.sessionManager.SendKey(sessionID, "enter")
+		c.sendKeys(sessionID, "y", "enter")
 	case "no", "n":
-		c.server.sessionManager.SendKey(sessionID, "n")
-		c.server.sessionManager.SendKey(sessionID, "enter")
+		c.sendKeys(sessionID, "n", "enter")
 	case "always", "a":
-		c.server.sessionManager.SendKey(sessionID, "a")
-		c.server.sessionManager.SendKey(sessionID, "enter")
+		c.sendKeys(sessionID, "a", "enter")
 	case "submit", "enter":
-		c.server.sessionManager.SendKey(sessionID, "enter")
+		c.sendKeys(sessionID, "enter")
 	case "cancel", "escape":
-		c.server.sessionManager.SendKey(sessionID, "escape")
+		c.sendKeys(sessionID, "escape")
 	case "select":
 		// Value contains the selection, send it
 		if value != "" {
-			c.server.sessionManager.SendInput(sessionID, value)
-			c.server.sessionManager.SendKey(sessionID, "enter")
+			if err := c.server.sessionManager.SendInput(sessionID, value); err != nil {
+				log.Printf("Error sending input to %s: %v", sessionID, err)
+				return
+			}
+			c.sendKeys(sessionID, "enter")
+		}
+	}
+}
+
+// sendKeys sends keys in order, stopping at the first failure, which is logged.
+func (c *Client) sendKeys(sessionID string, keys ...string) {
+	for _, key := range keys {
+		if err := c.server.sessionManager.SendKey(sessionID, key); err != nil {
+			log.Printf("Error sending key %q to %s: %v", key, sessionID, err)
+			return
 		}
 	}
 }
