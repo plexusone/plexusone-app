@@ -726,6 +726,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#when-a-session-needs-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When a session needs you
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#claude-names-in-panes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude names in panes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#claude-names-in-the-tmux-status-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude names in the tmux status line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-a-session-ended" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -737,10 +770,43 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#renaming-a-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Renaming a session
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recording-sessions-while-plexusone-is-closed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recording sessions while PlexusOne is closed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#restoring-sessions" class="md-nav__link">
     <span class="md-ellipsis">
       
         Restoring sessions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#after-a-crash-or-restart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After a crash or restart
       
     </span>
   </a>
@@ -1445,6 +1511,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../design/adrs/0003-claude-code-hook-recording/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    0003 Claude Code Hook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1674,6 +1768,34 @@
     
   
     Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/v0.7.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.7.0
   
 
     
@@ -1984,6 +2106,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#when-a-session-needs-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When a session needs you
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#claude-names-in-panes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude names in panes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#claude-names-in-the-tmux-status-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude names in the tmux status line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-a-session-ended" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1995,10 +2150,43 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#renaming-a-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Renaming a session
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recording-sessions-while-plexusone-is-closed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recording sessions while PlexusOne is closed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#restoring-sessions" class="md-nav__link">
     <span class="md-ellipsis">
       
         Restoring sessions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#after-a-crash-or-restart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After a crash or restart
       
     </span>
   </a>
@@ -2042,11 +2230,15 @@ window's toolbar.</p>
 <tbody>
 <tr>
 <td>State</td>
-<td>Running, or how the session ended (see below)</td>
+<td>Running, with Claude's live status (<code>busy</code>, <code>idle</code>, or what it is waiting for, such as <code>waiting: permission prompt</code>), or how the session ended (see below)</td>
 </tr>
 <tr>
 <td>tmux</td>
 <td>The tmux session Claude ran in, if known</td>
+</tr>
+<tr>
+<td>Claude Name</td>
+<td>Claude Code's own name for the session, such as <code>github-com-8b</code>. Sessions use this name to address each other</td>
 </tr>
 <tr>
 <td>Subject</td>
@@ -2054,7 +2246,15 @@ window's toolbar.</p>
 </tr>
 <tr>
 <td>Repository</td>
-<td>The git repository of the session's directory, as <code>github.com/org/repo</code></td>
+<td>The repository the session worked in most, as <code>github.com/org/repo</code>, ranked by how many of the files it read or edited fall in each</td>
+</tr>
+<tr>
+<td>Last Prompt</td>
+<td>The last prompt you typed in the session</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>The session's cost as Claude Code last recorded it, usually at shutdown</td>
 </tr>
 <tr>
 <td>Last Active</td>
@@ -2071,6 +2271,37 @@ read or edited near the end, its first and last prompts, and the command that
 resumes it.</p>
 <p>Filter by how recently a session was active, by state, or by searching the
 subject, repository, tmux name, or ID.</p>
+<h2 id="when-a-session-needs-you">When a session needs you<a class="headerlink" href="#when-a-session-needs-you" title="Permanent link">&para;</a></h2>
+<p>When a Claude session starts waiting for you, for example at a permission
+prompt, PlexusOne Desktop posts a notification such as <em>"github-com-8b in
+tmux acad is waiting: permission prompt"</em>. Click it to go to that session.
+Turn notifications off in <strong>Settings &gt; Sessions</strong>.</p>
+<p>The Dock icon shows how many sessions are waiting. <strong>Window &gt; Jump to Next
+Waiting Session</strong> (<code>⌘ J</code>) cycles through them.</p>
+<p>Going to a session focuses the pane already showing it, in whichever window
+it is; a window opens only when no pane shows it. Double-clicking a running
+session in the list does the same.</p>
+<h2 id="claude-names-in-panes">Claude names in panes<a class="headerlink" href="#claude-names-in-panes" title="Permanent link">&para;</a></h2>
+<p>Each pane's header shows the Claude name of the session running in it, after
+the tmux session name. When the session is waiting for you, for example at a
+permission prompt, an orange badge says what it is waiting for.</p>
+<p>Claude Code names a session after the directory it started in and may rename
+it later; the header follows the change within a few seconds.</p>
+<h2 id="claude-names-in-the-tmux-status-line">Claude names in the tmux status line<a class="headerlink" href="#claude-names-in-the-tmux-status-line" title="Permanent link">&para;</a></h2>
+<p>While PlexusOne Desktop runs, it keeps a tmux option, <code>@claude_name</code>, on each
+tmux session equal to the Claude name running in it, and removes it when the
+session ends. tmux's own status line can show it. Add these lines to
+<code>~/.tmux.conf</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>set -g status-left &#39;[#S]#{?@claude_name,[#{@claude_name}],} &#39;
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>set -g status-left-length 40
+</code></pre></div>
+<p>Then reload with <code>tmux source-file ~/.tmux.conf</code>. The status line reads
+<code>[acad][github-com-8b]</code>; a tmux session without Claude shows just <code>[acad]</code>.
+The length setting matters: tmux's default of 10 characters cuts the name off.</p>
+<p>These lines change the status line in every tmux client, including other
+terminals, so the app does not apply them for you. If PlexusOne Desktop is
+not running, <code>@claude_name</code> is not updated, so a renamed or ended session can
+show its old name until the app runs again.</p>
 <h2 id="how-a-session-ended">How a session ended<a class="headerlink" href="#how-a-session-ended" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2118,21 +2349,52 @@ subject, repository, tmux name, or ID.</p>
 terminal looks the same as <code>/exit</code> there. PlexusOne Desktop tells them apart by
 watching while it runs: if Claude stops and its tmux pane is still open, you
 exited; if the pane went away too, the terminal or tmux closed. For the same
-reason, tmux names are only known for sessions the app has seen running.</p>
+reason, tmux names are only known for sessions the app has seen running, or
+that the Claude Code hook recorded (see below).</p>
 <p>The app keeps what it observes in <code>~/.plexusone/claude-sessions.json</code>.</p>
+<h2 id="renaming-a-session">Renaming a session<a class="headerlink" href="#renaming-a-session" title="Permanent link">&para;</a></h2>
+<p>Right-click a running session and choose <strong>Rename Claude Session...</strong>. The app
+types <code>/rename &lt;name&gt;</code> into the session's pane, as if you had typed it. It is
+available only while the session is idle at its prompt, so the command cannot
+interrupt work; make sure the session's input box is empty.</p>
+<h2 id="recording-sessions-while-plexusone-is-closed">Recording sessions while PlexusOne is closed<a class="headerlink" href="#recording-sessions-while-plexusone-is-closed" title="Permanent link">&para;</a></h2>
+<p>By itself the app records a session's tmux name only while it is running. To
+keep the mapping when it is not, install the Claude Code hook in <strong>Settings &gt;
+Sessions &gt; Install Hook</strong>:</p>
+<ul>
+<li>It adds two hooks to <code>~/.claude/settings.json</code>, which run at the start of
+  each Claude session and on every prompt. The file is backed up to
+  <code>settings.json.plexusone-backup</code> first, and only the app's own entries are
+  added or removed. The file is rewritten with sorted keys.</li>
+<li>Each hook run appends one line, with the session ID, directory, and tmux
+  pane, to <code>~/.plexusone/claude-session-events.jsonl</code>. It prints nothing and
+  never fails, and adds about a tenth of a second to each prompt.</li>
+<li>The app reads those lines into its session log when it next runs.</li>
+<li>The hooks apply to Claude sessions started after installing.</li>
+</ul>
+<p>If you move the app, Settings shows <strong>Update Hook</strong> so the hooks point at the
+new copy. <strong>Remove Hook</strong> takes them out again.</p>
 <h2 id="restoring-sessions">Restoring sessions<a class="headerlink" href="#restoring-sessions" title="Permanent link">&para;</a></h2>
 <p>Double-click a session, or select several and choose <strong>Restore Sessions in New
-Window</strong>. For each session:</p>
+Window</strong>. A session that is running and already shown in a pane is focused
+instead. For the others, a sheet asks which tmux session each one should run
+in, filled in with the remembered name, or one made from its directory and ID.
+Then, for each session:</p>
 <ul>
 <li>A running session in tmux is attached as it is.</li>
 <li>Otherwise <code>claude --resume &lt;id&gt;</code> is typed into a new shell in the session's
-  directory: in a new window of its remembered tmux session if that session
-  still exists, or in a new tmux session with the remembered name. A session
-  with no remembered name gets one made from its directory and ID.</li>
+  directory: in a new window of that tmux session if it exists, or in a new
+  tmux session with that name.</li>
 </ul>
 <p>The restored sessions open together in a new window, one pane each, up to nine.</p>
 <p>After a crash, a banner lists sessions that ended abnormally in the last 48
 hours, with <strong>Restore All</strong>.</p>
+<h2 id="after-a-crash-or-restart">After a crash or restart<a class="headerlink" href="#after-a-crash-or-restart" title="Permanent link">&para;</a></h2>
+<p>When PlexusOne Desktop starts with saved windows, choose <strong>Restore</strong>. tmux
+sessions the windows expect but that no longer exist are recreated first, by
+resuming the Claude session that last ran in each under the same name. The
+windows then open with their saved layouts, so the panes come back where they
+were.</p>
 
 
 
