@@ -2664,7 +2664,15 @@
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># Start window numbering at 1</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>base-index<span class="w"> </span><span class="m">1</span>
 <a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>setw<span class="w"> </span>-g<span class="w"> </span>pane-base-index<span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c1"># Show the Claude session name next to the tmux session name</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>status-left<span class="w"> </span><span class="s1">&#39;[#S]#{?@claude_name,[#{@claude_name}],} &#39;</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>status-left-length<span class="w"> </span><span class="m">40</span>
 </code></pre></div>
+<p>PlexusOne Desktop turns on mouse mode for each session it attaches, so the
+trackpad scrolls tmux history, unless <strong>Settings &gt; Sessions &gt; Trackpad scrolls
+conversation history</strong> is off. The <code>@claude_name</code> option is kept up to date
+while the app runs; see <a href="../../desktop/claude-sessions/#claude-names-in-the-tmux-status-line">Claude Sessions</a>.</p>
 <h3 id="session-naming">Session Naming<a class="headerlink" href="#session-naming" title="Permanent link">&para;</a></h3>
 <p>For better organization, name your sessions descriptively:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Create named session</span>
@@ -2673,7 +2681,7 @@
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Or rename existing session</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>tmux<span class="w"> </span>rename-session<span class="w"> </span>-t<span class="w"> </span><span class="m">0</span><span class="w"> </span>claude-main
 </code></pre></div>
-<p>PlexusOne Desktop displays session names in the pane headers.</p>
+<p>PlexusOne Desktop displays session names in the pane headers, followed by the Claude session name when Claude Code runs in the session.</p>
 <h2 id="file-locations">File Locations<a class="headerlink" href="#file-locations" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2687,7 +2695,22 @@
 <tr>
 <td>Desktop state</td>
 <td><code>~/.plexusone/state.json</code></td>
-<td>Session state</td>
+<td>Window layouts and pane attachments</td>
+</tr>
+<tr>
+<td>Claude session log</td>
+<td><code>~/.plexusone/claude-sessions.json</code></td>
+<td>What the app observed about each Claude session: tmux name, Claude name, how it ended</td>
+</tr>
+<tr>
+<td>Claude hook events</td>
+<td><code>~/.plexusone/claude-session-events.jsonl</code></td>
+<td>Lines written by the optional Claude Code hook while the app is closed</td>
+</tr>
+<tr>
+<td>Claude Code settings</td>
+<td><code>~/.claude/settings.json</code></td>
+<td>Holds the hook entries when the hook is installed; backed up to <code>settings.json.plexusone-backup</code> before each change</td>
 </tr>
 <tr>
 <td>tmux sessions</td>
