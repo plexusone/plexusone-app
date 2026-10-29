@@ -11,8 +11,9 @@ window's toolbar.
 
 | Column | Meaning |
 |--------|---------|
-| State | Running, or how the session ended (see below) |
+| State | Running, with Claude's live status (`busy`, `idle`, or what it is waiting for, such as `waiting: permission prompt`), or how the session ended (see below) |
 | tmux | The tmux session Claude ran in, if known |
+| Claude Name | Claude Code's own name for the session, such as `github-com-8b`. Sessions use this name to address each other |
 | Subject | Claude's title for the session, else the first prompt |
 | Repository | The git repository of the session's directory, as `github.com/org/repo` |
 | Last Active | When anything last happened in the session |
@@ -24,6 +25,36 @@ resumes it.
 
 Filter by how recently a session was active, by state, or by searching the
 subject, repository, tmux name, or ID.
+
+## Claude names in panes
+
+Each pane's header shows the Claude name of the session running in it, after
+the tmux session name. When the session is waiting for you, for example at a
+permission prompt, an orange badge says what it is waiting for.
+
+Claude Code names a session after the directory it started in and may rename
+it later; the header follows the change within a few seconds.
+
+## Claude names in the tmux status line
+
+While PlexusOne Desktop runs, it keeps a tmux option, `@claude_name`, on each
+tmux session equal to the Claude name running in it, and removes it when the
+session ends. tmux's own status line can show it. Add these lines to
+`~/.tmux.conf`:
+
+```tmux
+set -g status-left '[#S]#{?@claude_name,[#{@claude_name}],} '
+set -g status-left-length 40
+```
+
+Then reload with `tmux source-file ~/.tmux.conf`. The status line reads
+`[acad][github-com-8b]`; a tmux session without Claude shows just `[acad]`.
+The length setting matters: tmux's default of 10 characters cuts the name off.
+
+These lines change the status line in every tmux client, including other
+terminals, so the app does not apply them for you. If PlexusOne Desktop is
+not running, `@claude_name` is not updated, so a renamed or ended session can
+show its old name until the app runs again.
 
 ## How a session ended
 
