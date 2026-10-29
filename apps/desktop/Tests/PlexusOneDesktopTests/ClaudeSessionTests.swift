@@ -536,6 +536,18 @@ final class ClaudeSessionTests: XCTestCase {
         XCTAssertFalse(ClaudeSessionRestorer.canRename(info(state: .exited)))
     }
 
+    // MARK: - Recovery
+
+    func testResumableEntryPicksLatestEndedSessionForTmuxName() {
+        var registry = ClaudeSessionRegistry()
+        let acad = TmuxTarget(sessionName: "acad", windowId: "@1", paneId: "%1")
+        registry.sessions["old"] = ObservedSession(sessionId: "old", tmux: acad, firstSeenAt: t0, lastSeenRunningAt: t0, isRunning: false)
+        registry.sessions["new"] = ObservedSession(sessionId: "new", tmux: acad, firstSeenAt: t0, lastSeenRunningAt: t0.addingTimeInterval(60), isRunning: false)
+        registry.sessions["live"] = ObservedSession(sessionId: "live", tmux: acad, firstSeenAt: t0, lastSeenRunningAt: t0.addingTimeInterval(120), isRunning: true)
+        XCTAssertEqual(ClaudeSessionCatalog.resumableEntry(forTmuxName: "acad", in: registry)?.sessionId, "new")
+        XCTAssertNil(ClaudeSessionCatalog.resumableEntry(forTmuxName: "other", in: registry))
+    }
+
     func testGridFitting() {
         XCTAssertEqual(GridConfig.fitting(1), GridConfig(columns: 1, rows: 1))
         XCTAssertEqual(GridConfig.fitting(4), GridConfig(columns: 2, rows: 2))

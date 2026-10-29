@@ -154,6 +154,29 @@ final class ClaudeSessionCatalog {
         return changes
     }
 
+    // MARK: - Recovery
+
+    /// The Claude session that last ran in tmux session `name` and is not
+    /// running now, as a restorable row; nil if none is known.
+    func resumableSession(forTmuxName name: String) -> ClaudeSessionInfo? {
+        guard let entry = Self.resumableEntry(forTmuxName: name, in: registry) else { return nil }
+        return ClaudeSessionInfo(
+            sessionId: entry.sessionId,
+            cwd: entry.cwd,
+            tmux: entry.tmux,
+            claudeName: entry.name,
+            endState: entry.endState ?? .unknown
+        )
+    }
+
+    /// The most recently seen session that ran in tmux session `name` and
+    /// is not running.
+    nonisolated static func resumableEntry(forTmuxName name: String, in registry: ClaudeSessionRegistry) -> ObservedSession? {
+        registry.sessions.values
+            .filter { $0.tmux?.sessionName == name && !$0.isRunning }
+            .max { $0.lastSeenRunningAt < $1.lastSeenRunningAt }
+    }
+
     // MARK: - Listing
 
     /// Rebuild the list from transcripts active within `window` (nil for all).

@@ -148,7 +148,7 @@ struct ContentView: View {
             let configs = windowStateManager.configsToRestore()
             if let config = configs.first {
                 let attachmentCount = config.paneAttachments.count
-                Text("Found \(configs.count) saved window(s). First window: \(config.gridColumns)×\(config.gridRows) layout with \(attachmentCount) attached pane(s).")
+                Text("Found \(configs.count) saved window(s). First window: \(config.gridColumns)×\(config.gridRows) layout with \(attachmentCount) attached pane(s). tmux sessions that no longer exist are recreated by resuming the Claude session that last ran in them.")
             } else {
                 Text("Would you like to restore your previous session?")
             }
@@ -278,6 +278,9 @@ struct ContentView: View {
         Task {
             // Force a refresh to ensure we have the latest sessions
             await sessionManager.refresh()
+            if await recreateMissingTmuxSessions() > 0 {
+                await sessionManager.refresh()
+            }
 
             await MainActor.run {
                 // Pop the first pending config for this window
@@ -296,6 +299,31 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    /// After a crash or restart, recreate tmux sessions the saved windows
+    /// expect but that no longer exist, by resuming the Claude session that
+    /// last ran in each. Returns how many were recreated.
+    private func recreateMissingTmuxSessions() async -> Int {
+        let wanted = Set(windowStateManager.configsToRestore().flatMap { $0.paneAttachments.values })
+        let existing = Set(sessionManager.sessions.map(\.tmuxSession))
+        let missing = wanted.subtracting(existing).sorted()
+        guard !missing.isEmpty else { return 0 }
+
+        // Make sure sessions that stopped since the last check are marked ended.
+        await appState.claudeSessions.observeOnce()
+        let restorer = ClaudeSessionRestorer()
+        var recreated = 0
+        for name in missing {
+            guard let info = appState.claudeSessions.resumableSession(forTmuxName: name) else { continue }
+            do {
+                _ = try await restorer.restore(info, tmuxName: name)
+                recreated += 1
+            } catch {
+                NSLog("PlexusOne: could not recreate tmux session %@: %@", name, error.localizedDescription)
+            }
+        }
+        return recreated
     }
 
     private func saveState() {
