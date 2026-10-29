@@ -71,6 +71,8 @@ struct SessionSettingsView: View {
     @AppStorage("defaultShell") private var defaultShell = "/bin/zsh"
     @AppStorage(TmuxEnvironment.mouseScrollingKey) private var mouseScrolling = true
     @AppStorage(AppState.notifyWaitingKey) private var notifyWaiting = true
+    @State private var hookStatus: ClaudeHookInstaller.Status?
+    @State private var hookError: String?
 
     var body: some View {
         Form {
@@ -93,6 +95,24 @@ struct SessionSettingsView: View {
             TextField("Default Shell:", text: $defaultShell)
                 .textFieldStyle(.roundedBorder)
 
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("Record Claude sessions while PlexusOne is closed")
+                    Spacer()
+                    switch hookStatus {
+                    case .installed:
+                        Button("Remove Hook") { changeHook(install: false) }
+                    case .outdated:
+                        Button("Update Hook") { changeHook(install: true) }
+                    default:
+                        Button("Install Hook") { changeHook(install: true) }
+                    }
+                }
+                Text(hookDescription)
+                    .font(.caption)
+                    .foregroundColor(hookError == nil ? .secondary : .red)
+            }
+
             Toggle("Notify when a Claude session needs you", isOn: $notifyWaiting)
             Text("A notification when a session starts waiting, for example at a permission prompt. The Dock badge always counts waiting sessions; Command-J jumps to the next one.")
                 .font(.caption)
@@ -104,6 +124,41 @@ struct SessionSettingsView: View {
                 .foregroundColor(.secondary)
         }
         .padding()
+        .onAppear(perform: loadHookStatus)
+    }
+
+    private var hookDescription: String {
+        if let hookError { return hookError }
+        switch hookStatus {
+        case .installed:
+            return "Installed in ~/.claude/settings.json. Claude Code records each session and its tmux session at start and on every prompt."
+        case .outdated:
+            return "Installed for a different copy of PlexusOne Desktop. Update it to use this one."
+        default:
+            return "Adds two hooks to ~/.claude/settings.json (backed up first) so tmux names are kept even when PlexusOne is not running. Applies to Claude sessions started afterwards."
+        }
+    }
+
+    private func loadHookStatus() {
+        do {
+            hookStatus = try ClaudeHookInstaller.currentStatus()
+            hookError = nil
+        } catch {
+            hookError = "Could not read ~/.claude/settings.json: \(error.localizedDescription)"
+        }
+    }
+
+    private func changeHook(install: Bool) {
+        do {
+            if install {
+                try ClaudeHookInstaller.install()
+            } else {
+                try ClaudeHookInstaller.uninstall()
+            }
+            loadHookStatus()
+        } catch {
+            hookError = "Could not update ~/.claude/settings.json: \(error.localizedDescription)"
+        }
     }
 }
 

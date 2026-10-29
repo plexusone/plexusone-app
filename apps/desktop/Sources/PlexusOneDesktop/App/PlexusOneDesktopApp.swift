@@ -1,6 +1,5 @@
 import SwiftUI
 
-@main
 struct PlexusOneDesktopApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     private let appState = AppState()

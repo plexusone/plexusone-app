@@ -548,6 +548,70 @@ final class ClaudeSessionTests: XCTestCase {
         XCTAssertNil(ClaudeSessionCatalog.resumableEntry(forTmuxName: "other", in: registry))
     }
 
+    // MARK: - Claude Code hook
+
+    func testHookEventFromHookInput() throws {
+        let input = Data(#"{"session_id":"abc","cwd":"/repo","hook_event_name":"SessionStart","transcript_path":"/x"}"#.utf8)
+        let event = try XCTUnwrap(ClaudeHookRecorder.makeEvent(hookInput: input, tmux: "acad:@17.%17", now: t0))
+        XCTAssertEqual(event, ClaudeHookRecorder.Event(sessionId: "abc", cwd: "/repo", tmux: "acad:@17.%17", event: "SessionStart", at: t0))
+        XCTAssertNil(ClaudeHookRecorder.makeEvent(hookInput: Data("not json".utf8), tmux: nil, now: t0))
+        XCTAssertNil(ClaudeHookRecorder.makeEvent(hookInput: Data(#"{"cwd":"/repo"}"#.utf8), tmux: nil, now: t0))
+    }
+
+    func testHookEventsRoundTripAndSkipCutLines() throws {
+        let event = ClaudeHookRecorder.Event(sessionId: "abc", cwd: nil, tmux: nil, event: nil, at: t0)
+        var data = try ClaudeHookRecorder.encoder.encode(event)
+        data.append(contentsOf: Array("\n{\"sessionId\":\"cut".utf8))
+        XCTAssertEqual(ClaudeHookRecorder.decodeEvents(data), [event])
+    }
+
+    func testFoldAddsSessionsSeenByHook() {
+        var registry = ClaudeSessionRegistry()
+        let changed = registry.fold([ClaudeHookRecorder.Event(sessionId: "a", cwd: "/repo", tmux: "acad:@17.%17", event: "SessionStart", at: t0)])
+        XCTAssertTrue(changed)
+        XCTAssertEqual(registry.sessions["a"]?.tmux?.sessionName, "acad")
+        XCTAssertEqual(registry.sessions["a"]?.isRunning, true)
+        // Not live at the next check, and the machine booted since: system shutdown.
+        registry.observe(snap(at: 600, boot: t0.addingTimeInterval(300)))
+        XCTAssertEqual(registry.sessions["a"]?.endState, .systemShutdown)
+    }
+
+    func testFoldDoesNotDisturbWatchedSession() {
+        var registry = ClaudeSessionRegistry()
+        registry.observe(snap(at: 0, live: [record("a", tmux: "work:@0.%1")]))
+        registry.fold([ClaudeHookRecorder.Event(sessionId: "a", cwd: "/repo", tmux: "other:@9.%9", event: "UserPromptSubmit", at: t0.addingTimeInterval(2))])
+        XCTAssertEqual(registry.sessions["a"]?.tmux?.sessionName, "work")
+        XCTAssertEqual(registry.sessions["a"]?.lastSeenRunningAt, t0)
+        registry.observe(snap(at: 5, panes: ["%1"]))
+        XCTAssertEqual(registry.sessions["a"]?.endState, .exited)
+    }
+
+    func testHookInstallerKeepsOtherHooksAndIsIdempotent() throws {
+        let command = ClaudeHookInstaller.hookCommand(executable: "/Applications/PlexusOne Desktop.app/Contents/MacOS/PlexusOneDesktop")
+        XCTAssertEqual(command, #""/Applications/PlexusOne Desktop.app/Contents/MacOS/PlexusOneDesktop" claude-hook"#)
+        let other: [String: Any] = ["type": "command", "command": "echo hi"]
+        let settings: [String: Any] = [
+            "model": "opus",
+            "hooks": ["UserPromptSubmit": [["hooks": [other]]], "Stop": [["hooks": [other]]]],
+        ]
+        XCTAssertEqual(ClaudeHookInstaller.status(in: settings, command: command), .notInstalled)
+        let once = ClaudeHookInstaller.installing(into: settings, command: command)
+        let twice = ClaudeHookInstaller.installing(into: once, command: command)
+        XCTAssertEqual(ClaudeHookInstaller.status(in: twice, command: command), .installed)
+        let hooks = try XCTUnwrap(twice["hooks"] as? [String: Any])
+        XCTAssertEqual((hooks["UserPromptSubmit"] as? [Any])?.count, 2, "other hook kept, ours added once")
+        XCTAssertEqual((hooks["SessionStart"] as? [Any])?.count, 1)
+        XCTAssertEqual(twice["model"] as? String, "opus")
+        XCTAssertEqual(ClaudeHookInstaller.status(in: twice, command: #""/elsewhere/PlexusOneDesktop" claude-hook"#), .outdated)
+
+        let removed = ClaudeHookInstaller.removing(from: twice)
+        let left = try XCTUnwrap(removed["hooks"] as? [String: Any])
+        XCTAssertNil(left["SessionStart"])
+        XCTAssertEqual((left["UserPromptSubmit"] as? [Any])?.count, 1)
+        XCTAssertNotNil(left["Stop"])
+        XCTAssertNil(ClaudeHookInstaller.removing(from: ClaudeHookInstaller.installing(into: [:], command: command))["hooks"])
+    }
+
     func testGridFitting() {
         XCTAssertEqual(GridConfig.fitting(1), GridConfig(columns: 1, rows: 1))
         XCTAssertEqual(GridConfig.fitting(4), GridConfig(columns: 2, rows: 2))

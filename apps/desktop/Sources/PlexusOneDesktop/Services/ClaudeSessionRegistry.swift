@@ -42,6 +42,8 @@ struct ClaudeSessionRegistry: Codable {
     var sessions: [String: ObservedSession] = [:]
     /// When the previous snapshot was applied.
     var lastObservedAt: Date?
+    /// Bytes of the hook events file already folded in.
+    var eventsOffset: UInt64?
 
     /// Longest gap between snapshots that still counts as watching continuously.
     static let continuousGap: TimeInterval = 60
@@ -117,6 +119,42 @@ struct ClaudeSessionRegistry: Codable {
             return .tmuxClosed
         }
         return .exited
+    }
+
+    /// Fold in events recorded by the Claude Code hook. An event means the
+    /// session was running at that time in that tmux pane. Sessions the app
+    /// is already watching only gain a missing tmux location, so their
+    /// observed exit is not disturbed.
+    @discardableResult
+    mutating func fold(_ events: [ClaudeHookRecorder.Event]) -> Bool {
+        let before = sessions
+        for event in events {
+            let tmux = event.tmux.flatMap(TmuxTarget.init(claudeField:))
+            if var entry = sessions[event.sessionId] {
+                if entry.isRunning {
+                    entry.tmux = entry.tmux ?? tmux
+                    entry.cwd = entry.cwd ?? event.cwd
+                } else if event.at > entry.lastSeenRunningAt {
+                    entry.tmux = tmux ?? entry.tmux
+                    entry.cwd = event.cwd ?? entry.cwd
+                    entry.lastSeenRunningAt = event.at
+                    entry.isRunning = true
+                    entry.endState = nil
+                    entry.endedAt = nil
+                }
+                sessions[event.sessionId] = entry
+            } else {
+                sessions[event.sessionId] = ObservedSession(
+                    sessionId: event.sessionId,
+                    cwd: event.cwd,
+                    tmux: tmux,
+                    firstSeenAt: event.at,
+                    lastSeenRunningAt: event.at,
+                    isRunning: true
+                )
+            }
+        }
+        return sessions != before
     }
 
     // MARK: - Persistence

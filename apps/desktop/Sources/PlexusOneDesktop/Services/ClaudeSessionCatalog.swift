@@ -77,12 +77,13 @@ final class ClaudeSessionCatalog {
         )
         latestSnapshot = snap
         bootTime = snap.bootTime
+        let eventsChanged = foldHookEvents()
         liveByTmuxSession = Self.liveByTmuxSession(snap.live)
         let previouslyWaiting = Set(waitingSessions.map(\.sessionId))
         waitingSessions = Self.waiting(in: snap.live)
         onWaitingChanged?(waitingSessions, waitingSessions.filter { !previouslyWaiting.contains($0.sessionId) })
         await syncClaudeNameOptions()
-        if registry.observe(snap) {
+        if registry.observe(snap) || eventsChanged {
             do {
                 try registry.save(to: registryURL, fileSystem: fileSystem)
             } catch {
@@ -152,6 +153,45 @@ final class ClaudeSessionCatalog {
             changes.append((session, ["set-option", "-u", "-t", "=\(session):", "@claude_name"]))
         }
         return changes
+    }
+
+    // MARK: - Hook events
+
+    /// Size past which the events file is started afresh once folded in.
+    nonisolated static let eventsFileLimit: UInt64 = 2 << 20
+
+    /// Fold in hook events appended since the last check. Returns whether
+    /// the log changed.
+    private func foldHookEvents() -> Bool {
+        let url = ClaudeHookRecorder.eventsURL
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return false }
+        defer {
+            do {
+                try handle.close()
+            } catch {
+                // Read-only handle: a close failure loses nothing.
+            }
+        }
+        var changed = false
+        do {
+            let size = try handle.seekToEnd()
+            var offset = registry.eventsOffset ?? 0
+            if offset > size { offset = 0 } // file was replaced
+            try handle.seek(toOffset: offset)
+            let data = try handle.readToEnd() ?? Data()
+            // Only whole lines: a hook may be mid-write.
+            let complete = data.lastIndex(of: UInt8(ascii: "\n")).map { data[...$0] } ?? Data()
+            changed = registry.fold(ClaudeHookRecorder.decodeEvents(Data(complete)))
+            registry.eventsOffset = offset + UInt64(complete.count)
+            if registry.eventsOffset ?? 0 >= Self.eventsFileLimit, registry.eventsOffset == size {
+                try FileManager.default.removeItem(at: url)
+                registry.eventsOffset = 0
+            }
+            changed = changed || registry.eventsOffset != offset
+        } catch {
+            lastError = "Could not read \(url.path): \(error.localizedDescription)"
+        }
+        return changed
     }
 
     // MARK: - Recovery
