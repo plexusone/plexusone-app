@@ -85,6 +85,7 @@ nav:
     - TRD: specs/TRD.md
   - Releases:
     - Changelog: releases/changelog.md
+    - v0.7.0: releases/v0.7.0.md
     - v0.6.0: releases/v0.6.0.md
     - v0.5.2: releases/v0.5.2.md
     - v0.5.1: releases/v0.5.1.md

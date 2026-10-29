@@ -7,6 +7,97 @@
   "unreleased": {},
   "releases": [
     {
+      "version": "v0.7.0",
+      "date": "2026-10-29",
+      "highlights": [
+        {
+          "description": "Pane headers and the Claude Sessions window show each session's Claude name and live status, and a tmux @claude_name option lets the tmux status line show it too"
+        },
+        {
+          "description": "Notifications, a Dock badge, and Jump to Next Waiting Session (Command-J) when a Claude session waits for you, such as at a permission prompt"
+        },
+        {
+          "description": "Crash recovery in one step: restoring saved windows recreates missing tmux sessions by resuming the Claude session that ran in each, and an optional Claude Code hook remembers tmux names while the app is closed"
+        }
+      ],
+      "added": [
+        {
+          "description": "Claude Name column and live status (busy, idle, or what the session is waiting for) in the Claude Sessions window, and the Claude name with a waiting badge in each pane header",
+          "commit": "f01ea8f"
+        },
+        {
+          "description": "tmux option @claude_name kept on each tmux session with the Claude name running in it, for use in the tmux status line",
+          "commit": "f01ea8f"
+        },
+        {
+          "description": "Notification when a Claude session starts waiting, a Dock badge counting waiting sessions, and Window > Jump to Next Waiting Session (Command-J)",
+          "commit": "4e93518"
+        },
+        {
+          "description": "Showing a session focuses the pane already displaying it in any window, opening a window only when none does",
+          "commit": "4e93518"
+        },
+        {
+          "description": "Last Prompt and Cost columns, with cost and lines added and removed in the detail pane",
+          "commit": "c275889"
+        },
+        {
+          "description": "Rename Claude Session, which types /rename into an idle session's pane",
+          "commit": "ddd75c3"
+        },
+        {
+          "description": "Restoring saved windows recreates tmux sessions that no longer exist by resuming the Claude session that last ran in each",
+          "commit": "cb1e450"
+        },
+        {
+          "description": "Optional Claude Code hook, installed from Settings > Sessions, that records each session's tmux pane while the app is closed",
+          "commit": "5fe9538"
+        }
+      ],
+      "changed": [
+        {
+          "description": "Repository column ranks repositories by how many of the files a session read or edited fall in each, instead of using the starting directory",
+          "commit": "c275889"
+        },
+        {
+          "description": "Only one copy of the app runs at a time; opening a second brings the running one forward",
+          "commit": "9571200"
+        },
+        {
+          "description": "When Claude Code's live record has no tmux location, the app finds the pane from the process tree",
+          "commit": "bdc05c1"
+        }
+      ],
+      "fixed": [
+        {
+          "description": "TUI Parser handles errors from HTTP writes, PTY and server closes, detach, and key sending instead of ignoring them",
+          "commit": "28f2997"
+        }
+      ],
+      "infrastructure": [
+        {
+          "description": "Info.plist version 0.7.0",
+          "commit": "fa0711c"
+        }
+      ],
+      "tests": [
+        {
+          "description": "Tests for Claude names, live status, and @claude_name updates",
+          "commit": "49bb80a"
+        }
+      ],
+      "documentation": [
+        {
+          "description": "Claude Sessions guide covers Claude names, the tmux status line, waiting alerts, renaming, the hook, and crash recovery",
+          "commit": "4d73b47"
+        },
+        {
+          "description": "Architecture decision record for recording sessions with a Claude Code hook",
+          "commit": "98f4bce"
+        }
+      ]
+    },
+    {
       "version": "v0.6.0",
       "date": "2026-10-27",
       "highlights": [
