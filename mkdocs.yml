@@ -78,6 +78,7 @@ nav:
       - Overview: design/adrs/index.md
       - "0001 Session End Detection": design/adrs/0001-claude-session-end-detection.md
       - "0002 tmux Mouse Mode": design/adrs/0002-tmux-mouse-mode-for-scrolling.md
+      - "0003 Claude Code Hook": design/adrs/0003-claude-code-hook-recording.md
   - Specs:
     - Overview: specs/index.md
     - PRD: specs/PRD.md

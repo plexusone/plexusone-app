@@ -132,7 +132,10 @@ All window configurations are saved to:
 On app launch:
 
 1. If saved state exists, you're prompted to restore
-2. Click "Restore" to restore all windows with their layouts
+2. Click "Restore" to restore all windows with their layouts. tmux sessions
+   that no longer exist, for example after a restart, are recreated by
+   resuming the Claude session that last ran in each (see
+   [Claude Sessions](claude-sessions.md#after-a-crash-or-restart))
 3. Click "Start Fresh" to start with a single default window
 
 ### Migration

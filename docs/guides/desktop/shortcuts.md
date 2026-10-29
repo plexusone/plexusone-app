@@ -20,6 +20,7 @@ Keyboard shortcuts for efficient navigation and control.
 | `⌥ ⌘ A` | Attach a session to the focused pane |
 | `⌘ ⇧ A` | Detach the focused pane |
 | `⌘ ]` / `⌘ [` | Next / previous pane |
+| `⌘ J` | Jump to the next Claude session waiting for you |
 | `⌘ M` | Minimize window |
 | `⌘ W` | Close window |
 | `⌘ 1-9` | Switch to pane 1-9 (planned) |

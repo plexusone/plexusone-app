@@ -43,6 +43,10 @@ Native macOS terminal multiplexer built with Swift and SwiftTerm.
 - **Input detection** for AI assistant prompts (Claude, Kiro, etc.)
 - **PTY wrapper detection** - warns if a session is running behind a shell-autocomplete PTY shim (Kiro CLI, Fig, Amazon Q) known to freeze terminal panes
 - **Claude Sessions window** (`⇧⌘S`) - lists Claude Code sessions with their tmux session, subject, repositories, last activity, and whether each ended normally or in a crash, restart, or closed terminal; resumes the ones you pick into tmux sessions you name
+- **Waiting alerts** - a notification and Dock badge when a Claude session needs you (for example at a permission prompt); `⌘J` jumps to the next one
+- Pane headers show each pane's Claude session name and whether it is waiting
+- Restoring at launch recreates missing tmux sessions by resuming the Claude session that last ran in each, so a crash or restart is one step to recover from
+- Optional Claude Code hook that records sessions and their tmux names even while the app is closed
 - Trackpad scrolls tmux history (tmux mouse mode per attached session; hold Shift to drag-select)
 - Keyboard pane navigation (`⌘]` / `⌘[`), attach (`⌥⌘A`), and detach (`⇧⌘A`)
 - Visual focus indicator for active pane
