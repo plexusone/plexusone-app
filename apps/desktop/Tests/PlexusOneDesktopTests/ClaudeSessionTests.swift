@@ -446,8 +446,7 @@ final class ClaudeSessionTests: XCTestCase {
             liveRecord("a", name: "n", tmux: nil), panes: panes, parentPid: { parents[$0] }
         )
         XCTAssertNil(resolved.tmuxTarget, "pid 100 is not under a pane")
-        var rec = liveRecord("a", name: "n", tmux: nil)
-        rec = try! JSONDecoder().decode(ClaudeLiveRecord.self, from: Data(#"{"pid":300,"sessionId":"a"}"#.utf8))
+        let rec = try! JSONDecoder().decode(ClaudeLiveRecord.self, from: Data(#"{"pid":300,"sessionId":"a"}"#.utf8))
         let found = ClaudeSessionCatalog.withTmuxFromProcessTree(rec, panes: panes, parentPid: { parents[$0] })
         XCTAssertEqual(found.tmuxTarget?.sessionName, "acad")
         XCTAssertEqual(found.tmuxTarget?.paneId, "%17")
@@ -457,6 +456,38 @@ final class ClaudeSessionTests: XCTestCase {
         let rec = liveRecord("a", name: "n", tmux: "p1app:@0.%0")
         let result = ClaudeSessionCatalog.withTmuxFromProcessTree(rec, panes: [], parentPid: { _ in nil })
         XCTAssertEqual(result.tmux, "p1app:@0.%0")
+    }
+
+    // MARK: - Cost and repository ranking
+
+    func testSummaryReadsCostTotals() throws {
+        let s = try XCTUnwrap(summarize([
+            line(["type": "user", "timestamp": "2026-10-27T10:00:00Z", "message": ["content": "hi"]]),
+            line(["type": "cost-state", "totalCostUSD": 0.5, "totalLinesAdded": 3, "totalLinesRemoved": 1]),
+            line(["type": "assistant", "timestamp": "2026-10-27T10:01:00Z", "message": ["content": [["type": "text", "text": "x"]]]]),
+            line(["type": "cost-state", "totalCostUSD": 1.25, "totalLinesAdded": 40, "totalLinesRemoved": 7]),
+        ]))
+        XCTAssertEqual(s.costUSD, 1.25)
+        XCTAssertEqual(s.linesAdded, 40)
+        XCTAssertEqual(s.linesRemoved, 7)
+    }
+
+    func testReposRankedByUse() throws {
+        let base = FileManager.default.temporaryDirectory.appendingPathComponent("rank-\(UUID().uuidString)")
+        for name in ["start", "main"] {
+            try FileManager.default.createDirectory(at: base.appendingPathComponent("\(name)/.git"), withIntermediateDirectories: true)
+        }
+        defer {
+            do {
+                try FileManager.default.removeItem(at: base)
+            } catch {
+                XCTFail("cleanup: \(error)")
+            }
+        }
+        let start = base.appendingPathComponent("start").path
+        let main = base.appendingPathComponent("main").path
+        let repos = GitRepoResolver().repos(for: [start, "\(main)/a.go", "\(main)/b.go", "\(main)/d.go", "\(start)/c.go"])
+        XCTAssertEqual(repos.map { URL(fileURLWithPath: $0.path).lastPathComponent }, ["main", "start"])
     }
 
     func testGridFitting() {

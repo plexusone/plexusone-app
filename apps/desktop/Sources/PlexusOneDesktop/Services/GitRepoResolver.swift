@@ -13,15 +13,22 @@ final class GitRepoResolver {
         return RepoRef(path: root, remoteId: remoteId(forRoot: root))
     }
 
-    /// Distinct repositories for `paths`, in first-seen order.
+    /// Distinct repositories for `paths`, most-used first: ranked by how
+    /// many of the paths fall in each, ties in first-seen order.
     func repos(for paths: [String]) -> [RepoRef] {
-        var seen = Set<String>()
-        var result: [RepoRef] = []
+        var order: [RepoRef] = []
+        var counts: [String: Int] = [:]
         for path in paths {
-            guard let repo = repo(containing: path), seen.insert(repo.path).inserted else { continue }
-            result.append(repo)
+            guard let repo = repo(containing: path) else { continue }
+            if counts[repo.path] == nil { order.append(repo) }
+            counts[repo.path, default: 0] += 1
         }
-        return result
+        return order.enumerated()
+            .sorted { a, b in
+                let (ca, cb) = (counts[a.element.path] ?? 0, counts[b.element.path] ?? 0)
+                return ca != cb ? ca > cb : a.offset < b.offset
+            }
+            .map(\.element)
     }
 
     private func root(containing path: String) -> String? {

@@ -274,6 +274,9 @@ final class ClaudeSessionCatalog {
             liveStatus: live?.status,
             waitingFor: live?.waitingFor,
             repos: resolver.repos(for: repoPaths),
+            costUSD: t.costUSD,
+            linesAdded: t.linesAdded,
+            linesRemoved: t.linesRemoved,
             endState: classify(transcript: t, live: live, stale: stale, observed: observed, bootTime: bootTime),
             endedAt: observed?.endedAt
         )

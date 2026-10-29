@@ -182,6 +182,21 @@ struct ClaudeSessionsView: View {
             }
             .width(min: 120, ideal: 220)
 
+            TableColumn("Last Prompt") { info in
+                Text(info.lastPrompt ?? "—")
+                    .foregroundColor(info.lastPrompt == nil ? .secondary : .primary)
+                    .lineLimit(1)
+                    .help(info.lastPrompt ?? "")
+            }
+            .width(min: 140, ideal: 260)
+
+            TableColumn("Cost") { info in
+                Text(info.costText ?? "—")
+                    .monospacedDigit()
+                    .foregroundColor(.secondary)
+            }
+            .width(min: 50, ideal: 60)
+
             TableColumn("Last Active") { info in
                 Text(info.lastActivityAt?.timeAgoString() ?? "—")
                     .help(info.lastActivityAt.map(Self.absolute) ?? "")
@@ -298,6 +313,11 @@ struct ClaudeSessionsView: View {
     private func copy(_ text: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
+    }
+
+    static func linesText(_ info: ClaudeSessionInfo) -> String {
+        guard let added = info.linesAdded, let removed = info.linesRemoved else { return "" }
+        return "  (+\(added) / -\(removed) lines)"
     }
 
     static func absolute(_ date: Date) -> String {
@@ -588,6 +608,12 @@ private struct SessionDetailView: View {
                                 .font(.system(.caption, design: .monospaced))
                                 .textSelection(.enabled)
                             Button("Copy") { onCopy(info.resumeCommand) }.controlSize(.small)
+                        }
+                    }
+                    if let cost = info.costText {
+                        row("Cost") {
+                            Text("\(cost)\(ClaudeSessionsView.linesText(info))")
+                                .monospacedDigit()
                         }
                     }
                     if let version = info.version {

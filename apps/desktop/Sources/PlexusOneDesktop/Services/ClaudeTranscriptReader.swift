@@ -108,8 +108,11 @@ enum ClaudeTranscriptReader {
             if record.isConversation {
                 lastConversationIndex = index
             }
-            for path in record.toolPaths where !touched.contains(path) {
-                touched.append(path)
+            touched.append(contentsOf: record.toolPaths)
+            if record.type == "cost-state" {
+                summary.costUSD = record.totalCostUSD ?? summary.costUSD
+                summary.linesAdded = record.totalLinesAdded ?? summary.linesAdded
+                summary.linesRemoved = record.totalLinesRemoved ?? summary.linesRemoved
             }
         }
         summary.touchedPaths = touched
@@ -177,6 +180,9 @@ enum ClaudeTranscriptReader {
         let isSidechain: Bool?
         let aiTitle: String?
         let lastPrompt: String?
+        let totalCostUSD: Double?
+        let totalLinesAdded: Int?
+        let totalLinesRemoved: Int?
         let message: Message?
 
         struct Message: Decodable {

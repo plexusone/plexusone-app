@@ -149,10 +149,15 @@ struct TranscriptSummary: Hashable {
     var title: String?
     var firstPrompt: String?
     var lastPrompt: String?
-    /// Absolute file paths the agent read or edited near the end of the transcript.
+    /// Absolute file paths the agent read or edited near the end of the
+    /// transcript, once per use, so frequency shows where the work was.
     var touchedPaths: [String] = []
     /// A `cost-state` record follows the last conversation record.
     var hasShutdownRecord = false
+    /// Totals from the latest `cost-state` record, if any.
+    var costUSD: Double?
+    var linesAdded: Int?
+    var linesRemoved: Int?
 }
 
 /// One row of the sessions list: a Claude session joined with what is known
@@ -180,6 +185,9 @@ struct ClaudeSessionInfo: Identifiable, Hashable {
     /// What a waiting session needs, e.g. "permission prompt".
     var waitingFor: String?
     var repos: [RepoRef] = []
+    var costUSD: Double?
+    var linesAdded: Int?
+    var linesRemoved: Int?
     var endState: SessionEndState
     /// When the app saw it end, if it did.
     var endedAt: Date?
@@ -187,6 +195,11 @@ struct ClaudeSessionInfo: Identifiable, Hashable {
     /// Short live status for display, e.g. "waiting: permission prompt".
     var liveStatusText: String? {
         ClaudeLiveStatus.text(status: liveStatus, waitingFor: waitingFor)
+    }
+
+    /// "$1.23", or nil when no cost was recorded.
+    var costText: String? {
+        costUSD.map { String(format: "$%.2f", $0) }
     }
 
     var subject: String {
