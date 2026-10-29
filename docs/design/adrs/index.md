@@ -8,6 +8,7 @@ a decision that is replaced keeps its record, marked as superseded.
 |-----|----------|--------|
 | [0001](0001-claude-session-end-detection.md) | Detect how a Claude Code session ended from its files plus app observation | Accepted |
 | [0002](0002-tmux-mouse-mode-for-scrolling.md) | Turn on tmux mouse mode per attached session so the trackpad scrolls history | Accepted |
+| [0003](0003-claude-code-hook-recording.md) | Record sessions with an opt-in Claude Code hook while the app is closed | Accepted |
 
 ## Writing a record
 
