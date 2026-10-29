@@ -17,6 +17,8 @@ struct ClaudeSessionsView: View {
     @State private var restoreMessage: String?
     /// Sessions waiting for the user to confirm tmux names
     @State private var pendingRestore: [ClaudeSessionInfo] = []
+    /// Session being renamed
+    @State private var renameTarget: ClaudeSessionInfo?
 
     private var catalog: ClaudeSessionCatalog { appState.claudeSessions }
 
@@ -82,6 +84,14 @@ struct ClaudeSessionsView: View {
                     performRestore(infos, names: names)
                 }
             )
+        }
+        .sheet(item: $renameTarget) { info in
+            RenameSessionSheet(info: info) { newName in
+                renameTarget = nil
+                rename(info, to: newName)
+            } onCancel: {
+                renameTarget = nil
+            }
         }
         .alert("Restore Sessions", isPresented: Binding(
             get: { restoreMessage != nil },
@@ -215,6 +225,8 @@ struct ClaudeSessionsView: View {
             Button(restoreLabel(for: infos)) { restore(infos) }
                 .disabled(infos.isEmpty || isRestoring)
             if infos.count == 1, let info = infos.first {
+                Button("Rename Claude Session...") { renameTarget = info }
+                    .disabled(!ClaudeSessionRestorer.canRename(info))
                 Divider()
                 Button("Copy Session ID") { copy(info.sessionId) }
                 Button("Copy Resume Command") { copy(info.resumeCommand) }
@@ -316,6 +328,20 @@ struct ClaudeSessionsView: View {
         }
     }
 
+    private func rename(_ info: ClaudeSessionInfo, to newName: String) {
+        Task {
+            do {
+                try await ClaudeSessionRestorer().rename(info, to: newName)
+                // Claude Code updates its record after the command runs.
+                try? await Task.sleep(for: .seconds(1.5))
+                await catalog.observeOnce()
+                await catalog.reload(window: timeWindow.interval)
+            } catch {
+                restoreMessage = "Rename failed: \(error.localizedDescription)"
+            }
+        }
+    }
+
     private func copy(_ text: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
@@ -328,6 +354,40 @@ struct ClaudeSessionsView: View {
 
     static func absolute(_ date: Date) -> String {
         date.formatted(date: .abbreviated, time: .shortened)
+    }
+}
+
+// MARK: - Rename
+
+private struct RenameSessionSheet: View {
+    let info: ClaudeSessionInfo
+    let onRename: (String) -> Void
+    let onCancel: () -> Void
+
+    @State private var name = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Rename Claude Session")
+                .font(.headline)
+            Text("Types /rename into \(info.claudeName ?? info.shortId) in tmux \(info.tmux?.sessionName ?? "?"). Its input box should be empty.")
+                .font(.callout)
+                .foregroundColor(.secondary)
+            TextField("New name", text: $name)
+                .textFieldStyle(.roundedBorder)
+            HStack {
+                Spacer()
+                Button("Cancel", action: onCancel)
+                    .keyboardShortcut(.cancelAction)
+                Button("Rename") { onRename(name) }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(ClaudeSessionRestorer.validRenameName(name) == nil)
+            }
+        }
+        .padding()
+        .frame(width: 420)
+        .onAppear { name = info.claudeName ?? "" }
     }
 }
 

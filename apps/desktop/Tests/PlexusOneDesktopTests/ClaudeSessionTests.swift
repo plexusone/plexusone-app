@@ -510,6 +510,32 @@ final class ClaudeSessionTests: XCTestCase {
         XCTAssertEqual(AppState.waitingNotificationBody(bare), "e36f0e3a is waiting")
     }
 
+    // MARK: - Rename
+
+    func testRenameValidationAndArguments() {
+        XCTAssertEqual(ClaudeSessionRestorer.validRenameName("  academyos-core "), "academyos-core")
+        XCTAssertNil(ClaudeSessionRestorer.validRenameName("   "))
+        XCTAssertNil(ClaudeSessionRestorer.validRenameName("two\nlines"))
+        XCTAssertNil(ClaudeSessionRestorer.validRenameName(String(repeating: "x", count: 81)))
+        XCTAssertEqual(ClaudeSessionRestorer.renameArguments(paneId: "%17", name: "academyos-core"), [
+            ["send-keys", "-t", "%17", "-l", "/rename academyos-core"],
+            ["send-keys", "-t", "%17", "Enter"],
+        ])
+    }
+
+    func testCanRenameOnlyIdleSessionsInTmux() {
+        var idle = info(state: .running)
+        idle.liveStatus = "idle"
+        XCTAssertTrue(ClaudeSessionRestorer.canRename(idle))
+        var busy = idle; busy.liveStatus = "busy"
+        XCTAssertFalse(ClaudeSessionRestorer.canRename(busy))
+        var waiting = idle; waiting.waitingFor = "permission prompt"
+        XCTAssertFalse(ClaudeSessionRestorer.canRename(waiting))
+        var outside = idle; outside.tmux = nil
+        XCTAssertFalse(ClaudeSessionRestorer.canRename(outside))
+        XCTAssertFalse(ClaudeSessionRestorer.canRename(info(state: .exited)))
+    }
+
     func testGridFitting() {
         XCTAssertEqual(GridConfig.fitting(1), GridConfig(columns: 1, rows: 1))
         XCTAssertEqual(GridConfig.fitting(4), GridConfig(columns: 2, rows: 2))

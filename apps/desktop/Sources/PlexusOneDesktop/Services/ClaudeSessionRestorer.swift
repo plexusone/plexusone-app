@@ -123,6 +123,47 @@ struct ClaudeSessionRestorer {
         ]
     }
 
+    // MARK: - Rename
+
+    /// Rename a running Claude session by typing `/rename <name>` into its
+    /// pane. Only safe while the session is idle at its prompt, which the
+    /// caller checks.
+    func rename(_ info: ClaudeSessionInfo, to newName: String) async throws {
+        guard let paneId = info.tmux?.paneId else {
+            throw RestoreError.runningOutsideTmux(info.sessionId)
+        }
+        guard let name = Self.validRenameName(newName) else {
+            throw RestoreError.tmuxFailed("'\(newName)' is not a usable session name")
+        }
+        for args in Self.renameArguments(paneId: paneId, name: name) {
+            let result = try await runTmux(args)
+            guard result.success else {
+                throw RestoreError.tmuxFailed(result.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+            }
+        }
+    }
+
+    /// The name trimmed, or nil if it is empty, multi-line, or over 80 characters.
+    static func validRenameName(_ name: String) -> String? {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, trimmed.count <= 80, !trimmed.contains(where: \.isNewline) else { return nil }
+        return trimmed
+    }
+
+    static func renameArguments(paneId: String, name: String) -> [[String]] {
+        [
+            ["send-keys", "-t", paneId, "-l", "/rename \(name)"],
+            ["send-keys", "-t", paneId, "Enter"],
+        ]
+    }
+
+    /// Whether typing into the session is safe: running in tmux, idle, and
+    /// not waiting for anything.
+    static func canRename(_ info: ClaudeSessionInfo) -> Bool {
+        info.endState == .running && info.tmux != nil && info.liveStatus == "idle"
+            && (info.waitingFor ?? "").isEmpty
+    }
+
     private func runTmux(_ arguments: [String]) async throws -> CommandResult {
         let (path, baseArgs) = TmuxEnvironment.findExecutable()
         return try await commandExecutor.execute(path, arguments: baseArgs + arguments)
