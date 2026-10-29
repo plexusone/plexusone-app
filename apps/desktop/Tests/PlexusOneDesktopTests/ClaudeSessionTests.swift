@@ -372,6 +372,64 @@ final class ClaudeSessionTests: XCTestCase {
         XCTAssertEqual(ClaudeSessionRestorer.tmuxName(for: info(state: .exited, tmux: nil, cwd: "/src/my.app")), "my-app-6a68b401")
     }
 
+    // MARK: - Claude names and live status
+
+    private func liveRecord(_ id: String, name: String?, tmux: String?, started: Int = 1_800_000_000_000,
+                            status: String? = "idle", waitingFor: String? = nil) -> ClaudeLiveRecord {
+        var obj: [String: Any] = ["pid": 100, "sessionId": id, "startedAt": started]
+        if let name { obj["name"] = name }
+        if let tmux { obj["tmux"] = tmux }
+        if let status { obj["status"] = status }
+        if let waitingFor { obj["waitingFor"] = waitingFor }
+        return try! JSONDecoder().decode(ClaudeLiveRecord.self, from: JSONSerialization.data(withJSONObject: obj))
+    }
+
+    func testLiveStatusText() {
+        XCTAssertEqual(ClaudeLiveStatus.text(status: "waiting", waitingFor: "permission prompt"), "waiting: permission prompt")
+        XCTAssertEqual(ClaudeLiveStatus.text(status: "busy", waitingFor: nil), "busy")
+        XCTAssertNil(ClaudeLiveStatus.text(status: nil, waitingFor: ""))
+        XCTAssertTrue(ClaudeLiveStatus.isWaiting(status: "idle", waitingFor: "permission prompt"))
+        XCTAssertTrue(ClaudeLiveStatus.isWaiting(status: "waiting", waitingFor: nil))
+        XCTAssertFalse(ClaudeLiveStatus.isWaiting(status: "busy", waitingFor: nil))
+    }
+
+    func testLiveRecordDecodesNameAndWaitingFor() {
+        let rec = liveRecord("a", name: "systemforge-61", tmux: "sysfrg:@20.%20", status: "waiting", waitingFor: "permission prompt")
+        XCTAssertEqual(rec.name, "systemforge-61")
+        XCTAssertEqual(rec.waitingFor, "permission prompt")
+        XCTAssertEqual(rec.tmuxTarget?.sessionName, "sysfrg")
+    }
+
+    func testLiveByTmuxSessionPrefersNewestAndSkipsNonTmux() {
+        let map = ClaudeSessionCatalog.liveByTmuxSession([
+            liveRecord("old", name: "a-1", tmux: "work:@0.%1", started: 1),
+            liveRecord("new", name: "a-2", tmux: "work:@0.%2", started: 2),
+            liveRecord("bare", name: "b-1", tmux: nil),
+        ])
+        XCTAssertEqual(map.count, 1)
+        XCTAssertEqual(map["work"]?.sessionId, "new")
+    }
+
+    func testClaudeNameOptionChanges() {
+        let changes = ClaudeSessionCatalog.claudeNameOptionChanges(
+            applied: ["acad": "github-com-8b", "gone": "x-1", "same": "s-1"],
+            wanted: ["acad": "academyos-2", "new": "n-1", "same": "s-1"]
+        )
+        let bySession = Dictionary(uniqueKeysWithValues: changes.map { ($0.session, $0.args) })
+        XCTAssertEqual(bySession["acad"], ["set-option", "-t", "=acad:", "@claude_name", "academyos-2"])
+        XCTAssertEqual(bySession["new"], ["set-option", "-t", "=new:", "@claude_name", "n-1"])
+        XCTAssertEqual(bySession["gone"], ["set-option", "-u", "-t", "=gone:", "@claude_name"])
+        XCTAssertNil(bySession["same"], "unchanged names do not call tmux")
+    }
+
+    func testRegistryKeepsClaudeNameAfterSessionEnds() {
+        var registry = ClaudeSessionRegistry()
+        registry.observe(snap(at: 0, live: [liveRecord("a", name: "github-com-8b", tmux: "acad:@17.%17")]))
+        registry.observe(snap(at: 5, panes: ["%17"]))
+        XCTAssertEqual(registry.sessions["a"]?.name, "github-com-8b")
+        XCTAssertEqual(registry.sessions["a"]?.isRunning, false)
+    }
+
     func testGridFitting() {
         XCTAssertEqual(GridConfig.fitting(1), GridConfig(columns: 1, rows: 1))
         XCTAssertEqual(GridConfig.fitting(4), GridConfig(columns: 2, rows: 2))
