@@ -10,7 +10,7 @@ Project context for coding agents (Claude Code, Codex, and others). `CLAUDE.md` 
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| Xcode | 16+ | Provides the Swift 6.0 toolchain SwiftTerm needs; CI builds with 16.2 |
+| Xcode | 16+ | Provides the Swift 6.0 toolchain SwiftTerm needs; CI builds with the latest stable Xcode on macOS 26 |
 | macOS | 14+ (Sonoma) | Required by desktop app |
 | Flutter | 3.x | Dart SDK >=2.18.6 included |
 | Go | 1.22+ | For tuiparser service |
@@ -224,7 +224,7 @@ cd apps/ios && xcodebuild -scheme PlexusOneiOS -sdk iphonesimulator build
 cd services/tuiparser && go build ./... && go test ./...
 ```
 
-CI: **Desktop CI** (`.github/workflows/desktop.yaml`) builds and tests the desktop app on pushes and pull requests that touch `apps/desktop/`, using the shared org Swift workflow (Xcode 16.2). **Desktop Release** (`desktop-release.yaml`) builds the DMGs on `v*` tags or a manual run. The other components have no CI yet; run their checks locally.
+CI: **Desktop CI** (`.github/workflows/desktop.yaml`) builds and tests the desktop app on pushes and pull requests that touch `apps/desktop/`, using the shared org Swift workflow on a macOS 26 runner with the latest stable Xcode, as the release workflow does. **Desktop Release** (`desktop-release.yaml`) builds the DMGs on `v*` tags or a manual run. The other components have no CI yet; run their checks locally.
 
 ### Environment Variables
 

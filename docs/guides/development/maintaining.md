@@ -47,7 +47,7 @@ cd services/tuiparser && go build ./... && go test ./... && golangci-lint run
 
 | Workflow | Runs on | Builds with | Does |
 |----------|---------|-------------|------|
-| Desktop CI (`desktop.yaml`) | Pushes and pull requests to `main` that touch `apps/desktop/` | The shared org Swift workflow (Xcode 16.2 today) | Builds and tests the desktop app |
+| Desktop CI (`desktop.yaml`) | Pushes and pull requests to `main` that touch `apps/desktop/` | The shared org Swift workflow, on a macOS 26 runner with the latest stable Xcode | Builds and tests the desktop app |
 | Desktop Release (`desktop-release.yaml`) | `v*` tags, or a manual run | `macos-26` runners (Xcode 26) | Builds, signs, and packages the DMGs; on a tag, publishes the GitHub release |
 
 The two workflows use different Xcode versions. Desktop CI is the stricter
