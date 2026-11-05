@@ -40,6 +40,7 @@ Native macOS terminal multiplexer built with Swift and SwiftTerm.
 - Multi-window, multi-pane grid layout
 - Attach/detach to tmux sessions
 - Pop-out sessions to dedicated windows
+- **Pane terminal** - a plain shell below a pane's coding session, opened in the folder the session works in; shown or hidden from the pane header, resizable, with a default height set in Settings
 - **Input detection** for AI assistant prompts (Claude, Kiro, etc.)
 - **PTY wrapper detection** - warns if a session is running behind a shell-autocomplete PTY shim (Kiro CLI, Fig, Amazon Q) known to freeze terminal panes
 - **Claude Sessions window** (`⇧⌘S`) - lists Claude Code sessions with their tmux session, subject, repositories, last activity, and whether each ended normally or in a crash, restart, or closed terminal; resumes the ones you pick into tmux sessions you name
@@ -71,7 +72,7 @@ Cross-platform companion app for monitoring and interacting with agents remotely
 - Session tabs
 - Quick action buttons (Yes/No/Always)
 - Virtual D-pad for menu navigation
-- WebSocket connection to TUI Parser
+- WebSocket connection to TUI Parser, with an optional token and `wss://`
 
 **Build & Run:**
 ```bash
@@ -82,7 +83,7 @@ flutter run
 
 ### PlexusOne Mobile - Native iOS
 
-Native iOS/iPadOS companion app using SwiftTerm (same terminal library as Desktop).
+Native iOS/iPadOS companion app using SwiftTerm (same terminal library as Desktop). Connects to TUI Parser with an optional token.
 
 **Build & Run:**
 ```bash
