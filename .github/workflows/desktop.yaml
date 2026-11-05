@@ -18,3 +18,7 @@ jobs:
     uses: plexusone/.github/.github/workflows/swift-ci.yaml@main
     with:
       working-directory: apps/desktop
+      # Same runner and Xcode as desktop-release.yaml, so CI tests what
+      # the release builds with.
+      macos-version: macos-26
+      xcode-version: latest-stable
