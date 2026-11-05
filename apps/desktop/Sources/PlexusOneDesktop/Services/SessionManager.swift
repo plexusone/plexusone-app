@@ -103,7 +103,7 @@ final class SessionManager {
 
     /// Kill a tmux session
     func killSession(_ session: Session) async throws {
-        let result = try await runTmux(["kill-session", "-t", session.tmuxSession])
+        let result = try await runTmux(["kill-session", "-t", TmuxEnvironment.exactSessionTarget(session.tmuxSession)])
         if !result.success {
             throw SessionManagerError.killFailed(result.stderr)
         }
@@ -117,7 +117,7 @@ final class SessionManager {
         guard !sanitizedName.isEmpty else {
             throw SessionManagerError.invalidSessionName(newName)
         }
-        let result = try await runTmux(["rename-session", "-t", session.tmuxSession, sanitizedName])
+        let result = try await runTmux(["rename-session", "-t", TmuxEnvironment.exactSessionTarget(session.tmuxSession), sanitizedName])
         if !result.success {
             throw SessionManagerError.renameFailed(result.stderr)
         }

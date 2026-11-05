@@ -35,6 +35,13 @@ enum TmuxEnvironment {
         searchPaths.first { FileManager.default.fileExists(atPath: $0) }
     }
 
+    /// A `-t` target that matches session `name` exactly. A bare name also
+    /// matches a session whose name merely starts with it, so a command
+    /// aimed at a session that just ended could hit another one.
+    static func exactSessionTarget(_ name: String) -> String {
+        "=\(name)"
+    }
+
     /// UserDefaults key: whether attached sessions get tmux mouse mode, so
     /// the trackpad scrolls tmux history instead of sending arrow keys.
     static let mouseScrollingKey = "tmuxMouseScrolling"

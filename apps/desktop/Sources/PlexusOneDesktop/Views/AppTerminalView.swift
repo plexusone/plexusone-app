@@ -87,7 +87,7 @@ class AppTerminalView: LocalProcessTerminalView {
         currentSessionId = session.id
 
         let (tmuxPath, baseArgs) = TmuxEnvironment.findExecutable()
-        let args = baseArgs + ["attach", "-t", session.tmuxSession]
+        let args = baseArgs + ["attach", "-t", TmuxEnvironment.exactSessionTarget(session.tmuxSession)]
         let envArray = TmuxEnvironment.terminalEnvironmentArray()
         applyMouseOption(session: session.tmuxSession)
 
