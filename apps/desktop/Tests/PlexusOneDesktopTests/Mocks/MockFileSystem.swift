@@ -18,6 +18,9 @@ final class MockFileSystem: FileSystemAccessing, @unchecked Sendable {
     /// Error to throw on next operation (if set)
     var errorToThrow: Error?
 
+    /// Error thrown by writes only, so reads still succeed.
+    var writeErrorToThrow: Error?
+
     /// Mock home directory
     var mockHomeDirectory: URL = URL(fileURLWithPath: "/tmp/mock-home")
 
@@ -42,7 +45,7 @@ final class MockFileSystem: FileSystemAccessing, @unchecked Sendable {
     }
 
     func write(_ data: Data, to url: URL, options: Data.WritingOptions) throws {
-        if let error = errorToThrow {
+        if let error = errorToThrow ?? writeErrorToThrow {
             throw error
         }
         files[url.path] = data
