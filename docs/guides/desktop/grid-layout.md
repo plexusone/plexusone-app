@@ -81,7 +81,12 @@ folder are still there when you show it again.
 - **Starting folder**: where the Claude session in the pane started, or
   otherwise the current folder of the tmux pane. The bar above the shell
   shows it.
-- **Resize**: drag the bar up or down.
+- **Height**: the terminal takes a share of the pane (35% by default), so
+  it grows and shrinks with the pane. Change the default in
+  **Settings → General → Pane terminal height**; panes you have not resized
+  follow the new value right away.
+- **Resize**: drag the bar up or down to size one pane's terminal yourself.
+  Double-click the bar to return to the default height.
 - **Focus**: click the shell to type in it. `⌘ ]` and `⌘ [` move through
   each pane's session and its shell.
 - **One per session**: switching the pane to another session shows that
