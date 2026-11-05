@@ -2374,6 +2374,18 @@ Sessions &gt; Install Hook</strong>:</p>
 </ul>
 <p>If you move the app, Settings shows <strong>Update Hook</strong> so the hooks point at the
 new copy. <strong>Remove Hook</strong> takes them out again.</p>
+<p>To check the hook is recording, start a new Claude session in tmux, type a
+prompt, and look at the end of the events file. Each prompt adds a line with
+the session ID and tmux pane:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>tail<span class="w"> </span>-n<span class="w"> </span><span class="m">3</span><span class="w"> </span>~/.plexusone/claude-session-events.jsonl
+</code></pre></div>
+<p><strong>Before deleting the app, click Remove Hook.</strong> The hooks run the app's own
+executable, so after the app is gone Claude Code would try to run a missing
+command at every session start and prompt, and report a hook error. If the app
+is already gone, remove the two entries whose command ends in <code>claude-hook</code>
+from the <code>hooks</code> section of <code>~/.claude/settings.json</code>, or restore
+<code>~/.claude/settings.json.plexusone-backup</code> if you have not changed the settings
+since installing.</p>
 <h2 id="restoring-sessions">Restoring sessions<a class="headerlink" href="#restoring-sessions" title="Permanent link">&para;</a></h2>
 <p>Double-click a session, or select several and choose <strong>Restore Sessions in New
 Window</strong>. A session that is running and already shown in a pane is focused

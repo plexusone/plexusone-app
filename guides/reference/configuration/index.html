@@ -979,6 +979,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#reset-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2269,6 +2280,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#reset-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2535,6 +2557,42 @@
 <li><strong>Restore</strong> - Reattaches to saved sessions if they still exist</li>
 <li><strong>Start Fresh</strong> - Ignores saved state, starts with empty panes</li>
 </ul>
+<h3 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h3>
+<p>Open <strong>PlexusOne Desktop &gt; Settings...</strong> (<code>⌘,</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Setting</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sessions</td>
+<td>Record Claude sessions while PlexusOne is closed</td>
+<td>Off</td>
+<td><strong>Install Hook</strong> adds the <a href="../../desktop/claude-sessions/#recording-sessions-while-plexusone-is-closed">Claude Code hook</a>; <strong>Update Hook</strong> and <strong>Remove Hook</strong> appear once installed</td>
+</tr>
+<tr>
+<td>Sessions</td>
+<td>Notify when a Claude session needs you</td>
+<td>On</td>
+<td>Posts a notification when a Claude session starts waiting. The Dock badge and <code>⌘J</code> work either way</td>
+</tr>
+<tr>
+<td>Sessions</td>
+<td>Trackpad scrolls conversation history</td>
+<td>On</td>
+<td>Turns on tmux mouse mode for each session the app attaches, so the trackpad scrolls tmux history. Off leaves your own tmux setting. Applies the next time a session is attached</td>
+</tr>
+</tbody>
+</table>
+<p>The other settings in the window are saved but not yet used by the app:
+auto-attach on launch, show detached sessions, restore windows on launch
+(the app always asks), font size, cursor blink, the idle and stuck
+thresholds, and the default shell (new sessions use tmux's <code>default-shell</code>, normally your login shell).</p>
 <h3 id="reset-configuration">Reset Configuration<a class="headerlink" href="#reset-configuration" title="Permanent link">&para;</a></h3>
 <p>To reset to defaults, delete the state file:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>rm<span class="w"> </span>~/.plexusone/state.json

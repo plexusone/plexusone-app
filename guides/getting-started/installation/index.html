@@ -483,6 +483,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#upgrading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrading
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#option-2-build-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2275,6 +2286,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#upgrading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrading
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#option-2-build-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2531,10 +2553,22 @@
 <h2 id="desktop-app-macos">Desktop App (macOS)<a class="headerlink" href="#desktop-app-macos" title="Permanent link">&para;</a></h2>
 <h3 id="option-1-download-release-recommended">Option 1: Download Release (Recommended)<a class="headerlink" href="#option-1-download-release-recommended" title="Permanent link">&para;</a></h3>
 <ol>
-<li>Download the latest release from <a href="https://github.com/plexusone/plexusone-app/releases">GitHub Releases</a></li>
-<li>Unzip and drag <code>PlexusOne Desktop.app</code> to your Applications folder</li>
-<li>Open PlexusOne Desktop from Applications (you may need to right-click → Open the first time)</li>
+<li>Download the latest release from <a href="https://github.com/plexusone/plexusone-app/releases">GitHub Releases</a>:
+   <code>PlexusOneDesktop-X.Y.Z-macos-arm64.dmg</code> for Apple Silicon,
+   <code>-x86_64.dmg</code> for Intel, or <code>-universal.dmg</code> for either</li>
+<li>Open the <code>.dmg</code> and drag PlexusOne Desktop to Applications</li>
+<li>Open PlexusOne Desktop from Applications. The first time, macOS blocks it
+   (see <a href="#app-wont-open-macos-security">App Won't Open</a>)</li>
 </ol>
+<h3 id="upgrading">Upgrading<a class="headerlink" href="#upgrading" title="Permanent link">&para;</a></h3>
+<p>Quit PlexusOne Desktop (<code>⌘Q</code>) before opening a new version. Only one copy of
+the app runs at a time: opening a second copy brings the running one forward
+and quits, so a new version opened while the old one runs never starts.</p>
+<p>Then install the new version as above, replacing the old app. Windows, layouts,
+and the Claude session log are kept in <code>~/.plexusone/</code>, so they carry over. If
+you installed the <a href="../../desktop/claude-sessions/#recording-sessions-while-plexusone-is-closed">Claude Code hook</a>
+and the app is in the same place, it keeps working; if you moved the app,
+click <strong>Update Hook</strong> in <strong>Settings &gt; Sessions</strong>.</p>
 <h3 id="option-2-build-from-source">Option 2: Build from Source<a class="headerlink" href="#option-2-build-from-source" title="Permanent link">&para;</a></h3>
 <h4 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h4>
 <ul>
@@ -2634,7 +2668,13 @@
 <li>Verify firewall allows connections on port 9600</li>
 </ol>
 <h3 id="app-wont-open-macos-security">App Won't Open (macOS Security)<a class="headerlink" href="#app-wont-open-macos-security" title="Permanent link">&para;</a></h3>
-<p>Right-click the app → Open → Open anyway. This is required for unsigned apps.</p>
+<p>Release builds are ad-hoc signed but not notarized, so on first launch macOS
+says it could not verify the app. Open <strong>System Settings &gt; Privacy &amp; Security</strong>,
+scroll to the message about PlexusOne Desktop, and click <strong>Open Anyway</strong>. The
+prompt does not appear again for that copy.</p>
+<p>From Terminal instead:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>xattr<span class="w"> </span>-dr<span class="w"> </span>com.apple.quarantine<span class="w"> </span><span class="s2">&quot;/Applications/PlexusOne Desktop.app&quot;</span>
+</code></pre></div>
 
 
 
