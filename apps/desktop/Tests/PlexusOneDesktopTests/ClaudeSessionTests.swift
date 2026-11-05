@@ -588,7 +588,7 @@ final class ClaudeSessionTests: XCTestCase {
 
     func testHookInstallerKeepsOtherHooksAndIsIdempotent() throws {
         let command = ClaudeHookInstaller.hookCommand(executable: "/Applications/PlexusOne Desktop.app/Contents/MacOS/PlexusOneDesktop")
-        XCTAssertEqual(command, #""/Applications/PlexusOne Desktop.app/Contents/MacOS/PlexusOneDesktop" claude-hook"#)
+        XCTAssertEqual(command, "'/Applications/PlexusOne Desktop.app/Contents/MacOS/PlexusOneDesktop' claude-hook")
         let other: [String: Any] = ["type": "command", "command": "echo hi"]
         let settings: [String: Any] = [
             "model": "opus",
