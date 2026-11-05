@@ -76,6 +76,16 @@ final class AppState {
         openMainWindow?()
     }
 
+    /// The directory a companion shell for tmux session `name` should start
+    /// in: where the Claude session there started, else the tmux pane's
+    /// current directory.
+    func workingDirectory(forTmuxSession name: String) async -> String? {
+        if let cwd = claudeSessions.liveByTmuxSession[name]?.cwd, !cwd.isEmpty {
+            return cwd
+        }
+        return await sessionManager.currentPath(ofSession: name)
+    }
+
     /// Show the next Claude session waiting for the user, cycling through them.
     func showNextWaitingSession() async {
         let names = claudeSessions.waitingSessions.compactMap { $0.tmuxTarget?.sessionName }

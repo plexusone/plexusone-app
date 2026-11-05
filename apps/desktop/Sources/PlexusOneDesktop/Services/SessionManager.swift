@@ -125,6 +125,24 @@ final class SessionManager {
         await refresh()
     }
 
+    /// The current directory of the active pane in tmux session `name`, or
+    /// nil if tmux cannot report it.
+    func currentPath(ofSession name: String) async -> String? {
+        do {
+            // "=name:" matches the session name exactly.
+            let result = try await runTmux(["display-message", "-p", "-t", "=\(name):", "#{pane_current_path}"])
+            guard result.success else {
+                NSLog("PlexusOne: tmux could not report the directory of %@: %@", name, result.stderr)
+                return nil
+            }
+            let path = result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+            return path.isEmpty ? nil : path
+        } catch {
+            NSLog("PlexusOne: tmux could not report the directory of %@: %@", name, error.localizedDescription)
+            return nil
+        }
+    }
+
     /// Check if tmux is available by checking known installation paths
     func checkTmuxAvailable() -> Bool {
         TmuxEnvironment.isInstalled()

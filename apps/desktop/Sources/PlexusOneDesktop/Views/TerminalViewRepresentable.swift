@@ -38,6 +38,14 @@ class TerminalContainerView: NSView {
         windowObservation = window?.observe(\.firstResponder, options: [.new]) { [weak self] _, _ in
             self?.updateFocusState()
         }
+        if terminalView.focusWhenShown, let window {
+            terminalView.focusWhenShown = false
+            // Wait for SwiftUI to finish placing the view.
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.window === window else { return }
+                window.makeFirstResponder(self.terminalView)
+            }
+        }
     }
 
     override var acceptsFirstResponder: Bool { true }
@@ -105,9 +113,15 @@ class TerminalContainerView: NSView {
         terminalView.scrollWheel(with: event)
     }
 
-    /// Check if this terminal has focus and notify if changed
+    /// Check if this terminal's pane has focus and notify if changed. A pane
+    /// can hold two terminals (the coding session and its companion shell);
+    /// focus in either one counts, so moving between them keeps the pane
+    /// highlighted.
     func updateFocusState() {
-        let isFocused = window?.firstResponder === terminalView
+        let focused = window?.firstResponder as? AppTerminalView
+        let isFocused = focused != nil
+            && focused?.paneId == terminalView.paneId
+            && focused?.focusSessionId == terminalView.focusSessionId
         if isFocused != lastFocusState {
             lastFocusState = isFocused
             postFocusChange(focused: isFocused)
@@ -115,7 +129,7 @@ class TerminalContainerView: NSView {
     }
 
     private func postFocusChange(focused: Bool) {
-        guard let sessionId = terminalView.attachedSessionId() else { return }
+        guard let sessionId = terminalView.focusSessionId else { return }
         lastFocusState = focused
 
         NotificationCenter.default.post(
@@ -148,8 +162,7 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
         terminalView.processDelegate = context.coordinator
         context.coordinator.terminalView = terminalView
 
-        // Configure appearance
-        configureAppearance(terminalView)
+        terminalView.applyStandardAppearance()
 
         let container = TerminalContainerView(terminalView: terminalView)
         context.coordinator.containerView = container
@@ -181,24 +194,6 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
-    }
-
-    private func configureAppearance(_ view: AppTerminalView) {
-        // Use system monospace font
-        let fontSize: CGFloat = 13
-        let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
-        view.font = font
-
-        // Configure colors
-        view.nativeBackgroundColor = NSColor(calibratedRed: 0.1, green: 0.1, blue: 0.1, alpha: 1.0)
-        view.nativeForegroundColor = NSColor(calibratedRed: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)
-
-        // Cursor style
-        view.caretColor = NSColor.white
-
-        // Configure scrollback buffer (default is only 500 lines)
-        // AI agent output can be lengthy, so use 10,000 lines
-        view.changeScrollback(10000)
     }
 
     // MARK: - Coordinator
@@ -316,5 +311,22 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
 
             return lines.joined(separator: "\n")
         }
+    }
+}
+
+/// Hosts a pane's companion shell. The shell's view lives in
+/// `CompanionTerminalStore`, not here, so hiding the shell keeps it running.
+struct CompanionTerminalRepresentable: NSViewRepresentable {
+    let terminal: AppTerminalView
+
+    func makeNSView(context: Context) -> TerminalContainerView {
+        TerminalContainerView(terminalView: terminal)
+    }
+
+    func updateNSView(_ container: TerminalContainerView, context: Context) {}
+
+    static func dismantleNSView(_ container: TerminalContainerView, coordinator: ()) {
+        // Release the shell's view so the next container can host it.
+        container.terminalView.removeFromSuperview()
     }
 }

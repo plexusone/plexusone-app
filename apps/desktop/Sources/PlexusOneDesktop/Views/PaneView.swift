@@ -16,6 +16,7 @@ struct PaneView: View {
 
     @Environment(\.openWindow) private var openWindow
     @Environment(AppState.self) private var appState
+    @Environment(CompanionTerminalStore.self) private var companions
 
     /// The attached session as of the latest refresh. The binding holds a
     /// copy taken at attach time, so its status and wrapper go stale.
@@ -30,6 +31,72 @@ struct PaneView: View {
         return appState.claudeSessions.liveByTmuxSession[tmux]
     }
 
+    /// This pane's companion shell for the attached session.
+    private var companionKey: CompanionKey? {
+        attachedSession.map { CompanionKey(paneId: paneId, tmuxSession: $0.tmuxSession) }
+    }
+
+    /// The companion shell's view, while it is shown.
+    private var shownCompanion: AppTerminalView? {
+        guard let key = companionKey, companions.isVisible(key) else { return nil }
+        return companions.terminal(for: key)
+    }
+
+    /// The tmux session's terminal, with the input prompt badge.
+    private var codingTerminal: some View {
+        ZStack(alignment: .topTrailing) {
+            AppTerminalViewRepresentable(
+                paneId: paneId,
+                attachedSession: $attachedSession,
+                sessionManager: sessionManager,
+                inputMonitor: inputMonitor,
+                onSessionEnded: {
+                    attachedSession = nil
+                },
+                onInputChanged: { result in
+                    if result?.pattern.type != currentInputAlert?.pattern.type
+                        || result?.matchedText != currentInputAlert?.matchedText {
+                        currentInputAlert = result
+                    }
+                }
+            )
+
+            // Input indicator overlay
+            if let alert = currentInputAlert {
+                InputIndicatorView(
+                    result: alert,
+                    onDismiss: { currentInputAlert = nil }
+                )
+                .padding(8)
+            }
+        }
+    }
+
+    /// Show or hide the shell below the coding session. The first time,
+    /// start it in the coding session's working directory.
+    private func toggleCompanion() {
+        guard let session = attachedSession, let key = companionKey else { return }
+        if companions.isVisible(key) {
+            // Hand focus back to the coding terminal if the shell had it.
+            if let shell = companions.terminal(for: key), let window = shell.window,
+               window.firstResponder === shell, let contentView = window.contentView,
+               let coding = SessionNavigator.terminalViews(in: contentView)
+                   .first(where: { $0.paneId == paneId && $0.isSessionAttached }) {
+                window.makeFirstResponder(coding)
+            }
+            companions.hide(key)
+        } else if companions.hasShell(key) {
+            companions.show(key, ownerSessionId: session.id, directory: nil)
+        } else {
+            Task {
+                let directory = await appState.workingDirectory(forTmuxSession: session.tmuxSession)
+                // Skip if the pane moved on while the lookup ran.
+                guard attachedSession?.tmuxSession == session.tmuxSession else { return }
+                companions.show(key, ownerSessionId: session.id, directory: directory)
+            }
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Compact header with session dropdown
@@ -41,6 +108,8 @@ struct PaneView: View {
                 claudeStatus: ClaudeLiveStatus.text(status: claudeRecord?.status, waitingFor: claudeRecord?.waitingFor),
                 claudeWaiting: ClaudeLiveStatus.isWaiting(status: claudeRecord?.status, waitingFor: claudeRecord?.waitingFor),
                 isFocused: isFocused,
+                companionShown: shownCompanion != nil,
+                onToggleCompanion: toggleCompanion,
                 onSelectSession: { session in
                     attachedSession = session
                 },
@@ -59,30 +128,24 @@ struct PaneView: View {
 
             // Terminal or detached placeholder
             if attachedSession != nil {
-                ZStack(alignment: .topTrailing) {
-                    AppTerminalViewRepresentable(
-                        paneId: paneId,
-                        attachedSession: $attachedSession,
-                        sessionManager: sessionManager,
-                        inputMonitor: inputMonitor,
-                        onSessionEnded: {
-                            attachedSession = nil
-                        },
-                        onInputChanged: { result in
-                            if result?.pattern.type != currentInputAlert?.pattern.type
-                                || result?.matchedText != currentInputAlert?.matchedText {
-                                currentInputAlert = result
-                            }
+                GeometryReader { geometry in
+                    // The coding terminal stays first so showing the shell
+                    // below it never recreates it.
+                    VStack(spacing: 0) {
+                        codingTerminal
+                            .frame(maxHeight: .infinity)
+                        if let terminal = shownCompanion, let key = companionKey {
+                            CompanionBarView(
+                                directory: companions.directories[key],
+                                paneHeight: geometry.size.height,
+                                fraction: companions.fraction(forPane: paneId),
+                                onResize: { companions.setFraction($0, forPane: paneId) },
+                                onHide: toggleCompanion
+                            )
+                            CompanionTerminalRepresentable(terminal: terminal)
+                                .id(key)
+                                .frame(height: geometry.size.height * companions.fraction(forPane: paneId))
                         }
-                    )
-
-                    // Input indicator overlay
-                    if let alert = currentInputAlert {
-                        InputIndicatorView(
-                            result: alert,
-                            onDismiss: { currentInputAlert = nil }
-                        )
-                        .padding(8)
                     }
                 }
             } else {
@@ -139,6 +202,9 @@ struct PaneHeaderView: View {
     var claudeStatus: String? = nil
     var claudeWaiting: Bool = false
     let isFocused: Bool
+    /// Whether the shell below the coding session is shown.
+    var companionShown: Bool = false
+    var onToggleCompanion: () -> Void = {}
     let onSelectSession: (Session) -> Void
     let onDetach: () -> Void
     let onPopOut: () -> Void
@@ -229,8 +295,16 @@ struct PaneHeaderView: View {
                 .foregroundColor(isFocused ? Color.blue : Color(nsColor: .tertiaryLabelColor))
                 .padding(.horizontal, 4)
 
-            // Pop-out and Detach buttons (only show if attached)
+            // Terminal, Pop-out and Detach buttons (only show if attached)
             if currentSession != nil {
+                Button(action: onToggleCompanion) {
+                    Image(systemName: companionShown ? "terminal.fill" : "terminal")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(companionShown ? .accentColor : .secondary)
+                }
+                .buttonStyle(.plain)
+                .help(companionShown ? "Hide Terminal" : "Show Terminal Below (opens in the session's folder)")
+
                 Button(action: onPopOut) {
                     Image(systemName: "arrow.up.forward.app")
                         .font(.system(size: 9, weight: .medium))
@@ -256,6 +330,85 @@ struct PaneHeaderView: View {
                 .frame(height: 2)
                 .foregroundColor(isFocused ? Color.blue : Color(nsColor: .separatorColor)),
             alignment: .bottom
+        )
+    }
+}
+
+/// The bar above a companion shell: its folder, and a handle to drag to
+/// resize the shell.
+struct CompanionBarView: View {
+    let directory: String?
+    let paneHeight: CGFloat
+    /// The shell's share of the pane height.
+    let fraction: CGFloat
+    let onResize: (CGFloat) -> Void
+    let onHide: () -> Void
+
+    @State private var dragStartFraction: CGFloat?
+    @State private var showsResizeCursor = false
+
+    /// The folder with the home directory shown as "~".
+    private var displayDirectory: String {
+        guard let directory else { return "" }
+        return (directory as NSString).abbreviatingWithTildeInPath
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "folder")
+                .font(.system(size: 9))
+                .foregroundColor(.secondary)
+            Text(displayDirectory)
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundColor(.secondary)
+                .lineLimit(1)
+                .truncationMode(.head)
+                .help(directory ?? "")
+            Spacer()
+            Button(action: onHide) {
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help("Hide Terminal (keeps it running)")
+        }
+        .padding(.horizontal, 6)
+        .frame(height: 18)
+        .background(Color(nsColor: .controlBackgroundColor))
+        .overlay(
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color(nsColor: .separatorColor)),
+            alignment: .top
+        )
+        .contentShape(Rectangle())
+        .onHover { inside in
+            guard inside != showsResizeCursor else { return }
+            showsResizeCursor = inside
+            if inside {
+                NSCursor.resizeUpDown.push()
+            } else {
+                NSCursor.pop()
+            }
+        }
+        .onDisappear {
+            // Hidden while the pointer was over it: restore the cursor.
+            if showsResizeCursor {
+                showsResizeCursor = false
+                NSCursor.pop()
+            }
+        }
+        .gesture(
+            DragGesture(minimumDistance: 1, coordinateSpace: .global)
+                .onChanged { value in
+                    guard paneHeight > 0 else { return }
+                    let start = dragStartFraction ?? fraction
+                    dragStartFraction = start
+                    // Dragging up makes the shell taller.
+                    onResize(start - value.translation.height / paneHeight)
+                }
+                .onEnded { _ in dragStartFraction = nil }
         )
     }
 }
@@ -330,5 +483,6 @@ struct CompactDetachedView: View {
         onRequestNewSession: {}
     )
     .environment(AppState())
+    .environment(CompanionTerminalStore())
     .frame(width: 400, height: 300)
 }

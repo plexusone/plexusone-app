@@ -11,6 +11,28 @@ class AppTerminalView: LocalProcessTerminalView {
     /// (next/previous pane, detach) can find the focused pane.
     var paneId: Int?
 
+    /// For a pane's companion shell: the coding session it sits under. The
+    /// pane's focus highlight treats both terminals as one pane.
+    var ownerSessionId: UUID?
+
+    /// Take keyboard focus the next time this view joins a window.
+    var focusWhenShown = false
+
+    /// The session this terminal counts toward for the pane focus highlight.
+    var focusSessionId: UUID? {
+        currentSessionId ?? ownerSessionId
+    }
+
+    /// Font, colors, and scrollback shared by every terminal in the app.
+    func applyStandardAppearance() {
+        font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
+        nativeBackgroundColor = NSColor(calibratedRed: 0.1, green: 0.1, blue: 0.1, alpha: 1.0)
+        nativeForegroundColor = NSColor(calibratedRed: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)
+        caretColor = NSColor.white
+        // The default is only 500 lines; agent output can be long.
+        changeScrollback(10000)
+    }
+
     override func layout() {
         super.layout()
         updateSizeIfNeeded()
@@ -59,7 +81,7 @@ class AppTerminalView: LocalProcessTerminalView {
         // Terminate any existing process before attaching to a new session
         // This prevents the old tmux attach from continuing to run
         if isSessionAttached {
-            terminateClient()
+            terminateProcess()
         }
 
         currentSessionId = session.id
@@ -80,7 +102,7 @@ class AppTerminalView: LocalProcessTerminalView {
     func detach() {
         // Terminate the tmux attach process
         // The tmux session itself continues running in background
-        terminateClient()
+        terminateProcess()
         currentSessionId = nil
     }
 
@@ -105,13 +127,18 @@ class AppTerminalView: LocalProcessTerminalView {
         }
     }
 
-    /// Stop the `tmux attach` client and reap it.
+    /// Stop the child process (a `tmux attach` client or a companion shell)
+    /// and reap it.
     ///
-    /// SwiftTerm's `terminate()` sends SIGTERM but also stops watching the
-    /// child, so nothing calls waitpid() and the client would linger as a
-    /// zombie process until the app quits.
-    private func terminateClient() {
-        let pid = process.running ? process.shellPid : 0
+    /// SwiftTerm's `terminate()` closes the PTY, which hangs up the child,
+    /// and sends SIGTERM, but it also stops watching the child, so nothing
+    /// calls waitpid() and the child would linger as a zombie process until
+    /// the app quits.
+    func terminateProcess() {
+        // Once the child has exited its PID may belong to another process,
+        // so never signal it again.
+        guard process.running else { return }
+        let pid = process.shellPid
         terminate()
         guard pid > 0 else { return }
         DispatchQueue.global(qos: .utility).async {

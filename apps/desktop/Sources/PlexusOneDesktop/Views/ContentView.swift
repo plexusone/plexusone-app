@@ -6,6 +6,7 @@ struct ContentView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.openWindow) private var openWindow
     @State private var paneManager = PaneManager()
+    @State private var companions = CompanionTerminalStore()
     @State private var gridConfig = GridConfig(columns: 2, rows: 1)
     @State private var windowId: UUID?
     @State private var showNewSessionSheet = false
@@ -117,6 +118,7 @@ struct ContentView: View {
                 }
             }
         }
+        .environment(companions)
         .focusedSceneValue(\.windowActions, windowActions)
         .sheet(isPresented: $showAttachSheet) {
             AttachSessionSheet(sessions: sessionManager.sessions) { session in
@@ -173,6 +175,11 @@ struct ContentView: View {
             if let id = windowId {
                 windowStateManager.unregisterWindow(id: id)
             }
+            companions.closeAll()
+        }
+        .onChange(of: sessionManager.sessions.map(\.tmuxSession)) { _, names in
+            // End shells whose tmux session is gone.
+            companions.prune(keepingSessions: Set(names))
         }
         .onChange(of: gridConfig) { _, _ in
             saveState()
@@ -355,12 +362,17 @@ struct ContentView: View {
         (NSApp.keyWindow?.firstResponder as? AppTerminalView)?.paneId
     }
 
-    /// Move keyboard focus to the next/previous pane that has a terminal.
+    /// Move keyboard focus to the next/previous terminal: each pane's coding
+    /// session, then the shell below it when shown.
     private func cycleFocus(by step: Int) {
         guard let window = NSApp.keyWindow, let contentView = window.contentView else { return }
         let terminals = SessionNavigator.terminalViews(in: contentView)
-            .filter { $0.isSessionAttached && $0.paneId != nil }
-            .sorted { ($0.paneId ?? 0) < ($1.paneId ?? 0) }
+            .filter { $0.focusSessionId != nil && $0.paneId != nil }
+            .sorted {
+                let left = ($0.paneId ?? 0, $0.isSessionAttached ? 0 : 1)
+                let right = ($1.paneId ?? 0, $1.isSessionAttached ? 0 : 1)
+                return left < right
+            }
         guard !terminals.isEmpty else { return }
 
         let next: Int
