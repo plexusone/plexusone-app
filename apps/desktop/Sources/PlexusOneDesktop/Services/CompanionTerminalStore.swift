@@ -20,14 +20,21 @@ struct CompanionKey: Hashable {
 @MainActor
 @Observable
 final class CompanionTerminalStore {
-    /// Default share of the pane height given to the shell.
-    static let defaultFraction: CGFloat = 0.35
-    static let fractionRange: ClosedRange<CGFloat> = 0.15...0.85
+    /// UserDefaults key: the shell's default height, as a percent of the pane.
+    nonisolated static let defaultHeightPercentKey = "paneTerminalHeightPercent"
+    /// The shell's default height when the user has not chosen one.
+    nonisolated static let standardHeightPercent: Double = 35
+    /// Heights the shell can take, as a share of the pane, so neither
+    /// terminal shrinks to nothing.
+    nonisolated static let fractionRange: ClosedRange<CGFloat> = 0.15...0.85
+    /// `fractionRange` as percents, for the setting.
+    nonisolated static let heightPercentRange: ClosedRange<Double> = 15...85
 
     /// Companions currently shown.
     private(set) var visible: Set<CompanionKey> = []
 
-    /// The shell's share of the pane height, per pane.
+    /// The shell's share of the pane height, for panes the user resized.
+    /// Other panes follow the default height setting.
     private var fractions: [Int: CGFloat] = [:]
 
     /// Directory each shell started in, shown above it.
@@ -64,12 +71,33 @@ final class CompanionTerminalStore {
         shells[key]?.terminal
     }
 
-    func fraction(forPane paneId: Int) -> CGFloat {
-        fractions[paneId] ?? Self.defaultFraction
+    /// The height the user dragged this pane's shell to, if any.
+    func customFraction(forPane paneId: Int) -> CGFloat? {
+        fractions[paneId]
+    }
+
+    /// The shell's share of the pane height: the user's size for this pane,
+    /// else the default.
+    func fraction(forPane paneId: Int, defaultPercent: Double) -> CGFloat {
+        fractions[paneId] ?? Self.fraction(percent: defaultPercent)
     }
 
     func setFraction(_ fraction: CGFloat, forPane paneId: Int) {
-        fractions[paneId] = min(max(fraction, Self.fractionRange.lowerBound), Self.fractionRange.upperBound)
+        fractions[paneId] = Self.clamped(fraction)
+    }
+
+    /// Go back to the default height for this pane.
+    func resetFraction(forPane paneId: Int) {
+        fractions.removeValue(forKey: paneId)
+    }
+
+    /// A height percent as a share of the pane, kept within `fractionRange`.
+    nonisolated static func fraction(percent: Double) -> CGFloat {
+        clamped(CGFloat(percent) / 100)
+    }
+
+    private nonisolated static func clamped(_ fraction: CGFloat) -> CGFloat {
+        min(max(fraction, fractionRange.lowerBound), fractionRange.upperBound)
     }
 
     // MARK: - Showing and hiding

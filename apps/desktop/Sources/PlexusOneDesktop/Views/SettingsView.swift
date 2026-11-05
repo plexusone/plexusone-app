@@ -27,12 +27,29 @@ struct GeneralSettingsView: View {
     @AppStorage("autoAttachOnLaunch") private var autoAttachOnLaunch = true
     @AppStorage("showDetachedSessions") private var showDetachedSessions = true
     @AppStorage("restoreWindowsOnLaunch") private var restoreWindowsOnLaunch = true
+    @AppStorage(CompanionTerminalStore.defaultHeightPercentKey)
+    private var terminalPercent = CompanionTerminalStore.standardHeightPercent
 
     var body: some View {
         Form {
             Toggle("Auto-attach to last session on launch", isOn: $autoAttachOnLaunch)
             Toggle("Show detached sessions in status bar", isOn: $showDetachedSessions)
             Toggle("Restore windows on launch", isOn: $restoreWindowsOnLaunch)
+
+            HStack {
+                Text("Pane terminal height:")
+                Slider(
+                    value: $terminalPercent,
+                    in: CompanionTerminalStore.heightPercentRange,
+                    step: 5
+                )
+                Text("\(Int(terminalPercent))%")
+                    .monospacedDigit()
+                    .frame(width: 40)
+            }
+            Text("How much of the pane the terminal below a session takes. Panes follow this as they resize. Drag the bar above a terminal to size that pane yourself; double-click the bar to return to this default.")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
         .padding()
     }

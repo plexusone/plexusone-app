@@ -17,6 +17,8 @@ struct PaneView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(AppState.self) private var appState
     @Environment(CompanionTerminalStore.self) private var companions
+    @AppStorage(CompanionTerminalStore.defaultHeightPercentKey)
+    private var defaultTerminalPercent = CompanionTerminalStore.standardHeightPercent
 
     /// The attached session as of the latest refresh. The binding holds a
     /// copy taken at attach time, so its status and wrapper go stale.
@@ -40,6 +42,11 @@ struct PaneView: View {
     private var shownCompanion: AppTerminalView? {
         guard let key = companionKey, companions.isVisible(key) else { return nil }
         return companions.terminal(for: key)
+    }
+
+    /// The shell's share of the pane height.
+    private var companionFraction: CGFloat {
+        companions.fraction(forPane: paneId, defaultPercent: defaultTerminalPercent)
     }
 
     /// The tmux session's terminal, with the input prompt badge.
@@ -138,13 +145,14 @@ struct PaneView: View {
                             CompanionBarView(
                                 directory: companions.directories[key],
                                 paneHeight: geometry.size.height,
-                                fraction: companions.fraction(forPane: paneId),
+                                fraction: companionFraction,
                                 onResize: { companions.setFraction($0, forPane: paneId) },
+                                onResetSize: { companions.resetFraction(forPane: paneId) },
                                 onHide: toggleCompanion
                             )
                             CompanionTerminalRepresentable(terminal: terminal)
                                 .id(key)
-                                .frame(height: geometry.size.height * companions.fraction(forPane: paneId))
+                                .frame(height: geometry.size.height * companionFraction)
                         }
                     }
                 }
@@ -335,13 +343,14 @@ struct PaneHeaderView: View {
 }
 
 /// The bar above a companion shell: its folder, and a handle to drag to
-/// resize the shell.
+/// resize the shell. Double-click returns it to the default height.
 struct CompanionBarView: View {
     let directory: String?
     let paneHeight: CGFloat
     /// The shell's share of the pane height.
     let fraction: CGFloat
     let onResize: (CGFloat) -> Void
+    let onResetSize: () -> Void
     let onHide: () -> Void
 
     @State private var dragStartFraction: CGFloat?
@@ -399,6 +408,8 @@ struct CompanionBarView: View {
                 NSCursor.pop()
             }
         }
+        .help("Drag to resize. Double-click for the default height.")
+        .onTapGesture(count: 2, perform: onResetSize)
         .gesture(
             DragGesture(minimumDistance: 1, coordinateSpace: .global)
                 .onChanged { value in
