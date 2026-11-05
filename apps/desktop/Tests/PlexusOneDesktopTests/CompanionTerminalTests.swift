@@ -84,15 +84,36 @@ final class CompanionTerminalStoreTests: XCTestCase {
         XCTAssertFalse(store.hasShell(key))
     }
 
-    func testFractionDefaultsAndClamps() {
-        XCTAssertEqual(store.fraction(forPane: 1), CompanionTerminalStore.defaultFraction)
-        store.setFraction(0.5, forPane: 1)
-        XCTAssertEqual(store.fraction(forPane: 1), 0.5)
+    func testFractionFollowsDefaultUntilResized() {
+        XCTAssertNil(store.customFraction(forPane: 1))
+        XCTAssertEqual(store.fraction(forPane: 1, defaultPercent: 35), 0.35, accuracy: 0.0001)
+        // A pane that was not resized follows a changed default.
+        XCTAssertEqual(store.fraction(forPane: 1, defaultPercent: 50), 0.5, accuracy: 0.0001)
+
+        store.setFraction(0.6, forPane: 1)
+        XCTAssertEqual(store.fraction(forPane: 1, defaultPercent: 35), 0.6, accuracy: 0.0001)
+        XCTAssertEqual(store.fraction(forPane: 2, defaultPercent: 35), 0.35, accuracy: 0.0001)
+
+        store.resetFraction(forPane: 1)
+        XCTAssertNil(store.customFraction(forPane: 1))
+        XCTAssertEqual(store.fraction(forPane: 1, defaultPercent: 40), 0.4, accuracy: 0.0001)
+    }
+
+    func testFractionsAreClamped() {
         store.setFraction(0.99, forPane: 1)
-        XCTAssertEqual(store.fraction(forPane: 1), CompanionTerminalStore.fractionRange.upperBound)
+        XCTAssertEqual(store.customFraction(forPane: 1), CompanionTerminalStore.fractionRange.upperBound)
         store.setFraction(-1, forPane: 1)
-        XCTAssertEqual(store.fraction(forPane: 1), CompanionTerminalStore.fractionRange.lowerBound)
-        XCTAssertEqual(store.fraction(forPane: 2), CompanionTerminalStore.defaultFraction)
+        XCTAssertEqual(store.customFraction(forPane: 1), CompanionTerminalStore.fractionRange.lowerBound)
+        XCTAssertEqual(CompanionTerminalStore.fraction(percent: 5), CompanionTerminalStore.fractionRange.lowerBound)
+        XCTAssertEqual(CompanionTerminalStore.fraction(percent: 100), CompanionTerminalStore.fractionRange.upperBound)
+    }
+
+    func testPercentRangeMatchesFractionRange() {
+        XCTAssertEqual(CompanionTerminalStore.heightPercentRange.lowerBound / 100,
+                       Double(CompanionTerminalStore.fractionRange.lowerBound), accuracy: 0.0001)
+        XCTAssertEqual(CompanionTerminalStore.heightPercentRange.upperBound / 100,
+                       Double(CompanionTerminalStore.fractionRange.upperBound), accuracy: 0.0001)
+        XCTAssertTrue(CompanionTerminalStore.heightPercentRange.contains(CompanionTerminalStore.standardHeightPercent))
     }
 }
 
