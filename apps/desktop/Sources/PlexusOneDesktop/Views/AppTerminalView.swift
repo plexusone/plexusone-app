@@ -23,9 +23,25 @@ class AppTerminalView: LocalProcessTerminalView {
         currentSessionId ?? ownerSessionId
     }
 
+    /// UserDefaults key for the terminal font size, set in Settings.
+    static let fontSizeKey = "terminalFontSize"
+    static let defaultFontSize: Double = 13
+
+    /// The font size chosen in Settings.
+    static var fontSizeSetting: Double {
+        let stored = UserDefaults.standard.double(forKey: fontSizeKey)
+        return stored > 0 ? stored : defaultFontSize
+    }
+
+    /// Use `size` for the terminal font, if it is not already.
+    func applyFontSize(_ size: Double) {
+        guard font.pointSize != CGFloat(size) else { return }
+        font = NSFont.monospacedSystemFont(ofSize: CGFloat(size), weight: .regular)
+    }
+
     /// Font, colors, and scrollback shared by every terminal in the app.
     func applyStandardAppearance() {
-        font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
+        font = NSFont.monospacedSystemFont(ofSize: CGFloat(Self.fontSizeSetting), weight: .regular)
         nativeBackgroundColor = NSColor(calibratedRed: 0.1, green: 0.1, blue: 0.1, alpha: 1.0)
         nativeForegroundColor = NSColor(calibratedRed: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)
         caretColor = NSColor.white

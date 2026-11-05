@@ -24,18 +24,11 @@ struct SettingsView: View {
 }
 
 struct GeneralSettingsView: View {
-    @AppStorage("autoAttachOnLaunch") private var autoAttachOnLaunch = true
-    @AppStorage("showDetachedSessions") private var showDetachedSessions = true
-    @AppStorage("restoreWindowsOnLaunch") private var restoreWindowsOnLaunch = true
     @AppStorage(CompanionTerminalStore.defaultHeightPercentKey)
     private var terminalPercent = CompanionTerminalStore.standardHeightPercent
 
     var body: some View {
         Form {
-            Toggle("Auto-attach to last session on launch", isOn: $autoAttachOnLaunch)
-            Toggle("Show detached sessions in status bar", isOn: $showDetachedSessions)
-            Toggle("Restore windows on launch", isOn: $restoreWindowsOnLaunch)
-
             HStack {
                 Text("Pane terminal height:")
                 Slider(
@@ -56,8 +49,7 @@ struct GeneralSettingsView: View {
 }
 
 struct AppearanceSettingsView: View {
-    @AppStorage("terminalFontSize") private var fontSize: Double = 13
-    @AppStorage("cursorBlink") private var cursorBlink = true
+    @AppStorage(AppTerminalView.fontSizeKey) private var fontSize = AppTerminalView.defaultFontSize
 
     var body: some View {
         Form {
@@ -70,22 +62,17 @@ struct AppearanceSettingsView: View {
                     .monospacedDigit()
                     .frame(width: 40)
             }
-
-            Toggle("Cursor blink", isOn: $cursorBlink)
-
-            // Placeholder for theme selection
-            Text("Theme settings coming in a future update")
-                .foregroundColor(.secondary)
+            Text("Applies to every terminal, including open ones.")
                 .font(.caption)
+                .foregroundColor(.secondary)
         }
         .padding()
     }
 }
 
 struct SessionSettingsView: View {
-    @AppStorage("idleThresholdSeconds") private var idleThreshold: Double = 30
-    @AppStorage("stuckThresholdSeconds") private var stuckThreshold: Double = 120
-    @AppStorage("defaultShell") private var defaultShell = "/bin/zsh"
+    @AppStorage(SessionManager.idleThresholdKey) private var idleThreshold = SessionManager.defaultIdleThreshold
+    @AppStorage(SessionManager.stuckThresholdKey) private var stuckThreshold = SessionManager.defaultStuckThreshold
     @AppStorage(TmuxEnvironment.mouseScrollingKey) private var mouseScrolling = true
     @AppStorage(AppState.notifyWaitingKey) private var notifyWaiting = true
     @State private var hookStatus: ClaudeHookInstaller.Status?
@@ -109,8 +96,9 @@ struct SessionSettingsView: View {
                     .frame(width: 40)
             }
 
-            TextField("Default Shell:", text: $defaultShell)
-                .textFieldStyle(.roundedBorder)
+            Text("A session with no output for these times shows as idle, then stuck. Applies at the next refresh.")
+                .font(.caption)
+                .foregroundColor(.secondary)
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack {

@@ -15,9 +15,26 @@ final class SessionManager {
     private var refreshTask: Task<Void, Never>?
     private let refreshInterval: TimeInterval = 5.0
 
-    // Status thresholds (in seconds)
-    let idleThreshold: TimeInterval = 30
-    let stuckThreshold: TimeInterval = 120
+    /// UserDefaults keys for the status thresholds, set in Settings.
+    nonisolated static let idleThresholdKey = "idleThresholdSeconds"
+    nonisolated static let stuckThresholdKey = "stuckThresholdSeconds"
+    nonisolated static let defaultIdleThreshold: TimeInterval = 30
+    nonisolated static let defaultStuckThreshold: TimeInterval = 120
+
+    /// Seconds without output before a session counts as idle.
+    var idleThreshold: TimeInterval {
+        Self.threshold(forKey: Self.idleThresholdKey, default: Self.defaultIdleThreshold)
+    }
+
+    /// Seconds without output before a session counts as stuck.
+    var stuckThreshold: TimeInterval {
+        Self.threshold(forKey: Self.stuckThresholdKey, default: Self.defaultStuckThreshold)
+    }
+
+    private nonisolated static func threshold(forKey key: String, default value: TimeInterval) -> TimeInterval {
+        let stored = UserDefaults.standard.double(forKey: key)
+        return stored > 0 ? stored : value
+    }
 
     // Injected dependencies for testing
     private let commandExecutor: any CommandExecuting

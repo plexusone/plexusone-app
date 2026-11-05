@@ -152,6 +152,8 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
     @Binding var attachedSession: Session?
     let sessionManager: SessionManager
     let inputMonitor: InputMonitor
+    /// Font size from Settings; changing it resizes the open terminal.
+    var fontSize: Double = AppTerminalView.defaultFontSize
     var onSessionEnded: (() -> Void)?
     /// Called with the current prompt, or nil once it is gone.
     var onInputChanged: ((DetectionResult?) -> Void)?
@@ -177,6 +179,8 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
         let view = container.terminalView
         context.coordinator.parent = self
         view.paneId = paneId
+
+        view.applyFontSize(fontSize)
 
         // Ensure layout is current
         view.updateSizeIfNeeded()
@@ -318,12 +322,17 @@ struct AppTerminalViewRepresentable: NSViewRepresentable {
 /// `CompanionTerminalStore`, not here, so hiding the shell keeps it running.
 struct CompanionTerminalRepresentable: NSViewRepresentable {
     let terminal: AppTerminalView
+    /// Font size from Settings.
+    let fontSize: Double
 
     func makeNSView(context: Context) -> TerminalContainerView {
-        TerminalContainerView(terminalView: terminal)
+        terminal.applyFontSize(fontSize)
+        return TerminalContainerView(terminalView: terminal)
     }
 
-    func updateNSView(_ container: TerminalContainerView, context: Context) {}
+    func updateNSView(_ container: TerminalContainerView, context: Context) {
+        container.terminalView.applyFontSize(fontSize)
+    }
 
     static func dismantleNSView(_ container: TerminalContainerView, coordinator: ()) {
         // Release the shell's view so the next container can host it.

@@ -17,6 +17,7 @@ struct PaneView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(AppState.self) private var appState
     @Environment(CompanionTerminalStore.self) private var companions
+    @AppStorage(AppTerminalView.fontSizeKey) private var fontSize = AppTerminalView.defaultFontSize
     @AppStorage(CompanionTerminalStore.defaultHeightPercentKey)
     private var defaultTerminalPercent = CompanionTerminalStore.standardHeightPercent
 
@@ -57,6 +58,7 @@ struct PaneView: View {
                 attachedSession: $attachedSession,
                 sessionManager: sessionManager,
                 inputMonitor: inputMonitor,
+                fontSize: fontSize,
                 onSessionEnded: {
                     attachedSession = nil
                 },
@@ -150,7 +152,7 @@ struct PaneView: View {
                                 onResetSize: { companions.resetFraction(forPane: paneId) },
                                 onHide: toggleCompanion
                             )
-                            CompanionTerminalRepresentable(terminal: terminal)
+                            CompanionTerminalRepresentable(terminal: terminal, fontSize: fontSize)
                                 .id(key)
                                 .frame(height: geometry.size.height * companionFraction)
                         }
