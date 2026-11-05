@@ -6,7 +6,6 @@ struct NewSessionSheet: View {
     @Environment(AppState.self) private var appState
 
     @State private var sessionName: String = ""
-    @State private var selectedAgentType: AgentType?
     @State private var customCommand: String = ""
     @State private var useCustomCommand: Bool = false
     @State private var isCreating: Bool = false
@@ -39,14 +38,6 @@ struct NewSessionSheet: View {
                 // Session name
                 TextField("Session Name", text: $sessionName)
                     .textFieldStyle(.roundedBorder)
-
-                // Agent type (optional)
-                Picker("Agent Type", selection: $selectedAgentType) {
-                    Text("None").tag(nil as AgentType?)
-                    ForEach(AgentType.allCases, id: \.self) { type in
-                        Text(type.displayName).tag(type as AgentType?)
-                    }
-                }
 
                 // Custom command toggle
                 Toggle("Use custom command", isOn: $useCustomCommand)
@@ -110,9 +101,7 @@ struct NewSessionSheet: View {
 
         Task {
             do {
-                var session = try await sessionManager.createSession(name: sessionName, command: command)
-                session.agentType = selectedAgentType
-                let createdSession = session  // Immutable copy for concurrent access
+                let createdSession = try await sessionManager.createSession(name: sessionName, command: command)
 
                 await MainActor.run {
                     onSessionCreated(createdSession)
