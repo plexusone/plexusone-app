@@ -130,6 +130,10 @@
         {
           "description": "Info.plist version 0.8.0",
           "commit": "8a44f51"
+        },
+        {
+          "description": "Desktop CI builds and tests on a macOS 26 runner with the latest stable Xcode, like the release workflow; the shared workflow's macOS 14 runner is no longer available",
+          "commit": "61ea5ae"
         }
       ],
       "tests": [
@@ -170,6 +174,10 @@
         {
           "description": "README lists the pane terminal and the mobile apps' token setting",
           "commit": "9e0a349"
+        },
+        {
+          "description": "AGENTS.md and the maintaining guide describe the CI runner",
+          "commit": "8e31f07"
         }
       ]
     },
