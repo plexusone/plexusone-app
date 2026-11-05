@@ -984,6 +984,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#message-format" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1932,6 +1943,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../releases/v0.8.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.8.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../releases/v0.7.0/" class="md-nav__link">
         
   
@@ -2250,6 +2289,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#message-format" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2506,6 +2556,17 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>The TUI Parser exposes a WebSocket endpoint for real-time communication between the mobile app and tmux sessions.</p>
 <p><strong>Endpoint:</strong> <code>ws://&lt;host&gt;:9600/ws</code></p>
+<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
+<p>When TUI Parser runs with a token (<code>--token</code> or <code>TUIPARSER_TOKEN</code>, required
+whenever it listens on a non-loopback address), the WebSocket upgrade request
+must carry it in either form:</p>
+<ul>
+<li><code>Authorization: Bearer &lt;token&gt;</code> header</li>
+<li><code>token</code> query parameter, URL-encoded: <code>ws://&lt;host&gt;:9600/ws?token=&lt;token&gt;</code></li>
+</ul>
+<p>A missing or wrong token gets <code>401 Unauthorized</code> before the upgrade. Requests
+whose <code>Origin</code> header names a different host than the request get
+<code>403 Forbidden</code>; native clients that send no <code>Origin</code> are accepted.</p>
 <h2 id="message-format">Message Format<a class="headerlink" href="#message-format" title="Permanent link">&para;</a></h2>
 <p>All messages are JSON objects with a <code>type</code> field:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
@@ -2762,7 +2823,7 @@
 </ul>
 <h2 id="example-session">Example Session<a class="headerlink" href="#example-session" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1">// Connect</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">ws</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">WebSocket</span><span class="p">(</span><span class="s1">&#39;ws://192.168.1.100:9600/ws&#39;</span><span class="p">);</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">ws</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">WebSocket</span><span class="p">(</span><span class="s1">&#39;ws://192.168.1.100:9600/ws?token=&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">token</span><span class="p">));</span>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
 <a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="nx">ws</span><span class="p">.</span><span class="nx">onopen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">  </span><span class="c1">// Request session list</span>

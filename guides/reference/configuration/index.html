@@ -1939,6 +1939,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../releases/v0.8.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.8.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../releases/v0.7.0/" class="md-nav__link">
         
   
@@ -2570,6 +2598,24 @@
 </thead>
 <tbody>
 <tr>
+<td>General</td>
+<td>Pane terminal height</td>
+<td>35%</td>
+<td>Share of the pane the <a href="../../desktop/grid-layout/#pane-terminal">pane terminal</a> takes. Panes you have not resized follow changes at once</td>
+</tr>
+<tr>
+<td>Appearance</td>
+<td>Font Size</td>
+<td>13 pt</td>
+<td>Font size of every terminal, including open ones</td>
+</tr>
+<tr>
+<td>Sessions</td>
+<td>Idle after / Stuck after</td>
+<td>30 s / 120 s</td>
+<td>Time without output before a session shows as idle, then stuck</td>
+</tr>
+<tr>
 <td>Sessions</td>
 <td>Record Claude sessions while PlexusOne is closed</td>
 <td>Off</td>
@@ -2589,10 +2635,8 @@
 </tr>
 </tbody>
 </table>
-<p>The other settings in the window are saved but not yet used by the app:
-auto-attach on launch, show detached sessions, restore windows on launch
-(the app always asks), font size, cursor blink, the idle and stuck
-thresholds, and the default shell (new sessions use tmux's <code>default-shell</code>, normally your login shell).</p>
+<p>New tmux sessions use tmux's <code>default-shell</code>, normally your login shell.
+The pane terminal uses your login shell (<code>$SHELL</code>).</p>
 <h3 id="reset-configuration">Reset Configuration<a class="headerlink" href="#reset-configuration" title="Permanent link">&para;</a></h3>
 <p>To reset to defaults, delete the state file:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>rm<span class="w"> </span>~/.plexusone/state.json
@@ -2611,14 +2655,19 @@ thresholds, and the default shell (new sessions use tmux's <code>default-shell</
 </thead>
 <tbody>
 <tr>
-<td><code>-port</code></td>
+<td><code>--host</code></td>
+<td><code>127.0.0.1</code></td>
+<td>Address to listen on. A non-loopback address (for example <code>0.0.0.0</code> or a Tailscale IP) requires a token</td>
+</tr>
+<tr>
+<td><code>--port</code></td>
 <td><code>9600</code></td>
 <td>HTTP/WebSocket server port</td>
 </tr>
 <tr>
-<td><code>-debug</code></td>
-<td><code>false</code></td>
-<td>Enable verbose logging</td>
+<td><code>--token</code></td>
+<td>(empty)</td>
+<td>Token clients must present on <code>/ws</code>. Falls back to <code>TUIPARSER_TOKEN</code></td>
 </tr>
 </tbody>
 </table>
@@ -2632,15 +2681,13 @@ thresholds, and the default shell (new sessions use tmux's <code>default-shell</
 </thead>
 <tbody>
 <tr>
-<td><code>TUIPARSER_PORT</code></td>
-<td>Override default port</td>
-</tr>
-<tr>
-<td><code>TUIPARSER_LOG_LEVEL</code></td>
-<td>Log level (debug, info, warn, error)</td>
+<td><code>TUIPARSER_TOKEN</code></td>
+<td>Token clients must present, used when <code>--token</code> is empty. Preferred over <code>--token</code>, which other local users can see in the process list</td>
 </tr>
 </tbody>
 </table>
+<p>If <code>--host</code> is not a loopback address and no token is set, TUI Parser refuses
+to start and prints a randomly generated token you can use.</p>
 <h3 id="tmux-integration">tmux Integration<a class="headerlink" href="#tmux-integration" title="Permanent link">&para;</a></h3>
 <p>TUI Parser automatically discovers tmux sessions via:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>tmux<span class="w"> </span>list-sessions<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;#{session_name}&quot;</span>
@@ -2667,6 +2714,16 @@ thresholds, and the default shell (new sessions use tmux's <code>default-shell</
 <td>Port</td>
 <td><code>9600</code></td>
 <td>TUI Parser server port</td>
+</tr>
+<tr>
+<td>Token</td>
+<td>(empty)</td>
+<td>Token the server was started with; sent as the <code>token</code> query parameter</td>
+</tr>
+<tr>
+<td>Use TLS</td>
+<td>off</td>
+<td>Flutter only: connect with <code>wss://</code> (for a TLS-terminating proxy). The iOS app takes a full <code>ws://</code> or <code>wss://</code> URL instead of host and port</td>
 </tr>
 <tr>
 <td>Auto-connect</td>
@@ -2814,12 +2871,24 @@ while the app runs; see <a href="../../desktop/claude-sessions/#claude-names-in-
 </ul>
 <p>Terminal content is streamed in real-time and not persisted by PlexusOne Desktop (tmux handles its own scrollback).</p>
 <h3 id="network-security">Network Security<a class="headerlink" href="#network-security" title="Permanent link">&para;</a></h3>
+<p>Any client connected to TUI Parser can send keystrokes to your tmux sessions,
+which amounts to running commands as you. TUI Parser therefore:</p>
 <ul>
-<li>TUI Parser binds to all interfaces by default</li>
-<li>No authentication is implemented</li>
-<li>Use only on trusted networks</li>
-<li>Consider SSH tunneling for remote access</li>
+<li>Listens on <code>127.0.0.1</code> by default</li>
+<li>Refuses to listen on a non-loopback address without a token</li>
+<li>Requires the token on <code>/ws</code>, as <code>Authorization: Bearer &lt;token&gt;</code> or a
+  <code>token</code> query parameter, compared in constant time, and answers
+  <code>401 Unauthorized</code> before the WebSocket upgrade otherwise</li>
+<li>Accepts WebSocket requests with no <code>Origin</code> header (native apps) or an
+  <code>Origin</code> matching the request host, so other web pages cannot connect from
+  your browser</li>
+<li>Leaves <code>/health</code> and the static debug console page open; neither shows
+  session data. Open the console as <code>http://&lt;host&gt;:9600/?token=&lt;token&gt;</code> when a
+  token is set</li>
 </ul>
+<p>Traffic is not encrypted. For remote access, prefer Tailscale (listen on the
+Tailscale address with a token) or an SSH tunnel to the default loopback
+listener, and never expose the port to the internet.</p>
 
 
 

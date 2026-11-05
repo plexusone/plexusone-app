@@ -1788,6 +1788,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../releases/v0.8.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.8.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../releases/v0.7.0/" class="md-nav__link">
         
   
@@ -2365,15 +2393,22 @@ Sessions &gt; Install Hook</strong>:</p>
 <li>It adds two hooks to <code>~/.claude/settings.json</code>, which run at the start of
   each Claude session and on every prompt. The file is backed up to
   <code>settings.json.plexusone-backup</code> first, and only the app's own entries are
-  added or removed. The file is rewritten with sorted keys.</li>
+  added or removed. The file is rewritten with sorted keys. If
+  <code>settings.json</code> is a symlink (for example from a dotfiles manager), the
+  file it points to is updated and the link is kept.</li>
 <li>Each hook run appends one line, with the session ID, directory, and tmux
   pane, to <code>~/.plexusone/claude-session-events.jsonl</code>. It prints nothing and
   never fails, and adds about a tenth of a second to each prompt.</li>
 <li>The app reads those lines into its session log when it next runs.</li>
 <li>The hooks apply to Claude sessions started after installing.</li>
+<li>Install from the copy in your Applications folder. The app refuses to
+  install the hook when it runs from its disk image or from a temporary copy
+  macOS made of a downloaded app, since those paths stop working later.</li>
 </ul>
 <p>If you move the app, Settings shows <strong>Update Hook</strong> so the hooks point at the
-new copy. <strong>Remove Hook</strong> takes them out again.</p>
+new copy. After upgrading from v0.7.0 or earlier it also shows <strong>Update
+Hook</strong> once, because the hook's command is now quoted differently; the old
+hook keeps working until you update it. <strong>Remove Hook</strong> takes them out again.</p>
 <p>To check the hook is recording, start a new Claude session in tmux, type a
 prompt, and look at the end of the events file. Each prompt adds a line with
 the session ID and tmux pane:</p>

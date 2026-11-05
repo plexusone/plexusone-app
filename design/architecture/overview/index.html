@@ -2017,6 +2017,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../releases/v0.8.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.8.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../releases/v0.7.0/" class="md-nav__link">
         
   
@@ -2899,15 +2927,17 @@
 <h2 id="security-model">Security Model<a class="headerlink" href="#security-model" title="Permanent link">&para;</a></h2>
 <h3 id="current-state">Current State<a class="headerlink" href="#current-state" title="Permanent link">&para;</a></h3>
 <ul>
-<li>No authentication</li>
-<li>Local network only</li>
-<li>Trust-based model</li>
+<li>TUI Parser listens on <code>127.0.0.1</code> by default</li>
+<li>A non-loopback listen address requires a shared token, checked on the
+  WebSocket upgrade (<code>Authorization: Bearer</code> header or <code>token</code> query parameter)</li>
+<li>Cross-origin browser requests are rejected, so web pages cannot reach a
+  local TUI Parser</li>
+<li>Remote access goes through Tailscale or an SSH tunnel</li>
 </ul>
 <h3 id="future-considerations">Future Considerations<a class="headerlink" href="#future-considerations" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Token-based authentication</li>
-<li>TLS encryption</li>
-<li>SSH tunnel support</li>
+<li>TLS encryption in TUI Parser itself (today, terminate TLS in a proxy)</li>
+<li>Per-device tokens</li>
 </ul>
 <h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
 <h3 id="desktop_1">Desktop<a class="headerlink" href="#desktop_1" title="Permanent link">&para;</a></h3>

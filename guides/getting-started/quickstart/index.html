@@ -1788,6 +1788,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../releases/v0.8.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.8.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../releases/v0.7.0/" class="md-nav__link">
         
   
@@ -2278,9 +2306,11 @@ Found a saved session from 5 minutes ago with 3×2 layout and 4 attached pane(s)
 <p>To monitor agents from your phone:</p>
 <ol>
 <li>
-<p>Start the TUI Parser:
+<p>Start the TUI Parser with a token so your phone can reach it:
    <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>services/tuiparser
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>./bin/tuiparser<span class="w"> </span>--port<span class="w"> </span><span class="m">9600</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TUIPARSER_TOKEN</span><span class="o">=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="k">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TUIPARSER_TOKEN</span><span class="s2">&quot;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>./bin/tuiparser<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">9600</span>
 </code></pre></div></p>
 </li>
 <li>
@@ -2290,7 +2320,7 @@ Found a saved session from 5 minutes ago with 3×2 layout and 4 attached pane(s)
 </code></pre></div></p>
 </li>
 <li>
-<p>On your phone, open PlexusOne Mobile and connect to <code>192.168.1.100:9600</code></p>
+<p>On your phone, open PlexusOne Mobile and connect to <code>192.168.1.100:9600</code> with the token</p>
 </li>
 </ol>
 <p>See the <a href="../../mobile/overview/">Mobile Guide</a> for details.</p>

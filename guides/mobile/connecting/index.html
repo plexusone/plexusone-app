@@ -899,6 +899,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuring the Mobile App">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-a-rejected-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting a Rejected Token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1844,6 +1861,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../releases/v0.8.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.8.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../releases/v0.7.0/" class="md-nav__link">
         
   
@@ -2192,6 +2237,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuring the Mobile App">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-a-rejected-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting a Rejected Token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2331,23 +2393,26 @@
 <p>Before connecting:</p>
 <ol>
 <li>TUI Parser must be running on your desktop</li>
-<li>Both devices must be on the same network</li>
+<li>Your phone must be able to reach the desktop: same network, Tailscale, or an SSH tunnel</li>
 <li>Port 9600 must be accessible (check firewall settings)</li>
 </ol>
 <h2 id="starting-the-tui-parser">Starting the TUI Parser<a class="headerlink" href="#starting-the-tui-parser" title="Permanent link">&para;</a></h2>
-<p>On your desktop, start the TUI Parser service:</p>
+<p>By default TUI Parser listens on <code>127.0.0.1</code>, which your phone cannot reach.
+To accept connections from the network, give it a token and a listen address:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>services/tuiparser
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>go<span class="w"> </span>run<span class="w"> </span>./cmd/tuiparser
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TUIPARSER_TOKEN</span><span class="o">=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="k">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TUIPARSER_TOKEN</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># enter this in the mobile app</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>go<span class="w"> </span>run<span class="w"> </span>./cmd/tuiparser<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0
 </code></pre></div>
-<p>You should see:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>TUI Parser Debug Console
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>========================
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Server running on :9600
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>WebSocket: ws://localhost:9600/ws
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Debug UI: http://localhost:9600/
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>Connected clients: 0
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>Active sessions: 0
+<p>With Tailscale, use your desktop's Tailscale address (<code>tailscale ip -4</code>) as
+<code>--host</code> instead of <code>0.0.0.0</code>, so only devices on your tailnet can connect.</p>
+<p>TUI Parser refuses to start on a non-loopback address without a token and
+prints a random one you can use. You should see:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Starting TUI Parser on 0.0.0.0:9600
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Token authentication enabled for /ws
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Server listening on http://0.0.0.0:9600
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>WebSocket endpoint: ws://0.0.0.0:9600/ws
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Debug console: http://0.0.0.0:9600/
 </code></pre></div>
 <h2 id="finding-your-desktop-ip">Finding Your Desktop IP<a class="headerlink" href="#finding-your-desktop-ip" title="Permanent link">&para;</a></h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">macOS</label><label for="__tabbed_1_2">Linux</label></div>
@@ -2370,10 +2435,22 @@
 <li>Open the PlexusOne Mobile app</li>
 <li>Tap the <strong>Settings</strong> icon (gear)</li>
 <li>Enter the server address:</li>
-<li>Host: Your desktop's IP address (e.g., <code>192.168.1.100</code>)</li>
-<li>Port: <code>9600</code> (default)</li>
-<li>Tap <strong>Connect</strong></li>
+<li>Flutter app: Host (your desktop's IP, e.g. <code>192.168.1.100</code>) and Port (<code>9600</code>)</li>
+<li>iOS app: WebSocket URL, e.g. <code>ws://192.168.1.100:9600/ws</code></li>
+<li>Enter the <strong>Token</strong> TUI Parser was started with</li>
+<li>Tap <strong>Save &amp; Connect</strong> (Flutter) or <strong>Connect</strong> (iOS)</li>
 </ol>
+<p>The token is stored on the device and sent as the <code>token</code> query parameter.</p>
+<h3 id="troubleshooting-a-rejected-token">Troubleshooting a Rejected Token<a class="headerlink" href="#troubleshooting-a-rejected-token" title="Permanent link">&para;</a></h3>
+<p>If the app cannot connect and TUI Parser was started with a token, check the
+token from the desktop:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$TUIPARSER_TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Connection: Upgrade&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Upgrade: websocket&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Sec-WebSocket-Version: 13&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Sec-WebSocket-Key: </span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">16</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>http://localhost:9600/ws
+</code></pre></div>
+<p><code>101 Switching Protocols</code> means the token is right; <code>401 Unauthorized</code> means
+it is not.</p>
 <h2 id="connection-status">Connection Status<a class="headerlink" href="#connection-status" title="Permanent link">&para;</a></h2>
 <p>The app shows connection status in the header:</p>
 <table>
@@ -2405,12 +2482,12 @@
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="cannot-connect">Cannot Connect<a class="headerlink" href="#cannot-connect" title="Permanent link">&para;</a></h3>
 <p><strong>Check TUI Parser is running:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>http://localhost:9600/
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>http://localhost:9600/
 </code></pre></div>
 <p>Should return the debug HTML page.</p>
 <p><strong>Check network connectivity:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># From another device</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>ping<span class="w"> </span>&lt;desktop-ip&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># From another device</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>ping<span class="w"> </span>&lt;desktop-ip&gt;
 </code></pre></div>
 <p><strong>Check firewall:</strong></p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">macOS</label><label for="__tabbed_2_2">Linux</label></div>
@@ -2420,7 +2497,7 @@
 <p>Ensure the firewall allows incoming connections for the TUI Parser.</p>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">9600</span>/tcp
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">9600</span>/tcp
 </code></pre></div>
 </div>
 </div>
@@ -2442,21 +2519,25 @@
 </ol>
 <h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
 <div class="admonition warning">
-<p class="admonition-title">Local Network Only</p>
-<p>The TUI Parser does not implement authentication. Only run it on trusted networks.</p>
+<p class="admonition-title">Connected clients can run commands</p>
+<p>Anyone who connects to TUI Parser can type into your tmux sessions. Keep
+the default <code>127.0.0.1</code> listener unless you need network access, and then
+always use a token. Traffic is not encrypted.</p>
 </div>
 <p><strong>Recommendations:</strong></p>
 <ul>
 <li>Do not expose port 9600 to the internet</li>
-<li>Use a VPN for remote access</li>
-<li>Consider SSH tunneling for secure remote connections</li>
+<li>Prefer Tailscale (listen on the Tailscale address) or an SSH tunnel over an open Wi-Fi network</li>
+<li>Set the token with <code>TUIPARSER_TOKEN</code> rather than <code>--token</code>, which other local users can see in the process list</li>
+<li>Generate a fresh token with <code>openssl rand -hex 32</code> if one may have leaked</li>
 </ul>
 <h3 id="ssh-tunnel-advanced">SSH Tunnel (Advanced)<a class="headerlink" href="#ssh-tunnel-advanced" title="Permanent link">&para;</a></h3>
-<p>For secure remote access:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># On your mobile device (requires Termux or similar)</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>ssh<span class="w"> </span>-L<span class="w"> </span><span class="m">9600</span>:localhost:9600<span class="w"> </span>user@desktop-ip
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Then connect to localhost:9600 in the app</span>
+<p>An SSH tunnel keeps TUI Parser on its default loopback listener, so no token is
+required:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># On your mobile device (requires Termux or similar)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>ssh<span class="w"> </span>-L<span class="w"> </span><span class="m">9600</span>:localhost:9600<span class="w"> </span>user@desktop-ip
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Then connect to localhost:9600 in the app</span>
 </code></pre></div>
 <h2 id="multiple-devices">Multiple Devices<a class="headerlink" href="#multiple-devices" title="Permanent link">&para;</a></h2>
 <p>Multiple mobile devices can connect to the same TUI Parser simultaneously. All connected clients receive the same session updates.</p>
