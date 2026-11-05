@@ -4,9 +4,24 @@
 
 ### Option 1: Download Release (Recommended)
 
-1. Download the latest release from [GitHub Releases](https://github.com/plexusone/plexusone-app/releases)
-2. Unzip and drag `PlexusOne Desktop.app` to your Applications folder
-3. Open PlexusOne Desktop from Applications (you may need to right-click → Open the first time)
+1. Download the latest release from [GitHub Releases](https://github.com/plexusone/plexusone-app/releases):
+   `PlexusOneDesktop-X.Y.Z-macos-arm64.dmg` for Apple Silicon,
+   `-x86_64.dmg` for Intel, or `-universal.dmg` for either
+2. Open the `.dmg` and drag PlexusOne Desktop to Applications
+3. Open PlexusOne Desktop from Applications. The first time, macOS blocks it
+   (see [App Won't Open](#app-wont-open-macos-security))
+
+### Upgrading
+
+Quit PlexusOne Desktop (`⌘Q`) before opening a new version. Only one copy of
+the app runs at a time: opening a second copy brings the running one forward
+and quits, so a new version opened while the old one runs never starts.
+
+Then install the new version as above, replacing the old app. Windows, layouts,
+and the Claude session log are kept in `~/.plexusone/`, so they carry over. If
+you installed the [Claude Code hook](../desktop/claude-sessions.md#recording-sessions-while-plexusone-is-closed)
+and the app is in the same place, it keeps working; if you moved the app,
+click **Update Hook** in **Settings > Sessions**.
 
 ### Option 2: Build from Source
 
@@ -143,4 +158,13 @@ brew install tmux
 
 ### App Won't Open (macOS Security)
 
-Right-click the app → Open → Open anyway. This is required for unsigned apps.
+Release builds are ad-hoc signed but not notarized, so on first launch macOS
+says it could not verify the app. Open **System Settings > Privacy & Security**,
+scroll to the message about PlexusOne Desktop, and click **Open Anyway**. The
+prompt does not appear again for that copy.
+
+From Terminal instead:
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/PlexusOne Desktop.app"
+```

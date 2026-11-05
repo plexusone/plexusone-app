@@ -120,6 +120,22 @@ Sessions > Install Hook**:
 If you move the app, Settings shows **Update Hook** so the hooks point at the
 new copy. **Remove Hook** takes them out again.
 
+To check the hook is recording, start a new Claude session in tmux, type a
+prompt, and look at the end of the events file. Each prompt adds a line with
+the session ID and tmux pane:
+
+```bash
+tail -n 3 ~/.plexusone/claude-session-events.jsonl
+```
+
+**Before deleting the app, click Remove Hook.** The hooks run the app's own
+executable, so after the app is gone Claude Code would try to run a missing
+command at every session start and prompt, and report a hook error. If the app
+is already gone, remove the two entries whose command ends in `claude-hook`
+from the `hooks` section of `~/.claude/settings.json`, or restore
+`~/.claude/settings.json.plexusone-backup` if you have not changed the settings
+since installing.
+
 ## Restoring sessions
 
 Double-click a session, or select several and choose **Restore Sessions in New

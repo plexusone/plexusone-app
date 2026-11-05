@@ -51,6 +51,21 @@ On startup, if a state file exists, PlexusOne Desktop prompts:
 - **Restore** - Reattaches to saved sessions if they still exist
 - **Start Fresh** - Ignores saved state, starts with empty panes
 
+### Settings
+
+Open **PlexusOne Desktop > Settings...** (`⌘,`).
+
+| Tab | Setting | Default | Effect |
+|-----|---------|---------|--------|
+| Sessions | Record Claude sessions while PlexusOne is closed | Off | **Install Hook** adds the [Claude Code hook](../desktop/claude-sessions.md#recording-sessions-while-plexusone-is-closed); **Update Hook** and **Remove Hook** appear once installed |
+| Sessions | Notify when a Claude session needs you | On | Posts a notification when a Claude session starts waiting. The Dock badge and `⌘J` work either way |
+| Sessions | Trackpad scrolls conversation history | On | Turns on tmux mouse mode for each session the app attaches, so the trackpad scrolls tmux history. Off leaves your own tmux setting. Applies the next time a session is attached |
+
+The other settings in the window are saved but not yet used by the app:
+auto-attach on launch, show detached sessions, restore windows on launch
+(the app always asks), font size, cursor blink, the idle and stuck
+thresholds, and the default shell (new sessions use tmux's `default-shell`, normally your login shell).
+
 ### Reset Configuration
 
 To reset to defaults, delete the state file:
