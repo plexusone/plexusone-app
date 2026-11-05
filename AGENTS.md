@@ -80,6 +80,7 @@ Native terminal multiplexer built with Swift and SwiftTerm.
 - Multi-window support with independent grid layouts
 - Pop-out sessions to dedicated windows
 - Attach/detach tmux sessions
+- Optional shell (no tmux) below each pane's session, started in the session's working directory
 - 10,000 line scrollback buffer
 - State persistence across restarts
 - Claude Sessions window: lists Claude Code sessions with tmux name, Claude name, subject, repository, cost, and how each ended; restores and renames them

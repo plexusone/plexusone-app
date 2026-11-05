@@ -56,6 +56,40 @@ All panes are equal size. The grid divides available space evenly.
 !!! note "Future Enhancement"
     Adjustable pane sizes are planned for a future release.
 
+### Pane Terminal
+
+A pane can show a second terminal below its coding session: a plain shell
+(not tmux) that starts in the folder the session works in. Use it to look
+at the files the agent is changing, run tests, or use git, without
+leaving the pane.
+
+Click the **terminal** icon in the pane header to show it, and again to
+hide it. Hiding keeps the shell running, so its history and current
+folder are still there when you show it again.
+
+```
+┌─────────────────────────────────┐
+│ ● acad ▾           #1  >_  ↗  ✕ │  ← >_ shows or hides the terminal
+│                                 │
+│   Claude Code                   │
+│                                 │
+├─ ~/src/acad ──────────────── ⌄ ─┤  ← drag to resize; ⌄ hides
+│ ~/src/acad $ git status         │
+└─────────────────────────────────┘
+```
+
+- **Starting folder**: where the Claude session in the pane started, or
+  otherwise the current folder of the tmux pane. The bar above the shell
+  shows it.
+- **Resize**: drag the bar up or down.
+- **Focus**: click the shell to type in it. `⌘ ]` and `⌘ [` move through
+  each pane's session and its shell.
+- **One per session**: switching the pane to another session shows that
+  session's shell instead; switching back returns to the first.
+- **When it ends**: typing `exit` closes the shell. It also ends when its
+  tmux session ends or the window closes. Shells are not restored when the
+  app restarts.
+
 ## Layout Changes
 
 ### Reducing Panes

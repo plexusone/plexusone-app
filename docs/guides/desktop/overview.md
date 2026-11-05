@@ -106,6 +106,12 @@ tmux set -g mouse on
 
 Add to `~/.tmux.conf` to make it permanent. With mouse mode enabled, two-finger trackpad scrolling works to navigate through tmux's scrollback buffer.
 
+### Pane Terminal
+
+Each pane can show a plain shell below its coding session, opened in the
+folder the session works in, so you can review files and run commands
+alongside the agent. See [Grid Layout](grid-layout.md#pane-terminal).
+
 ### State Persistence
 
 Your workspace is automatically saved:
