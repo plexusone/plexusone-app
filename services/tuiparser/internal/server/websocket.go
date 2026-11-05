@@ -16,9 +16,7 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true // Allow all origins for local use
-	},
+	CheckOrigin:     CheckOrigin,
 }
 
 // Client represents a connected WebSocket client
@@ -28,6 +26,37 @@ type Client struct {
 	subscriptions map[string]bool
 	send          chan []byte
 	mu            sync.Mutex
+
+	// sendMu guards closed and the close of send, so a send never races
+	// the hub closing the channel on unregister.
+	sendMu sync.Mutex
+	closed bool
+}
+
+// trySend queues data for the client without blocking. It reports false
+// when the client is closed or its buffer is full.
+func (c *Client) trySend(data []byte) bool {
+	c.sendMu.Lock()
+	defer c.sendMu.Unlock()
+	if c.closed {
+		return false
+	}
+	select {
+	case c.send <- data:
+		return true
+	default:
+		return false
+	}
+}
+
+// closeSend closes the send channel once; later trySend calls are no-ops.
+func (c *Client) closeSend() {
+	c.sendMu.Lock()
+	defer c.sendMu.Unlock()
+	if !c.closed {
+		c.closed = true
+		close(c.send)
+	}
 }
 
 // Server handles WebSocket connections and message routing
@@ -96,7 +125,7 @@ func (s *Server) Run() {
 			s.mu.Lock()
 			if _, ok := s.clients[client]; ok {
 				delete(s.clients, client)
-				close(client.send)
+				client.closeSend()
 			}
 			s.mu.Unlock()
 
@@ -109,11 +138,8 @@ func (s *Server) Run() {
 				client.mu.Unlock()
 
 				if subscribed {
-					select {
-					case client.send <- message.Data:
-					default:
-						// Client buffer full, skip
-					}
+					// A closed client or a full buffer drops the message.
+					client.trySend(message.Data)
 				}
 			}
 			s.mu.RUnlock()
@@ -136,10 +162,8 @@ func (s *Server) sendSessionList(client *Client) {
 		return
 	}
 
-	select {
-	case client.send <- jsonData:
-	default:
-	}
+	// The client may have disconnected meanwhile; trySend drops the list then.
+	client.trySend(jsonData)
 }
 
 // BroadcastSessionList sends session list to all clients
@@ -290,11 +314,12 @@ func (c *Client) handleSubscribe(sessionIDs []string) {
 			log.Printf("Error attaching to session %s: %v", id, err)
 			// Send error to client
 			errMsg := protocol.NewErrorMessage(id, err.Error())
-			jsonData, _ := json.Marshal(errMsg)
-			select {
-			case c.send <- jsonData:
-			default:
+			jsonData, err := json.Marshal(errMsg)
+			if err != nil {
+				log.Printf("Error marshaling error message for %s: %v", id, err)
+				continue
 			}
+			c.trySend(jsonData)
 		}
 	}
 }

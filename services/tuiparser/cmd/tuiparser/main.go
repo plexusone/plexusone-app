@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"flag"
-	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -16,10 +18,32 @@ import (
 
 func main() {
 	port := flag.Int("port", 9600, "WebSocket server port")
+	host := flag.String("host", "127.0.0.1", "Address to listen on; a non-loopback host requires a token")
+	tokenFlag := flag.String("token", "", "Token clients must present (default: $"+server.TokenEnvVar+")")
 	flag.Parse()
 
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.Printf("Starting TUI Parser on port %d", *port)
+
+	token := *tokenFlag
+	if token == "" {
+		token = os.Getenv(server.TokenEnvVar)
+	}
+	if err := server.ValidateListenConfig(*host, token); err != nil {
+		if suggestion, genErr := server.GenerateToken(); genErr == nil {
+			log.Printf("Suggested token: %s", suggestion)
+		} else {
+			log.Printf("Could not generate a suggested token: %v", genErr)
+		}
+		log.Fatal(err)
+	}
+
+	addr := net.JoinHostPort(*host, strconv.Itoa(*port))
+	log.Printf("Starting TUI Parser on %s", addr)
+	if token != "" {
+		log.Printf("Token authentication enabled for /ws")
+	} else {
+		log.Printf("Token authentication disabled (loopback only)")
+	}
 
 	// Create session manager
 	sessionManager := session.NewManager()
@@ -39,7 +63,9 @@ func main() {
 	}()
 
 	// HTTP routes
-	http.HandleFunc("/ws", wsServer.HandleWebSocket)
+	// The health check and the static debug console expose no session data;
+	// /ws, which lists sessions and accepts input, requires the token.
+	http.HandleFunc("/ws", server.RequireToken(token, wsServer.HandleWebSocket))
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -83,7 +109,10 @@ func main() {
     <pre id="output"></pre>
 
     <script>
-        const ws = new WebSocket('ws://' + location.host + '/ws');
+        // Pass ?token=... in this page's URL when the server requires a token.
+        const token = new URLSearchParams(location.search).get('token');
+        const scheme = location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const ws = new WebSocket(scheme + location.host + '/ws' + (token ? '?token=' + encodeURIComponent(token) : ''));
         const output = document.getElementById('output');
         const sessionList = document.getElementById('session-list');
         let currentSession = '';
@@ -121,8 +150,7 @@ func main() {
 	})
 
 	// Start HTTP server
-	addr := fmt.Sprintf(":%d", *port)
-	server := &http.Server{
+	httpServer := &http.Server{
 		Addr:         addr,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -136,16 +164,16 @@ func main() {
 
 		log.Println("Shutting down...")
 		sessionManager.Close()
-		if err := server.Close(); err != nil {
+		if err := httpServer.Close(); err != nil {
 			log.Printf("server close: %v", err)
 		}
 	}()
 
-	log.Printf("Server listening on http://localhost%s", addr)
-	log.Printf("WebSocket endpoint: ws://localhost%s/ws", addr)
-	log.Printf("Debug console: http://localhost%s/", addr)
+	log.Printf("Server listening on http://%s", addr)
+	log.Printf("WebSocket endpoint: ws://%s/ws", addr)
+	log.Printf("Debug console: http://%s/", addr)
 
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+	if err := httpServer.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("HTTP server error: %v", err)
 	}
 }
