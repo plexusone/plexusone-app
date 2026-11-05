@@ -110,15 +110,22 @@ Sessions > Install Hook**:
 - It adds two hooks to `~/.claude/settings.json`, which run at the start of
   each Claude session and on every prompt. The file is backed up to
   `settings.json.plexusone-backup` first, and only the app's own entries are
-  added or removed. The file is rewritten with sorted keys.
+  added or removed. The file is rewritten with sorted keys. If
+  `settings.json` is a symlink (for example from a dotfiles manager), the
+  file it points to is updated and the link is kept.
 - Each hook run appends one line, with the session ID, directory, and tmux
   pane, to `~/.plexusone/claude-session-events.jsonl`. It prints nothing and
   never fails, and adds about a tenth of a second to each prompt.
 - The app reads those lines into its session log when it next runs.
 - The hooks apply to Claude sessions started after installing.
+- Install from the copy in your Applications folder. The app refuses to
+  install the hook when it runs from its disk image or from a temporary copy
+  macOS made of a downloaded app, since those paths stop working later.
 
 If you move the app, Settings shows **Update Hook** so the hooks point at the
-new copy. **Remove Hook** takes them out again.
+new copy. After upgrading from v0.7.0 or earlier it also shows **Update
+Hook** once, because the hook's command is now quoted differently; the old
+hook keeps working until you update it. **Remove Hook** takes them out again.
 
 To check the hook is recording, start a new Claude session in tmux, type a
 prompt, and look at the end of the events file. Each prompt adds a line with

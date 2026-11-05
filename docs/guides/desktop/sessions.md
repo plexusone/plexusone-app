@@ -59,6 +59,11 @@ PlexusOne Desktop monitors sessions and infers status:
 | **Idle** | No recent output, waiting |
 | **Stuck** | Long pause, potential issue |
 
+A session counts as idle after 30 seconds without output and as stuck after
+2 minutes. Change both in **Settings → Sessions**. A shell sitting at its
+prompt also shows as stuck, so treat the status as "no output lately"
+rather than as a fault.
+
 ### Status Bar
 
 The status bar shows all pane assignments:

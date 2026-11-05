@@ -57,14 +57,15 @@ Open **PlexusOne Desktop > Settings...** (`⌘,`).
 
 | Tab | Setting | Default | Effect |
 |-----|---------|---------|--------|
+| General | Pane terminal height | 35% | Share of the pane the [pane terminal](../desktop/grid-layout.md#pane-terminal) takes. Panes you have not resized follow changes at once |
+| Appearance | Font Size | 13 pt | Font size of every terminal, including open ones |
+| Sessions | Idle after / Stuck after | 30 s / 120 s | Time without output before a session shows as idle, then stuck |
 | Sessions | Record Claude sessions while PlexusOne is closed | Off | **Install Hook** adds the [Claude Code hook](../desktop/claude-sessions.md#recording-sessions-while-plexusone-is-closed); **Update Hook** and **Remove Hook** appear once installed |
 | Sessions | Notify when a Claude session needs you | On | Posts a notification when a Claude session starts waiting. The Dock badge and `⌘J` work either way |
 | Sessions | Trackpad scrolls conversation history | On | Turns on tmux mouse mode for each session the app attaches, so the trackpad scrolls tmux history. Off leaves your own tmux setting. Applies the next time a session is attached |
 
-The other settings in the window are saved but not yet used by the app:
-auto-attach on launch, show detached sessions, restore windows on launch
-(the app always asks), font size, cursor blink, the idle and stuck
-thresholds, and the default shell (new sessions use tmux's `default-shell`, normally your login shell).
+New tmux sessions use tmux's `default-shell`, normally your login shell.
+The pane terminal uses your login shell (`$SHELL`).
 
 ### Reset Configuration
 
@@ -84,15 +85,18 @@ tuiparser [options]
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `-port` | `9600` | HTTP/WebSocket server port |
-| `-debug` | `false` | Enable verbose logging |
+| `--host` | `127.0.0.1` | Address to listen on. A non-loopback address (for example `0.0.0.0` or a Tailscale IP) requires a token |
+| `--port` | `9600` | HTTP/WebSocket server port |
+| `--token` | (empty) | Token clients must present on `/ws`. Falls back to `TUIPARSER_TOKEN` |
 
 ### Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `TUIPARSER_PORT` | Override default port |
-| `TUIPARSER_LOG_LEVEL` | Log level (debug, info, warn, error) |
+| `TUIPARSER_TOKEN` | Token clients must present, used when `--token` is empty. Preferred over `--token`, which other local users can see in the process list |
+
+If `--host` is not a loopback address and no token is set, TUI Parser refuses
+to start and prints a randomly generated token you can use.
 
 ### tmux Integration
 
@@ -114,6 +118,8 @@ Server settings are stored locally on the device:
 |---------|---------|-------------|
 | Host | `localhost` | TUI Parser server address |
 | Port | `9600` | TUI Parser server port |
+| Token | (empty) | Token the server was started with; sent as the `token` query parameter |
+| Use TLS | off | Flutter only: connect with `wss://` (for a TLS-terminating proxy). The iOS app takes a full `ws://` or `wss://` URL instead of host and port |
 | Auto-connect | `true` | Connect on app launch |
 | Reconnect delay | `3s` | Time between reconnection attempts |
 
@@ -201,7 +207,21 @@ Terminal content is streamed in real-time and not persisted by PlexusOne Desktop
 
 ### Network Security
 
-- TUI Parser binds to all interfaces by default
-- No authentication is implemented
-- Use only on trusted networks
-- Consider SSH tunneling for remote access
+Any client connected to TUI Parser can send keystrokes to your tmux sessions,
+which amounts to running commands as you. TUI Parser therefore:
+
+- Listens on `127.0.0.1` by default
+- Refuses to listen on a non-loopback address without a token
+- Requires the token on `/ws`, as `Authorization: Bearer <token>` or a
+  `token` query parameter, compared in constant time, and answers
+  `401 Unauthorized` before the WebSocket upgrade otherwise
+- Accepts WebSocket requests with no `Origin` header (native apps) or an
+  `Origin` matching the request host, so other web pages cannot connect from
+  your browser
+- Leaves `/health` and the static debug console page open; neither shows
+  session data. Open the console as `http://<host>:9600/?token=<token>` when a
+  token is set
+
+Traffic is not encrypted. For remote access, prefer Tailscale (listen on the
+Tailscale address with a token) or an SSH tunnel to the default loopback
+listener, and never expose the port to the internet.
