@@ -16,6 +16,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController _hostController = TextEditingController();
   final TextEditingController _portController = TextEditingController();
+  final TextEditingController _tokenController = TextEditingController();
+  bool _useTls = false;
 
   @override
   void initState() {
@@ -28,11 +30,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final parts = service.serverAddress.split(':');
     _hostController.text = parts.isNotEmpty ? parts[0] : 'localhost';
     _portController.text = parts.length > 1 ? parts[1] : '9600';
+    _tokenController.text = service.token;
+    setState(() => _useTls = service.useTls);
   }
 
   Future<void> _saveSettings() async {
     final host = _hostController.text.trim();
     final port = _portController.text.trim();
+    final token = _tokenController.text.trim();
 
     if (host.isEmpty || port.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -46,12 +51,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // Save to preferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('server_address', address);
+    await prefs.setString('server_token', token);
+    await prefs.setBool('server_tls', _useTls);
 
     // Reconnect with new address
     if (mounted) {
       final service = context.read<WebSocketService>();
       service.disconnect();
-      service.connect(address);
+      service.connect(address, token: token, useTls: _useTls);
       Navigator.pop(context);
     }
   }
@@ -60,6 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void dispose() {
     _hostController.dispose();
     _portController.dispose();
+    _tokenController.dispose();
     super.dispose();
   }
 
@@ -97,6 +105,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
               hintText: '9600',
             ),
             keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _tokenController,
+            decoration: const InputDecoration(
+              labelText: 'Token (optional)',
+              hintText: 'Required when TUI Parser listens on the network',
+            ),
+            obscureText: true,
+            autocorrect: false,
+            enableSuggestions: false,
+          ),
+          const SizedBox(height: 12),
+          SwitchListTile(
+            title: const Text('Use TLS (wss://)'),
+            subtitle: const Text(
+                'For a TLS-terminating proxy in front of TUI Parser'),
+            value: _useTls,
+            onChanged: (value) => setState(() => _useTls = value),
+            contentPadding: EdgeInsets.zero,
           ),
           const SizedBox(height: 24),
           ElevatedButton(
@@ -136,12 +164,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Text(
-              '1. Start TUI Parser on your Mac:\n'
-              '   ./tuiparser --port 9600\n\n'
+              '1. Start TUI Parser on your Mac with a token:\n'
+              '   export TUIPARSER_TOKEN=\$(openssl rand -hex 32)\n'
+              '   ./tuiparser --host 0.0.0.0 --port 9600\n\n'
               '2. Find your Mac\'s IP address:\n'
               '   System Settings > Network\n\n'
-              '3. Enter the IP and port above\n\n'
-              '4. Make sure both devices are on the same WiFi network',
+              '3. Enter the IP, port, and token above\n\n'
+              '4. Prefer Tailscale or an SSH tunnel over an\n'
+              '   open Wi-Fi network',
               style: TextStyle(
                 fontFamily: 'monospace',
                 fontSize: 12,

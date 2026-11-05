@@ -16,12 +16,22 @@ enum WsConnectionState {
 
 /// Service for managing WebSocket connection to TUI Parser
 class WebSocketService extends ChangeNotifier {
+  WebSocketService({
+    String serverAddress = 'localhost:9600',
+    String token = '',
+    bool useTls = false,
+  })  : _serverAddress = serverAddress,
+        _token = token,
+        _useTls = useTls;
+
   WebSocketChannel? _channel;
   StreamSubscription? _subscription;
 
   WsConnectionState _connectionState = WsConnectionState.disconnected;
   String? _errorMessage;
-  String _serverAddress = 'localhost:9600';
+  String _serverAddress;
+  String _token;
+  bool _useTls;
 
   // Session data
   final List<Session> _sessions = [];
@@ -34,6 +44,8 @@ class WebSocketService extends ChangeNotifier {
   WsConnectionState get connectionState => _connectionState;
   String? get errorMessage => _errorMessage;
   String get serverAddress => _serverAddress;
+  String get token => _token;
+  bool get useTls => _useTls;
   List<Session> get sessions => List.unmodifiable(_sessions);
   String? get currentSessionId => _currentSessionId;
   List<OutputLine> get currentOutput =>
@@ -41,15 +53,29 @@ class WebSocketService extends ChangeNotifier {
   Prompt? get activePrompt => _activePrompt;
   Menu? get activeMenu => _activeMenu;
 
-  /// Connect to the TUI Parser server
-  Future<void> connect(String address) async {
+  /// Build the WebSocket URI for [address] (`host:port`). A non-empty
+  /// [token] is sent as the URL-encoded `token` query parameter, since
+  /// WebSocket clients cannot always set an Authorization header.
+  static Uri buildUri(String address,
+      {String token = '', bool useTls = false}) {
+    final scheme = useTls ? 'wss' : 'ws';
+    final uri = Uri.parse('$scheme://$address/ws');
+    if (token.isEmpty) return uri;
+    return uri.replace(queryParameters: {'token': token});
+  }
+
+  /// Connect to the TUI Parser server. [token] and [useTls] replace the
+  /// stored values when given.
+  Future<void> connect(String address, {String? token, bool? useTls}) async {
     _serverAddress = address;
+    if (token != null) _token = token;
+    if (useTls != null) _useTls = useTls;
     _connectionState = WsConnectionState.connecting;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final uri = Uri.parse('ws://$address/ws');
+      final uri = buildUri(address, token: _token, useTls: _useTls);
       _channel = WebSocketChannel.connect(uri);
 
       _subscription = _channel!.stream.listen(

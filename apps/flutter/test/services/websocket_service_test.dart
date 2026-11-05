@@ -30,6 +30,37 @@ void main() {
       expect(service.serverAddress, 'localhost:9600');
     });
 
+    test('constructor sets saved connection settings', () {
+      final s = WebSocketService(
+        serverAddress: '10.0.0.5:9700',
+        token: 'abc',
+        useTls: true,
+      );
+      expect(s.serverAddress, '10.0.0.5:9700');
+      expect(s.token, 'abc');
+      expect(s.useTls, isTrue);
+      s.dispose();
+    });
+
+    group('buildUri', () {
+      test('plain ws without token', () {
+        expect(WebSocketService.buildUri('localhost:9600').toString(),
+            'ws://localhost:9600/ws');
+      });
+
+      test('wss when TLS is on', () {
+        expect(WebSocketService.buildUri('host:443', useTls: true).toString(),
+            'wss://host:443/ws');
+      });
+
+      test('token is URL-encoded in the query', () {
+        final uri = WebSocketService.buildUri('host:9600', token: 'a b&c=d');
+        expect(uri.queryParameters['token'], 'a b&c=d');
+        expect(uri.toString(), isNot(contains(' ')));
+        expect(uri.toString(), contains('token=a+b%26c%3Dd'));
+      });
+    });
+
     test('sessions list is unmodifiable', () {
       final sessions = service.sessions;
       expect(
