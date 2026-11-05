@@ -7,6 +7,173 @@
   "unreleased": {},
   "releases": [
     {
+      "version": "v0.8.0",
+      "date": "2026-11-05",
+      "highlights": [
+        {
+          "description": "Pane terminal: a plain shell below each pane's coding session, opened in the folder the session works in, shown or hidden from the pane header"
+        },
+        {
+          "description": "TUI Parser listens only on this machine by default and requires a token when exposed to the network; the mobile apps can send one"
+        },
+        {
+          "description": "Claude session history is protected from being overwritten, hook events are no longer lost, and the Claude Code hook installs safely"
+        }
+      ],
+      "breaking": [
+        {
+          "description": "TUI Parser listens on 127.0.0.1 by default. To reach it from another device, start it with --host 0.0.0.0 and a token (--token or TUIPARSER_TOKEN), and enter the token in the mobile app",
+          "commit": "d819d74"
+        }
+      ],
+      "security": [
+        {
+          "description": "TUI Parser required no authentication and accepted WebSocket connections from any web page, so anyone on the network or any page in the user's browser could type into tmux sessions. It now listens on this machine only by default, requires a token on any other address, rejects foreign browser origins, and rejects requests for other host names (DNS rebinding)",
+          "commit": "d819d74"
+        },
+        {
+          "description": "iOS app allows plain connections only on the local network instead of turning off App Transport Security for every connection",
+          "commit": "d22bbab"
+        },
+        {
+          "description": "Claude Code hook command quotes the app's path with single quotes, so the shell expands nothing in it",
+          "commit": "26fdbe8"
+        }
+      ],
+      "added": [
+        {
+          "description": "Pane terminal: a terminal button in the pane header shows a login shell (no tmux) below the coding session, started where the Claude session started or in the tmux pane's current folder; hiding keeps it running, and each pane keeps one per session",
+          "commit": "7a59064"
+        },
+        {
+          "description": "Pane terminal height setting (Settings > General, 35% by default); drag the bar above the terminal to resize one pane, double-click it to reset",
+          "commit": "f04af84"
+        },
+        {
+          "description": "Mobile apps accept a token for TUI Parser, and the Flutter app can connect with wss://",
+          "commit": "02779db"
+        },
+        {
+          "description": "iOS app accepts a token for TUI Parser",
+          "commit": "995e9e2"
+        }
+      ],
+      "changed": [
+        {
+          "description": "Font Size, Idle after, and Stuck after in Settings now take effect; font size changes apply to open terminals. Settings that did nothing (auto-attach, show detached sessions, restore windows on launch, cursor blink, default shell) are removed",
+          "commit": "a2524f2"
+        },
+        {
+          "description": "Next Pane and Previous Pane also move through pane terminals",
+          "commit": "7a59064"
+        }
+      ],
+      "fixed": [
+        {
+          "description": "An unreadable Claude session log is copied aside before a new one is saved, instead of being overwritten",
+          "commit": "2db151b"
+        },
+        {
+          "description": "Session checks no longer overlap, so snapshots apply in order and a waiting notification is not posted twice",
+          "commit": "2db151b"
+        },
+        {
+          "description": "The Claude session log is saved when a session's state changes and otherwise at most once a minute, instead of every 5 seconds",
+          "commit": "2db151b"
+        },
+        {
+          "description": "Hook events are no longer lost when the events file is started afresh, and a partly written event no longer takes the next one with it",
+          "commit": "2db151b"
+        },
+        {
+          "description": "Restoring a session checks again that it is not already running, so it is not resumed twice",
+          "commit": "2db151b"
+        },
+        {
+          "description": "Failed @claude_name updates are retried",
+          "commit": "2db151b"
+        },
+        {
+          "description": "Sessions whose transcript ends in a very long line, such as a pasted image, keep their last-activity time",
+          "commit": "2db151b"
+        },
+        {
+          "description": "Installing the Claude hook keeps a symlinked ~/.claude/settings.json linked, keeps changes made to it meanwhile, and refuses to point at a temporary or disk-image copy of the app",
+          "commit": "26fdbe8"
+        },
+        {
+          "description": "Attaching, killing, and renaming target tmux sessions by exact name, not by prefix",
+          "commit": "6a181b6"
+        },
+        {
+          "description": "New Session no longer offers an Agent Type choice that had no effect",
+          "commit": "8b2cd6b"
+        },
+        {
+          "description": "A terminal's process is never signaled after it exits, since its PID may have been reused",
+          "commit": "7a59064"
+        },
+        {
+          "description": "TUI Parser never sends to a client after it disconnects, and logs message encoding errors",
+          "commit": "d819d74"
+        },
+        {
+          "description": "Android release builds request network access",
+          "commit": "566d2cc"
+        },
+        {
+          "description": "The Flutter app uses the saved server address at launch",
+          "commit": "02779db"
+        }
+      ],
+      "infrastructure": [
+        {
+          "description": "Info.plist version 0.8.0",
+          "commit": "8a44f51"
+        }
+      ],
+      "tests": [
+        {
+          "description": "Tests for pane terminals and the session folder lookup",
+          "commit": "b9d10dc"
+        },
+        {
+          "description": "Tests for pane terminal heights",
+          "commit": "db308ae"
+        },
+        {
+          "description": "Tests for the session log, hook hardening, transcript dates, and exact tmux targets",
+          "commit": "2076ac4"
+        },
+        {
+          "description": "First TUI Parser tests: token, origin, and host checks, and sends to disconnected clients",
+          "commit": "f5cb48a"
+        }
+      ],
+      "documentation": [
+        {
+          "description": "Grid layout guide covers the pane terminal",
+          "commit": "67cf5ad"
+        },
+        {
+          "description": "Pane terminal height setting",
+          "commit": "36092f6"
+        },
+        {
+          "description": "Guides and README describe TUI Parser's --host and --token options and the mobile token setting",
+          "commit": "881f4c2"
+        },
+        {
+          "description": "Configuration reference lists the settings that apply; guides cover status thresholds and the hook installer's handling of symlinks and app locations",
+          "commit": "a8f7310"
+        },
+        {
+          "description": "README lists the pane terminal and the mobile apps' token setting",
+          "commit": "9e0a349"
+        }
+      ]
+    },
+    {
       "version": "v0.7.0",
       "date": "2026-10-29",
       "highlights": [
