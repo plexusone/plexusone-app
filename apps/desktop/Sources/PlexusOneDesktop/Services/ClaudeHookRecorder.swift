@@ -77,17 +77,38 @@ enum ClaudeHookRecorder {
         return TmuxTarget(claudeField: target) != nil ? target : nil
     }
 
-    /// Append one JSON line. A single write to a file opened for appending,
-    /// so concurrent hooks do not interleave lines.
+    /// Append one JSON line in a single write, under the lock the app holds
+    /// while it starts the file afresh, so concurrent hooks do not interleave
+    /// lines and no event lands in a file being deleted.
     static func append(_ event: Event, to url: URL) throws {
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         var line = try encoder.encode(event)
         line.append(UInt8(ascii: "\n"))
-        let fd = open(url.path, O_WRONLY | O_APPEND | O_CREAT, 0o600)
-        guard fd >= 0 else { throw POSIXError(.init(rawValue: errno) ?? .EIO) }
-        defer { close(fd) }
-        let written = line.withUnsafeBytes { write(fd, $0.baseAddress, $0.count) }
-        guard written == line.count else { throw POSIXError(.init(rawValue: errno) ?? .EIO) }
+        // Retry if the app deleted the file while this hook waited for the lock.
+        for _ in 0..<3 {
+            let fd = open(url.path, O_WRONLY | O_APPEND | O_CREAT, 0o600)
+            guard fd >= 0 else { throw POSIXError(.init(rawValue: errno) ?? .EIO) }
+            defer { close(fd) }
+            guard flock(fd, LOCK_EX) == 0 else { throw POSIXError(.init(rawValue: errno) ?? .EIO) }
+            var info = stat()
+            guard fstat(fd, &info) == 0 else { throw POSIXError(.init(rawValue: errno) ?? .EIO) }
+            if info.st_nlink == 0 {
+                continue // deleted while waiting: open the new file
+            }
+            let written = line.withUnsafeBytes { write(fd, $0.baseAddress, $0.count) }
+            if written == line.count { return }
+            let writeError = POSIXError(.init(rawValue: errno) ?? .EIO)
+            if written > 0 {
+                // End the cut line so the next event starts on its own line;
+                // the reader skips the cut one.
+                let newline: [UInt8] = [UInt8(ascii: "\n")]
+                if write(fd, newline, 1) != 1 {
+                    NSLog("PlexusOne claude-hook: could not end a partial line: %d", errno)
+                }
+            }
+            throw writeError
+        }
+        throw POSIXError(.EAGAIN)
     }
 
     /// Decode event lines, skipping any that are cut off or malformed.

@@ -38,13 +38,20 @@ enum ClaudeTranscriptReader {
         }
 
         let sessionId = url.deletingPathExtension().lastPathComponent
-        return summarize(
+        guard var summary = summarize(
             sessionId: sessionId,
             path: url.path,
             head: head,
             tail: tail,
             tailStartsMidLine: tailIsPartial
-        )
+        ) else { return nil }
+        if summary.lastActivityAt == nil, tailIsPartial {
+            // The end of the file is one line longer than the tail window
+            // (for example a pasted image), so nothing there parsed. The
+            // file's last write is when the session was last active.
+            summary.lastActivityAt = try url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
+        }
+        return summary
     }
 
     /// Pure parsing step, separated for testing.

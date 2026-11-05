@@ -299,7 +299,10 @@ struct ClaudeSessionsView: View {
             let restorer = ClaudeSessionRestorer()
             var names: [String] = []
             var failures: [String] = []
-            for info in infos.prefix(9) {
+            for listed in infos.prefix(9) {
+                // The list can be seconds old: a session resumed elsewhere
+                // since then is attached to, not started a second time.
+                let info = await catalog.refreshedForRestore(listed)
                 do {
                     let name = try await restorer.restore(info, tmuxName: chosen[info.id])
                     if !names.contains(name) { names.append(name) }

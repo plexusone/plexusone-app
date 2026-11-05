@@ -23,14 +23,25 @@ final class ClaudeSessionCatalog {
     private var latestSnapshot: SessionSnapshot?
     private var transcriptCache: [String: CachedTranscript] = [:]
     private var monitorTask: Task<Void, Never>?
+    /// The check in progress, which other callers wait for instead of
+    /// starting a second one.
+    @ObservationIgnored private var observation: Task<Void, Never>?
     /// The @claude_name value last set on each tmux session.
     private var appliedClaudeNames: [String: String] = [:]
+    /// False when the saved log could not be read or backed up, so saving
+    /// would destroy it.
+    private(set) var canSaveRegistry = true
+    /// When the log was last written.
+    private var lastSavedAt: Date?
 
     private let claudeDir: URL
     private let registryURL: URL
     private let fileSystem: any FileSystemAccessing
     private let commandExecutor: any CommandExecuting
     private let pollInterval: TimeInterval = 5
+    /// Longest wait before saving a change that only moves "last seen
+    /// running" times forward.
+    nonisolated static let routineSaveInterval: TimeInterval = 60
 
     /// A start time this far from the live record's still counts as the same
     /// process; further off means the PID was reused.
@@ -54,11 +65,7 @@ final class ClaudeSessionCatalog {
     /// Load the observation log and start watching sessions (idempotent).
     func startMonitoring() {
         guard monitorTask == nil else { return }
-        do {
-            registry = try ClaudeSessionRegistry.load(from: registryURL, fileSystem: fileSystem)
-        } catch {
-            lastError = "Could not read \(registryURL.path): \(error.localizedDescription)"
-        }
+        loadRegistry()
         monitorTask = Task { [weak self] in
             while !Task.isCancelled {
                 guard let self else { return }
@@ -69,8 +76,39 @@ final class ClaudeSessionCatalog {
         }
     }
 
-    /// Take one snapshot and record what changed.
+    /// Load the observation log. If it cannot be read (for example a newer
+    /// version wrote it), copy it aside before it would be overwritten; if
+    /// even that fails, stop saving so the file is kept as it is.
+    func loadRegistry() {
+        do {
+            registry = try ClaudeSessionRegistry.load(from: registryURL, fileSystem: fileSystem)
+        } catch {
+            let backup = registryURL.deletingPathExtension().appendingPathExtension("unreadable.json")
+            do {
+                try fileSystem.write(try fileSystem.contents(at: registryURL), to: backup, options: .atomic)
+                lastError = "Could not read \(registryURL.path) (\(error.localizedDescription)). It was copied to \(backup.lastPathComponent) and a new log started."
+            } catch let backupError {
+                canSaveRegistry = false
+                lastError = "Could not read \(registryURL.path) (\(error.localizedDescription)) or copy it aside (\(backupError.localizedDescription)). It is left untouched and session history will not be saved."
+            }
+        }
+    }
+
+    /// Take one snapshot and record what changed. A call made while a check
+    /// is running waits for that check instead of starting another, so
+    /// snapshots are never applied out of order.
     func observeOnce() async {
+        if let observation {
+            await observation.value
+            return
+        }
+        let task = Task { await self.performObservation() }
+        observation = task
+        await task.value
+        observation = nil
+    }
+
+    private func performObservation() async {
         let snap = await Self.takeSnapshot(
             claudeDir: claudeDir,
             commandExecutor: commandExecutor
@@ -83,12 +121,32 @@ final class ClaudeSessionCatalog {
         waitingSessions = Self.waiting(in: snap.live)
         onWaitingChanged?(waitingSessions, waitingSessions.filter { !previouslyWaiting.contains($0.sessionId) })
         await syncClaudeNameOptions()
-        if registry.observe(snap) || eventsChanged {
-            do {
-                try registry.save(to: registryURL, fileSystem: fileSystem)
-            } catch {
-                lastError = "Could not save \(registryURL.path): \(error.localizedDescription)"
-            }
+        let before = registry.sessions
+        let changed = registry.observe(snap)
+        let significant = eventsChanged
+            || ClaudeSessionRegistry.differsBeyondLastSeen(before, registry.sessions)
+        if Self.shouldSave(changed: changed, significant: significant, lastSavedAt: lastSavedAt, now: snap.takenAt) {
+            saveRegistry(at: snap.takenAt)
+        }
+    }
+
+    /// Whether to write the log now. Changes in how sessions stand are saved
+    /// at once; a change that only moves "last seen running" forward (every
+    /// check, while any session runs) is saved at most once a minute.
+    nonisolated static func shouldSave(changed: Bool, significant: Bool, lastSavedAt: Date?, now: Date) -> Bool {
+        if significant { return true }
+        guard changed else { return false }
+        guard let lastSavedAt else { return true }
+        return now.timeIntervalSince(lastSavedAt) >= routineSaveInterval
+    }
+
+    private func saveRegistry(at now: Date) {
+        guard canSaveRegistry else { return }
+        do {
+            try registry.save(to: registryURL, fileSystem: fileSystem)
+            lastSavedAt = now
+        } catch {
+            lastError = "Could not save \(registryURL.path): \(error.localizedDescription)"
         }
     }
 
@@ -123,19 +181,31 @@ final class ClaudeSessionCatalog {
         for (session, rec) in liveByTmuxSession {
             if let name = rec.name, !name.isEmpty { wanted[session] = name }
         }
+        var applied = appliedClaudeNames
         for (session, args) in Self.claudeNameOptionChanges(applied: appliedClaudeNames, wanted: wanted) {
             let (path, baseArgs) = TmuxEnvironment.findExecutable()
             do {
                 let result = try await commandExecutor.execute(path, arguments: baseArgs + args)
-                if !result.success {
-                    // The tmux session may have closed already; nothing to update.
+                if result.success {
+                    applied[session] = wanted[session]
+                } else {
                     NSLog("PlexusOne: tmux %@ for %@: %@", args.joined(separator: " "), session, result.stderr)
+                    if Self.tmuxSessionIsGone(stderr: result.stderr) {
+                        // The tmux session closed: nothing left to update.
+                        applied[session] = nil
+                    }
+                    // Otherwise leave it as it was so the next check retries.
                 }
             } catch {
                 NSLog("PlexusOne: tmux @claude_name for %@ failed: %@", session, error.localizedDescription)
             }
         }
-        appliedClaudeNames = wanted
+        appliedClaudeNames = applied
+    }
+
+    /// Whether tmux failed because the session (or the whole server) is gone.
+    nonisolated static func tmuxSessionIsGone(stderr: String) -> Bool {
+        stderr.contains("can't find session") || stderr.contains("no server running")
     }
 
     /// The tmux commands that move the applied @claude_name values to the
@@ -164,7 +234,15 @@ final class ClaudeSessionCatalog {
     /// the log changed.
     private func foldHookEvents() -> Bool {
         let url = ClaudeHookRecorder.eventsURL
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return false }
+        let handle: FileHandle
+        do {
+            handle = try FileHandle(forReadingFrom: url)
+        } catch CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile {
+            return false // no hook has run yet
+        } catch {
+            lastError = "Could not open \(url.path): \(error.localizedDescription)"
+            return false
+        }
         defer {
             do {
                 try handle.close()
@@ -183,9 +261,8 @@ final class ClaudeSessionCatalog {
             let complete = data.lastIndex(of: UInt8(ascii: "\n")).map { data[...$0] } ?? Data()
             changed = registry.fold(ClaudeHookRecorder.decodeEvents(Data(complete)))
             registry.eventsOffset = offset + UInt64(complete.count)
-            if registry.eventsOffset ?? 0 >= Self.eventsFileLimit, registry.eventsOffset == size {
-                try FileManager.default.removeItem(at: url)
-                registry.eventsOffset = 0
+            if registry.eventsOffset ?? 0 >= Self.eventsFileLimit {
+                changed = try rotateEventsFile(handle: handle, url: url) || changed
             }
             changed = changed || registry.eventsOffset != offset
         } catch {
@@ -194,7 +271,36 @@ final class ClaudeSessionCatalog {
         return changed
     }
 
+    /// Start the events file afresh. Holds the lock hooks take to append, so
+    /// no event lands between the last read and the delete; a hook that
+    /// opened the old file sees it was deleted and opens the new one.
+    private func rotateEventsFile(handle: FileHandle, url: URL) throws -> Bool {
+        let fd = handle.fileDescriptor
+        guard flock(fd, LOCK_EX) == 0 else { throw POSIXError(.init(rawValue: errno) ?? .EIO) }
+        defer { flock(fd, LOCK_UN) }
+        // Fold in anything appended since the read above.
+        try handle.seek(toOffset: registry.eventsOffset ?? 0)
+        let rest = try handle.readToEnd() ?? Data()
+        let changed = registry.fold(ClaudeHookRecorder.decodeEvents(rest))
+        try FileManager.default.removeItem(at: url)
+        registry.eventsOffset = 0
+        return changed
+    }
+
     // MARK: - Recovery
+
+    /// `info` as of a fresh check, so a session started elsewhere since the
+    /// list was built is treated as running rather than resumed twice.
+    func refreshedForRestore(_ info: ClaudeSessionInfo) async -> ClaudeSessionInfo {
+        await observeOnce()
+        guard let live = latestSnapshot?.live.first(where: { $0.sessionId == info.sessionId }) else {
+            return info
+        }
+        var current = info
+        current.endState = .running
+        current.tmux = live.tmuxTarget ?? info.tmux
+        return current
+    }
 
     /// The Claude session that last ran in tmux session `name` and is not
     /// running now, as a restorable row; nil if none is known.

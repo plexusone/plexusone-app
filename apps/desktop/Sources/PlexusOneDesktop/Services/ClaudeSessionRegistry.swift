@@ -96,6 +96,18 @@ struct ClaudeSessionRegistry: Codable {
         return sessions != before
     }
 
+    /// Whether two session maps differ in more than "last seen running"
+    /// times, which move forward on every check while a session runs.
+    static func differsBeyondLastSeen(_ a: [String: ObservedSession], _ b: [String: ObservedSession]) -> Bool {
+        guard a.count == b.count else { return true }
+        for (id, left) in a {
+            guard var right = b[id] else { return true }
+            right.lastSeenRunningAt = left.lastSeenRunningAt
+            if right != left { return true }
+        }
+        return false
+    }
+
     /// How a session the app thought was running ended.
     static func endState(
         for entry: ObservedSession,
