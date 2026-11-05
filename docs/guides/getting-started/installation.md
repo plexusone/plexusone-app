@@ -72,12 +72,18 @@ go build -o bin/tuiparser ./cmd/tuiparser
 ### Run
 
 ```bash
-# Start on default port 9600
+# Start on 127.0.0.1:9600 (this machine only)
 ./bin/tuiparser
 
 # Or specify a different port
 ./bin/tuiparser --port 8080
+
+# Listen on the network for the mobile app; a token is required
+export TUIPARSER_TOKEN=$(openssl rand -hex 32)
+./bin/tuiparser --host 0.0.0.0
 ```
+
+See [Connecting to Desktop](../mobile/connecting.md) for security guidance.
 
 ### Verify
 
@@ -155,6 +161,7 @@ brew install tmux
 1. Ensure TUI Parser is running: `./bin/tuiparser`
 2. Check the port is not in use: `lsof -i :9600`
 3. Verify firewall allows connections on port 9600
+4. For connections from another device, start TUI Parser with `--host` and a token, and enter the same token in the app
 
 ### App Won't Open (macOS Security)
 

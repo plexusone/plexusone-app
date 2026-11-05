@@ -126,6 +126,10 @@ For physical devices, use your machine's local IP address:
 ws://192.168.1.100:9600/ws
 ```
 
+Settings also take an optional token, sent as the `token` query parameter,
+and a TLS switch that connects with `wss://`. They are stored in
+`SharedPreferences` under `server_address`, `server_token`, and `server_tls`.
+
 ### iOS Network Permissions
 
 The app requires network access. Entitlements are configured in:

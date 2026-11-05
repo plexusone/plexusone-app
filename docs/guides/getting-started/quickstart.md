@@ -83,10 +83,12 @@ Click **Restore** to pick up where you left off.
 
 To monitor agents from your phone:
 
-1. Start the TUI Parser:
+1. Start the TUI Parser with a token so your phone can reach it:
    ```bash
    cd services/tuiparser
-   ./bin/tuiparser --port 9600
+   export TUIPARSER_TOKEN=$(openssl rand -hex 32)
+   echo "$TUIPARSER_TOKEN"
+   ./bin/tuiparser --host 0.0.0.0 --port 9600
    ```
 
 2. Find your Mac's IP address:
@@ -95,6 +97,6 @@ To monitor agents from your phone:
    # 192.168.1.100
    ```
 
-3. On your phone, open PlexusOne Mobile and connect to `192.168.1.100:9600`
+3. On your phone, open PlexusOne Mobile and connect to `192.168.1.100:9600` with the token
 
 See the [Mobile Guide](../mobile/overview.md) for details.

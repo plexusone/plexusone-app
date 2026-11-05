@@ -8,6 +8,19 @@ The TUI Parser exposes a WebSocket endpoint for real-time communication between 
 
 **Endpoint:** `ws://<host>:9600/ws`
 
+## Authentication
+
+When TUI Parser runs with a token (`--token` or `TUIPARSER_TOKEN`, required
+whenever it listens on a non-loopback address), the WebSocket upgrade request
+must carry it in either form:
+
+- `Authorization: Bearer <token>` header
+- `token` query parameter, URL-encoded: `ws://<host>:9600/ws?token=<token>`
+
+A missing or wrong token gets `401 Unauthorized` before the upgrade. Requests
+whose `Origin` header names a different host than the request get
+`403 Forbidden`; native clients that send no `Origin` are accepted.
+
 ## Message Format
 
 All messages are JSON objects with a `type` field:
@@ -251,7 +264,7 @@ When a connection drops:
 
 ```javascript
 // Connect
-const ws = new WebSocket('ws://192.168.1.100:9600/ws');
+const ws = new WebSocket('ws://192.168.1.100:9600/ws?token=' + encodeURIComponent(token));
 
 ws.onopen = () => {
   // Request session list

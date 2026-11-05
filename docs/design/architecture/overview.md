@@ -278,15 +278,17 @@ Stored via Flutter's SharedPreferences:
 
 ### Current State
 
-- No authentication
-- Local network only
-- Trust-based model
+- TUI Parser listens on `127.0.0.1` by default
+- A non-loopback listen address requires a shared token, checked on the
+  WebSocket upgrade (`Authorization: Bearer` header or `token` query parameter)
+- Cross-origin browser requests are rejected, so web pages cannot reach a
+  local TUI Parser
+- Remote access goes through Tailscale or an SSH tunnel
 
 ### Future Considerations
 
-- Token-based authentication
-- TLS encryption
-- SSH tunnel support
+- TLS encryption in TUI Parser itself (today, terminate TLS in a proxy)
+- Per-device tokens
 
 ## Performance
 

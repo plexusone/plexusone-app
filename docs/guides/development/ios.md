@@ -102,7 +102,13 @@ Configure the WebSocket server address in the app's Settings screen.
 
 Default: `ws://192.168.1.100:9600/ws`
 
-Settings are persisted using `UserDefaults` with key `serverAddress`.
+An optional token, sent as the `token` query parameter, is entered on the
+same screen. Settings are persisted using `UserDefaults` with keys
+`serverAddress` and `serverToken`.
+
+App Transport Security allows plain `ws://` only to IP addresses (including
+Tailscale `100.x` addresses), unqualified host names, and `.local` names
+(`NSAllowsLocalNetworking`); other host names need `wss://`.
 
 ### Supported Devices
 

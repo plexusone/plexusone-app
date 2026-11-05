@@ -79,7 +79,7 @@ Quickly check if your agents are still running or have completed their tasks.
 To use the mobile app, you need:
 
 1. **TUI Parser running** - Start with `tuiparser` command on desktop
-2. **Network access** - Mobile device must reach desktop on port 9600
+2. **Network access** - Mobile device must reach desktop on port 9600; listening on the network requires a token (see [Connecting to Desktop](connecting.md))
 3. **Active sessions** - At least one tmux session to monitor
 
 ## Next Steps

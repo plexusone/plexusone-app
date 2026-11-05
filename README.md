@@ -112,6 +112,19 @@ go build -o bin/tuiparser ./cmd/tuiparser
 
 Debug console: http://localhost:9600
 
+By default it listens on `127.0.0.1` only. Any client that connects can type
+into your tmux sessions, so listening on the network (`--host 0.0.0.0`)
+requires a token, which clients send as `Authorization: Bearer <token>` or
+`?token=<token>`:
+
+```bash
+export TUIPARSER_TOKEN=$(openssl rand -hex 32)
+./bin/tuiparser --host 0.0.0.0 --port 9600
+```
+
+For access away from your desk, prefer Tailscale or an SSH tunnel to exposing
+the port. See [Connecting to Desktop](https://plexusone.github.io/plexusone-app/guides/mobile/connecting/).
+
 ## Architecture
 
 ```
