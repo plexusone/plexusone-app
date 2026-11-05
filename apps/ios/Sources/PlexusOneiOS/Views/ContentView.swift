@@ -5,6 +5,7 @@ public struct ContentView: View {
     @StateObject private var webSocket = WebSocketService()
     @State private var showSettings = false
     @State private var serverAddress = "ws://127.0.0.1:9600/ws"
+    @State private var serverToken = ""
     @State private var navigationPath = NavigationPath()
     @State private var showNewSessionSheet = false
 
@@ -69,10 +70,13 @@ public struct ContentView: View {
             .sheet(isPresented: $showSettings) {
                 SettingsView(
                     serverAddress: $serverAddress,
+                    serverToken: $serverToken,
                     connectionState: webSocket.connectionState,
                     onConnect: {
                         UserDefaults.standard.set(serverAddress, forKey: "serverAddress")
+                        UserDefaults.standard.set(serverToken, forKey: "serverToken")
                         webSocket.setServerAddress(serverAddress)
+                        webSocket.setToken(serverToken)
                         webSocket.connect()
                     },
                     onDisconnect: {
@@ -92,7 +96,9 @@ public struct ContentView: View {
                 if let saved = UserDefaults.standard.string(forKey: "serverAddress") {
                     serverAddress = saved
                 }
+                serverToken = UserDefaults.standard.string(forKey: "serverToken") ?? ""
                 webSocket.setServerAddress(serverAddress)
+                webSocket.setToken(serverToken)
                 webSocket.connect()
             }
         }
@@ -358,6 +364,7 @@ struct SessionTerminalView: View {
 
 struct SettingsView: View {
     @Binding var serverAddress: String
+    @Binding var serverToken: String
     let connectionState: ConnectionState
     let onConnect: () -> Void
     let onDisconnect: () -> Void
@@ -371,6 +378,10 @@ struct SettingsView: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .keyboardType(.URL)
+
+                    SecureField("Token (optional)", text: $serverToken)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
 
                     HStack {
                         Text("Status")
@@ -392,7 +403,7 @@ struct SettingsView: View {
                 }
 
                 Section("Help") {
-                    Text("Enter the WebSocket URL of your tuiparser server. Example: ws://192.168.1.100:9600/ws")
+                    Text("Enter the WebSocket URL of your tuiparser server, for example ws://192.168.1.100:9600/ws, and the token it was started with. A server reachable from the network requires a token; use wss:// behind a TLS proxy.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

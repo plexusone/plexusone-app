@@ -21,6 +21,7 @@ class WebSocketService: ObservableObject {
     private var webSocketTask: URLSessionWebSocketTask?
     private var urlSession: URLSession?
     private var serverAddress: String = "ws://127.0.0.1:9600/ws"
+    private var token: String = ""
 
     /// Output buffer per session
     private var outputBuffers: [String: String] = [:]
@@ -37,7 +38,7 @@ class WebSocketService: ObservableObject {
         disconnect()
         connectionState = .connecting
 
-        guard let url = URL(string: serverAddress) else {
+        guard let url = Self.makeURL(address: serverAddress, token: token) else {
             connectionState = .error("Invalid URL: \(serverAddress)")
             return
         }
@@ -108,6 +109,28 @@ class WebSocketService: ObservableObject {
     /// Update server address
     func setServerAddress(_ address: String) {
         serverAddress = address
+    }
+
+    /// Update the token sent to the server; empty sends none
+    func setToken(_ token: String) {
+        self.token = token
+    }
+
+    /// Build the connection URL, adding a non-empty token as the
+    /// percent-encoded `token` query parameter (a WebSocket client cannot
+    /// always set an Authorization header).
+    static func makeURL(address: String, token: String) -> URL? {
+        guard var components = URLComponents(string: address) else { return nil }
+        guard !token.isEmpty else { return components.url }
+        var allowed = CharacterSet.alphanumerics
+        allowed.insert(charactersIn: "-._~")
+        guard let encoded = token.addingPercentEncoding(withAllowedCharacters: allowed) else {
+            return nil
+        }
+        var items = (components.percentEncodedQueryItems ?? []).filter { $0.name != "token" }
+        items.append(URLQueryItem(name: "token", value: encoded))
+        components.percentEncodedQueryItems = items
+        return components.url
     }
 
     /// Get current server address
