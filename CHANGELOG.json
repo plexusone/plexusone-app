@@ -7,6 +7,28 @@
   "unreleased": {},
   "releases": [
     {
+      "version": "v0.8.1",
+      "date": "2026-11-05",
+      "fixed": [
+        {
+          "description": "Claude sessions running a background command, such as a dev server, show as \"idle · background shell\" instead of \"shell\", and can be renamed",
+          "commit": "c9f662c"
+        }
+      ],
+      "tests": [
+        {
+          "description": "Status text and renaming for sessions with a background shell",
+          "commit": "d3de46b"
+        }
+      ],
+      "documentation": [
+        {
+          "description": "Claude Sessions guide describes the background shell status",
+          "commit": "e8bf818"
+        }
+      ]
+    },
+    {
       "version": "v0.8.0",
       "date": "2026-11-05",
       "highlights": [
