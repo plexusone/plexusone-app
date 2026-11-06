@@ -218,13 +218,21 @@ struct ClaudeSessionInfo: Identifiable, Hashable {
 
 enum ClaudeLiveStatus {
     /// "waiting: permission prompt" when a session is blocked, else the
-    /// status as Claude Code reports it ("busy", "idle", ...).
+    /// status as Claude Code reports it ("busy", "idle", ...), with "shell"
+    /// shown as "idle · background shell".
     static func text(status: String?, waitingFor: String?) -> String? {
         if let waitingFor, !waitingFor.isEmpty {
             return "waiting: \(waitingFor)"
         }
         guard let status, !status.isEmpty else { return nil }
-        return status
+        return status == "shell" ? "idle · background shell" : status
+    }
+
+    /// Whether Claude is at its prompt. Claude Code reports "shell" instead
+    /// of "idle" while a background command it started is still running,
+    /// such as a dev server.
+    static func isIdle(status: String?) -> Bool {
+        status == "idle" || status == "shell"
     }
 
     /// Whether the session needs the user.

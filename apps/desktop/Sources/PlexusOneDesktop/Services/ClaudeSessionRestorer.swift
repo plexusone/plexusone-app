@@ -160,7 +160,7 @@ struct ClaudeSessionRestorer {
     /// Whether typing into the session is safe: running in tmux, idle, and
     /// not waiting for anything.
     static func canRename(_ info: ClaudeSessionInfo) -> Bool {
-        info.endState == .running && info.tmux != nil && info.liveStatus == "idle"
+        info.endState == .running && info.tmux != nil && ClaudeLiveStatus.isIdle(status: info.liveStatus)
             && (info.waitingFor ?? "").isEmpty
     }
 
