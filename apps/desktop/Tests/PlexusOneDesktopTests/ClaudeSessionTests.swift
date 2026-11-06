@@ -387,6 +387,9 @@ final class ClaudeSessionTests: XCTestCase {
     func testLiveStatusText() {
         XCTAssertEqual(ClaudeLiveStatus.text(status: "waiting", waitingFor: "permission prompt"), "waiting: permission prompt")
         XCTAssertEqual(ClaudeLiveStatus.text(status: "busy", waitingFor: nil), "busy")
+        XCTAssertEqual(ClaudeLiveStatus.text(status: "shell", waitingFor: nil), "idle · background shell")
+        XCTAssertTrue(ClaudeLiveStatus.isIdle(status: "shell"))
+        XCTAssertFalse(ClaudeLiveStatus.isIdle(status: "busy"))
         XCTAssertNil(ClaudeLiveStatus.text(status: nil, waitingFor: ""))
         XCTAssertTrue(ClaudeLiveStatus.isWaiting(status: "idle", waitingFor: "permission prompt"))
         XCTAssertTrue(ClaudeLiveStatus.isWaiting(status: "waiting", waitingFor: nil))
@@ -527,6 +530,8 @@ final class ClaudeSessionTests: XCTestCase {
         var idle = info(state: .running)
         idle.liveStatus = "idle"
         XCTAssertTrue(ClaudeSessionRestorer.canRename(idle))
+        var shell = idle; shell.liveStatus = "shell"
+        XCTAssertTrue(ClaudeSessionRestorer.canRename(shell))
         var busy = idle; busy.liveStatus = "busy"
         XCTAssertFalse(ClaudeSessionRestorer.canRename(busy))
         var waiting = idle; waiting.waitingFor = "permission prompt"
