@@ -11,7 +11,7 @@ window's toolbar.
 
 | Column | Meaning |
 |--------|---------|
-| State | Running, with Claude's live status (`busy`, `idle`, or what it is waiting for, such as `waiting: permission prompt`), or how the session ended (see below) |
+| State | Running, with Claude's live status (`busy`, `idle`, `idle · background shell` when a command Claude started, such as a dev server, is still running, or what it is waiting for, such as `waiting: permission prompt`), or how the session ended (see below) |
 | tmux | The tmux session Claude ran in, if known |
 | Claude Name | Claude Code's own name for the session, such as `github-com-8b`. Sessions use this name to address each other |
 | Subject | Claude's title for the session, else the first prompt |
