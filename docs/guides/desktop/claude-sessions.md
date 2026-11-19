@@ -143,6 +143,98 @@ from the `hooks` section of `~/.claude/settings.json`, or restore
 `~/.claude/settings.json.plexusone-backup` if you have not changed the settings
 since installing.
 
+## Keeping a session's mission after compaction
+
+When Claude Code compacts a long conversation, a session can lose track of its
+standing instructions. `PlexusOneDesktop context-hook` restores them: run from
+a SessionStart hook, it prints a short block that Claude Code adds to the
+session's context. The block has three parts:
+
+- the session's **charter**: its mission, the repositories it may change, its
+  autonomy level, its peers, and notes;
+- its **open roadmap items**, from the `visionstudio` CLI when it is on PATH,
+  for the charter's initiatives (in progress first);
+- the **decisions that bind it**: accepted decisions whose `agents` list is
+  empty or names the session, newest file first.
+
+The block is limited to 40 lines. With no charter configured the hook prints
+nothing. It always exits successfully and reports problems only to the system
+log, so it cannot block or fail a session start. When `visionstudio` is
+missing or takes more than 3 seconds, the roadmap part is left out.
+
+### Configuring it
+
+The hook takes the charter file and the decisions directory from
+`--charter` and `--decisions`, or from the `PLEXUSONE_CHARTER` and
+`PLEXUSONE_DECISIONS_DIR` environment variables. A leading `~/` is expanded.
+Add it to a Claude Code settings file, for example a project's
+`.claude/settings.json`, with the matcher `compact` (and `resume` if you also
+want it when a session is resumed):
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Applications/PlexusOne Desktop.app/Contents/MacOS/PlexusOneDesktop' context-hook --charter ~/agents/app/charter.json --decisions ~/agents/decisions",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+The app's **Install Hook** button does not add this hook; it depends on files
+only you can provide.
+
+### Charter file
+
+```json
+{
+  "name": "app-agent",
+  "status": "active",
+  "mission": "Maintain the desktop app and its release process.",
+  "repositories": ["github.com/example/app"],
+  "initiatives": ["INIT-EXAMPLE-001"],
+  "peers": ["docs-agent"],
+  "autonomy": "execute",
+  "notes": "Ask before tagging a release."
+}
+```
+
+All fields are optional. `autonomy` is `observe`, `prepare` or `execute`.
+`name` identifies the session in decisions' `agents` lists.
+
+### Decision files
+
+One JSON file per decision, ending in `.json`, in the decisions directory:
+
+```json
+{
+  "id": "DEC-0007",
+  "title": "Hooks run from the app binary",
+  "status": "accepted",
+  "decision": "Hook commands are subcommands of PlexusOneDesktop, not separate tools.",
+  "reasons": ["One binary to install and sign."],
+  "alternatives": ["A separate helper binary."],
+  "refs": ["RMI-EXAMPLE-004"],
+  "agents": [],
+  "repositories": ["github.com/example/app"],
+  "supersedes": [],
+  "supersededBy": null
+}
+```
+
+Only decisions with `status` `accepted` are shown; `superseded` ones are left
+out. An empty or missing `agents` list binds every session. Files that cannot
+be read are skipped.
+
 ## Restoring sessions
 
 Double-click a session, or select several and choose **Restore Sessions in New

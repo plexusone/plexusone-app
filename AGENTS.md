@@ -86,6 +86,7 @@ Native terminal multiplexer built with Swift and SwiftTerm.
 - Claude Sessions window: lists Claude Code sessions with tmux name, Claude name, subject, repository, cost, and how each ended; restores and renames them
 - Claude names and waiting badges in pane headers; notifications, Dock badge, and `⌘J` for sessions waiting on the user
 - Optional Claude Code hook (`PlexusOneDesktop claude-hook`) that records sessions while the app is closed
+- Optional SessionStart hook (`PlexusOneDesktop context-hook`) that restores a session's charter, open roadmap items and binding decisions after a compaction
 - Only one instance runs at a time (a bare `.build/debug` executable is exempt)
 
 **Build & Run:**
@@ -264,7 +265,7 @@ Window A                 Window B
 - **PaneManager** and **GridConfig** are per-window
 - Menu commands reach the front window through a focused scene value (`WindowActions`); new windows open with SwiftUI's `openWindow`
 - `ClaudeSessionCatalog` keeps the tmux `@claude_name` option on each tmux session in sync
-- `EntryPoint.swift` is `@main`: it runs the app, or the `claude-hook` command when given that argument
+- `EntryPoint.swift` is `@main`: it runs the app, or the `claude-hook` or `context-hook` command when given that argument
 
 ### Key Files
 
@@ -279,6 +280,7 @@ Window A                 Window B
 | Main content | `apps/desktop/Sources/PlexusOneDesktop/Views/ContentView.swift` |
 | Claude sessions | `apps/desktop/Sources/PlexusOneDesktop/Services/ClaudeSession*.swift`, `Views/ClaudeSessionsView.swift` |
 | Claude Code hook | `apps/desktop/Sources/PlexusOneDesktop/Services/ClaudeHookRecorder.swift`, `ClaudeHookInstaller.swift` |
+| Context hook | `apps/desktop/Sources/PlexusOneDesktop/Services/ContextHook.swift` |
 
 ## Common Tasks
 

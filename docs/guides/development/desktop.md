@@ -82,7 +82,7 @@ apps/desktop/
 ├── Package.swift                           # Swift package manifest
 ├── Sources/PlexusOneDesktop/
 │   ├── App/
-│   │   ├── EntryPoint.swift                # @main: runs the app, or the claude-hook command
+│   │   ├── EntryPoint.swift                # @main: runs the app, or a hook command
 │   │   ├── PlexusOneDesktopApp.swift       # Scenes and windows
 │   │   ├── AppCommands.swift               # Menu commands and shortcuts
 │   │   └── AppDelegate.swift               # Lifecycle, single instance, notifications
@@ -102,6 +102,7 @@ apps/desktop/
 │   │   ├── ClaudeSessionRestorer.swift     # Resume and rename sessions in tmux
 │   │   ├── ClaudeTranscriptReader.swift    # Subject, prompts, files, and cost from transcripts
 │   │   ├── ClaudeHookRecorder.swift        # The claude-hook command
+│   │   ├── ContextHook.swift               # The context-hook command
 │   │   ├── ClaudeHookInstaller.swift       # Adds and removes the hook in Claude settings
 │   │   ├── GitRepoResolver.swift           # Maps files to github.com/org/repo
 │   │   ├── SessionNavigator.swift          # Focuses the pane showing a session
