@@ -1,14 +1,21 @@
 import SwiftUI
 
-/// Starts the app, or runs the Claude Code hook recorder when invoked as
-/// `PlexusOneDesktop claude-hook` (see `ClaudeHookRecorder`).
+/// Starts the app, or runs a Claude Code hook when invoked as
+/// `PlexusOneDesktop claude-hook` (see `ClaudeHookRecorder`) or
+/// `PlexusOneDesktop context-hook` (see `ContextHook`).
 @main
 enum EntryPoint {
     @MainActor
     static func main() {
-        if CommandLine.arguments.dropFirst().first == ClaudeHookRecorder.command {
+        switch CommandLine.arguments.dropFirst().first {
+        case ClaudeHookRecorder.command:
             ClaudeHookRecorder.run()
             exit(0)
+        case ContextHook.command:
+            ContextHook.run()
+            exit(0)
+        default:
+            break
         }
         PlexusOneDesktopApp.main()
     }
