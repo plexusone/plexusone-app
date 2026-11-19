@@ -86,7 +86,7 @@ Native terminal multiplexer built with Swift and SwiftTerm.
 - Claude Sessions window: lists Claude Code sessions with tmux name, Claude name, subject, repository, cost, and how each ended; restores and renames them
 - Claude names and waiting badges in pane headers; notifications, Dock badge, and `⌘J` for sessions waiting on the user
 - Optional Claude Code hook (`PlexusOneDesktop claude-hook`) that records sessions while the app is closed
-- Optional SessionStart hook (`PlexusOneDesktop context-hook`) that restores a session's charter, open roadmap items and binding decisions after a compaction
+- Optional SessionStart hook (`PlexusOneDesktop context-hook`) that restores a session's role (from `HIVE_ROLE`), open roadmap items and binding decisions after a compaction
 - Only one instance runs at a time (a bare `.build/debug` executable is exempt)
 
 **Build & Run:**

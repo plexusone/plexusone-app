@@ -150,26 +150,32 @@ standing instructions. `PlexusOneDesktop context-hook` restores them: run from
 a SessionStart hook, it prints a short block that Claude Code adds to the
 session's context. The block has three parts:
 
-- the session's **charter**: its mission, the repositories it may change, its
+- the session's **role**: its mission, the repositories it may change, its
   autonomy level, its peers, and notes;
 - its **open roadmap items**, from the `visionstudio` CLI when it is on PATH,
-  for the charter's initiatives (in progress first);
-- the **decisions that bind it**: accepted decisions whose `agents` list is
-  empty or names the session, newest file first.
+  for the role's initiatives (in progress first);
+- the **decisions that bind it**: accepted decisions whose `roles` list is
+  empty or includes the role, newest file first.
 
-The block is limited to 40 lines. With no charter configured the hook prints
-nothing. It always exits successfully and reports problems only to the system
-log, so it cannot block or fail a session start. When `visionstudio` is
-missing or takes more than 3 seconds, the roadmap part is left out.
+The block is limited to 40 lines. Without a role it prints nothing. It always
+exits successfully and reports problems only to the system log, so it cannot
+block or fail a session start. When `visionstudio` is missing or takes more
+than 3 seconds, the roadmap part is left out.
 
 ### Configuring it
 
-The hook takes the charter file and the decisions directory from
-`--charter` and `--decisions`, or from the `PLEXUSONE_CHARTER` and
-`PLEXUSONE_DECISIONS_DIR` environment variables. A leading `~/` is expanded.
-Add it to a Claude Code settings file, for example a project's
-`.claude/settings.json`, with the matcher `compact` (and `resume` if you also
-want it when a session is resumed):
+A role is a JSON file named after the role in a roles directory, so one role
+can be played by any session. A session declares its role with the
+`HIVE_ROLE` environment variable, for example by starting Claude with
+`HIVE_ROLE=app-agent claude`. The hook then reads `<roles>/app-agent.json`.
+Without `HIVE_ROLE`, or without that file, it prints nothing. Role names may
+contain only letters, digits, `.`, `_` and `-`.
+
+The roles and decisions directories come from `--roles` and `--decisions`, or
+from the `PLEXUSONE_ROLES_DIR` and `PLEXUSONE_DECISIONS_DIR` environment
+variables. A leading `~/` is expanded. Add the hook to a Claude Code settings
+file with the matcher `compact` (and `resume` if you also want it when a
+session is resumed):
 
 ```json
 {
@@ -180,7 +186,7 @@ want it when a session is resumed):
         "hooks": [
           {
             "type": "command",
-            "command": "'/Applications/PlexusOne Desktop.app/Contents/MacOS/PlexusOneDesktop' context-hook --charter ~/agents/app/charter.json --decisions ~/agents/decisions",
+            "command": "'/Applications/PlexusOne Desktop.app/Contents/MacOS/PlexusOneDesktop' context-hook --roles ~/agents/roles --decisions ~/agents/decisions",
             "timeout": 10
           }
         ]
@@ -193,23 +199,31 @@ want it when a session is resumed):
 The app's **Install Hook** button does not add this hook; it depends on files
 only you can provide.
 
-### Charter file
+### Role file
+
+`<roles>/app-agent.json`:
 
 ```json
 {
   "name": "app-agent",
   "status": "active",
   "mission": "Maintain the desktop app and its release process.",
-  "repositories": ["github.com/example/app"],
+  "autonomy": "execute",
+  "repositories": [
+    {"pattern": "github.com/example/app", "affinity": "steward"},
+    {"pattern": "github.com/example/*", "affinity": "contributor"}
+  ],
   "initiatives": ["INIT-EXAMPLE-001"],
   "peers": ["docs-agent"],
-  "autonomy": "execute",
   "notes": "Ask before tagging a release."
 }
 ```
 
-All fields are optional. `autonomy` is `observe`, `prepare` or `execute`.
-`name` identifies the session in decisions' `agents` lists.
+All fields are optional; `name` defaults to the file's name. `status` is
+`draft`, `active` or `retired`, and `autonomy` is `observe`, `prepare` or
+`execute`. A repository `pattern` is `github.com/<org>/<repo>`, or
+`github.com/<org>/*` for every repository in an organization, and `affinity`
+is `steward` or `contributor`.
 
 ### Decision files
 
@@ -224,7 +238,7 @@ One JSON file per decision, ending in `.json`, in the decisions directory:
   "reasons": ["One binary to install and sign."],
   "alternatives": ["A separate helper binary."],
   "refs": ["RMI-EXAMPLE-004"],
-  "agents": [],
+  "roles": [],
   "repositories": ["github.com/example/app"],
   "supersedes": [],
   "supersededBy": null
@@ -232,8 +246,8 @@ One JSON file per decision, ending in `.json`, in the decisions directory:
 ```
 
 Only decisions with `status` `accepted` are shown; `superseded` ones are left
-out. An empty or missing `agents` list binds every session. Files that cannot
-be read are skipped.
+out. An empty or missing `roles` list binds every role. Files that cannot be
+read are skipped.
 
 ## Restoring sessions
 
