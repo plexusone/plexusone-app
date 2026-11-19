@@ -7,22 +7,25 @@ import Foundation
 /// whatever the hook prints to the session's context. The hook prints a short
 /// block with three parts:
 ///
-/// - the session's charter: its mission, the repositories it may change, its
-///   autonomy level, and notes;
+/// - the session's role: its mission, the repositories it may change, its
+///   autonomy level, its peers, and notes;
 /// - its open roadmap items, from the `visionstudio` CLI when it is on PATH;
-/// - the accepted decisions that bind it.
+/// - the accepted decisions that bind the role.
 ///
-/// Inputs are files: a charter JSON file and a directory of decision JSON
-/// files, given with `--charter` and `--decisions` or the environment
-/// variables `PLEXUSONE_CHARTER` and `PLEXUSONE_DECISIONS_DIR`. With no
-/// charter configured the hook prints nothing. It always exits 0 and reports
+/// A session declares its role with the `HIVE_ROLE` environment variable.
+/// Roles are JSON files named after the role in a roles directory, and
+/// decisions are JSON files in a decisions directory; both directories come
+/// from `--roles` and `--decisions` or the environment variables
+/// `PLEXUSONE_ROLES_DIR` and `PLEXUSONE_DECISIONS_DIR`. Without a role, or
+/// without its file, the hook prints nothing. It always exits 0 and reports
 /// problems only to the system log, so it can never block or fail a session
 /// start.
 enum ContextHook {
     /// Command-line argument that runs the hook instead of the app.
     static let command = "context-hook"
 
-    static let charterEnv = "PLEXUSONE_CHARTER"
+    static let roleEnv = "HIVE_ROLE"
+    static let rolesEnv = "PLEXUSONE_ROLES_DIR"
     static let decisionsEnv = "PLEXUSONE_DECISIONS_DIR"
 
     /// Output limits, so the block stays a few dozen lines.
@@ -33,20 +36,30 @@ enum ContextHook {
 
     // MARK: - File formats
 
-    /// A session's charter.
-    struct Charter: Codable, Equatable, Sendable {
+    /// A role a session plays, independent of the session.
+    struct Role: Codable, Equatable, Sendable {
         var name: String?
+        /// draft, active, or retired.
         var status: String?
         var mission: String?
-        /// Repositories the session may change.
-        var repositories: [String]?
-        /// Initiatives whose roadmap items the session works on.
-        var initiatives: [String]?
-        /// Other sessions it works with.
-        var peers: [String]?
         /// observe, prepare, or execute.
         var autonomy: String?
+        /// Repositories the role may change.
+        var repositories: [RepositoryScope]?
+        /// Initiatives whose roadmap items the role works on.
+        var initiatives: [String]?
+        /// Other roles it works with.
+        var peers: [String]?
         var notes: String?
+    }
+
+    /// Repositories a role covers.
+    struct RepositoryScope: Codable, Equatable, Sendable {
+        /// `github.com/<org>/<repo>`, or `github.com/<org>/*` for every
+        /// repository in an organization.
+        var pattern: String
+        /// steward or contributor.
+        var affinity: String?
     }
 
     /// A recorded decision.
@@ -59,8 +72,8 @@ enum ContextHook {
         var reasons: [String]?
         var alternatives: [String]?
         var refs: [String]?
-        /// Sessions the decision binds; empty binds every session.
-        var agents: [String]?
+        /// Roles the decision binds; empty binds every role.
+        var roles: [String]?
         var repositories: [String]?
         var supersedes: [String]?
         var supersededBy: String?
@@ -93,61 +106,84 @@ enum ContextHook {
         }
     }
 
-    /// The block to print, or "" when there is no charter or it cannot be
-    /// read. Problems go to the system log, never to the output.
+    /// The block to print, or "" when the session has no role or its file
+    /// cannot be read. Problems go to the system log, never to the output.
     static func render(
         arguments: [String],
         environment: [String: String],
         roadmap: ([String]) -> [RoadmapItem]
     ) -> String {
-        let paths = configuredPaths(arguments: arguments, environment: environment)
-        guard let charterPath = paths.charter else { return "" }
-
-        let charter: Charter
-        do {
-            charter = try JSONDecoder().decode(Charter.self, from: Data(contentsOf: URL(fileURLWithPath: charterPath)))
-        } catch {
-            NSLog("PlexusOne context-hook: cannot read charter %@: %@", charterPath, error.localizedDescription)
+        let config = configuration(arguments: arguments, environment: environment)
+        guard let roleName = config.role, let rolesDir = config.roles else { return "" }
+        guard isValidRoleName(roleName) else {
+            NSLog("PlexusOne context-hook: ignoring invalid role name %@", roleName)
             return ""
         }
 
+        let roleURL = URL(fileURLWithPath: rolesDir, isDirectory: true).appendingPathComponent("\(roleName).json")
+        guard FileManager.default.fileExists(atPath: roleURL.path) else { return "" }
+        var role: Role
+        do {
+            role = try JSONDecoder().decode(Role.self, from: Data(contentsOf: roleURL))
+        } catch {
+            NSLog("PlexusOne context-hook: cannot read role %@: %@", roleURL.path, error.localizedDescription)
+            return ""
+        }
+        if role.name?.isEmpty ?? true {
+            role.name = roleName
+        }
+
         var decisions: [Decision] = []
-        if let dir = paths.decisions {
+        if let dir = config.decisions {
             decisions = loadDecisions(in: URL(fileURLWithPath: dir, isDirectory: true))
         }
-        let items = roadmap(charter.initiatives ?? [])
-        return format(charter: charter, roadmap: items, decisions: binding(decisions, for: charter.name))
+        let items = roadmap(role.initiatives ?? [])
+        return format(role: role, roadmap: items, decisions: binding(decisions, for: roleName))
     }
 
     // MARK: - Configuration
 
-    /// The charter file and decisions directory: `--charter` and
-    /// `--decisions` (or `--decisions-dir`) take precedence over the
-    /// environment. A leading `~/` is expanded.
-    static func configuredPaths(arguments: [String], environment: [String: String]) -> (charter: String?, decisions: String?) {
-        var charter = environment[charterEnv]
+    /// The session's role (from `HIVE_ROLE`) and the roles and decisions
+    /// directories. `--roles` and `--decisions` take precedence over the
+    /// environment; a leading `~/` is expanded.
+    static func configuration(arguments: [String], environment: [String: String])
+        -> (role: String?, roles: String?, decisions: String?) {
+        var roles = environment[rolesEnv]
         var decisions = environment[decisionsEnv]
         var i = 0
         while i < arguments.count {
             let arg = arguments[i]
             let next = i + 1 < arguments.count ? arguments[i + 1] : nil
             switch arg {
-            case "--charter":
-                charter = next
+            case "--roles", "--roles-dir":
+                roles = next
                 i += 1
             case "--decisions", "--decisions-dir":
                 decisions = next
                 i += 1
             default:
-                if arg.hasPrefix("--charter=") {
-                    charter = String(arg.dropFirst("--charter=".count))
+                if arg.hasPrefix("--roles=") {
+                    roles = String(arg.dropFirst("--roles=".count))
                 } else if arg.hasPrefix("--decisions=") {
                     decisions = String(arg.dropFirst("--decisions=".count))
                 }
             }
             i += 1
         }
-        return (expand(charter, home: environment["HOME"]), expand(decisions, home: environment["HOME"]))
+        let role = environment[roleEnv]?.trimmingCharacters(in: .whitespaces)
+        return (role?.isEmpty == false ? role : nil,
+                expand(roles, home: environment["HOME"]),
+                expand(decisions, home: environment["HOME"]))
+    }
+
+    /// Whether a role name is a plain file name: ASCII letters, digits, `.`,
+    /// `_` and `-`, not starting with `.`. This keeps `HIVE_ROLE` from naming
+    /// a file outside the roles directory.
+    static func isValidRoleName(_ name: String) -> Bool {
+        guard !name.isEmpty, name.count <= 100, !name.hasPrefix(".") else { return false }
+        return name.unicodeScalars.allSatisfy { scalar in
+            scalar.isASCII && (CharacterSet.alphanumerics.contains(scalar) || "._-".unicodeScalars.contains(scalar))
+        }
     }
 
     private static func expand(_ path: String?, home: String?) -> String? {
@@ -185,13 +221,13 @@ enum ContextHook {
             .map(\.0)
     }
 
-    /// Accepted decisions that bind the named session: those whose `agents`
-    /// is empty or includes the name.
-    static func binding(_ decisions: [Decision], for name: String?) -> [Decision] {
+    /// Accepted decisions that bind the role: those whose `roles` is empty or
+    /// includes it.
+    static func binding(_ decisions: [Decision], for role: String?) -> [Decision] {
         decisions.filter { d in
             guard d.status?.lowercased() == "accepted" else { return false }
-            let agents = d.agents ?? []
-            return agents.isEmpty || (name.map { agents.contains($0) } ?? false)
+            let roles = d.roles ?? []
+            return roles.isEmpty || (role.map { roles.contains($0) } ?? false)
         }
     }
 
@@ -268,30 +304,31 @@ enum ContextHook {
 
     /// The context block. Long fields are shortened and the whole block is
     /// capped at `maxLines`.
-    static func format(charter: Charter, roadmap: [RoadmapItem], decisions: [Decision]) -> String {
+    static func format(role: Role, roadmap: [RoadmapItem], decisions: [Decision]) -> String {
         var lines: [String] = []
-        let name = charter.name.map { " \($0)" } ?? ""
-        lines.append("## Session charter\(name)")
+        let name = role.name.map { " \($0)" } ?? ""
+        lines.append("## Session role\(name)")
         lines.append("This session's standing context, restored after the conversation was compacted.")
-        if let mission = nonEmpty(charter.mission) {
+        if let mission = nonEmpty(role.mission) {
             lines.append("Mission: \(shorten(mission))")
         }
         var facts: [String] = []
-        if let autonomy = nonEmpty(charter.autonomy) { facts.append("autonomy: \(autonomy)") }
-        if let status = nonEmpty(charter.status) { facts.append("status: \(status)") }
+        if let autonomy = nonEmpty(role.autonomy) { facts.append("autonomy: \(autonomy)") }
+        if let status = nonEmpty(role.status) { facts.append("status: \(status)") }
         if !facts.isEmpty {
-            lines.append("Charter: " + facts.joined(separator: ", "))
+            lines.append("Role: " + facts.joined(separator: ", "))
         }
-        if let repos = charter.repositories, !repos.isEmpty {
-            lines.append("Repositories it may change: \(shorten(repos.joined(separator: ", ")))")
+        if let repos = role.repositories, !repos.isEmpty {
+            let list = repos.map { r in r.affinity.map { "\(r.pattern) (\($0))" } ?? r.pattern }
+            lines.append("Repositories it may change: \(shorten(list.joined(separator: ", ")))")
         }
-        if let initiatives = charter.initiatives, !initiatives.isEmpty {
+        if let initiatives = role.initiatives, !initiatives.isEmpty {
             lines.append("Initiatives: \(shorten(initiatives.joined(separator: ", ")))")
         }
-        if let peers = charter.peers, !peers.isEmpty {
+        if let peers = role.peers, !peers.isEmpty {
             lines.append("Peers: \(shorten(peers.joined(separator: ", ")))")
         }
-        if let notes = nonEmpty(charter.notes) {
+        if let notes = nonEmpty(role.notes) {
             lines.append("Notes: \(shorten(notes))")
         }
 
@@ -309,7 +346,7 @@ enum ContextHook {
 
         if !decisions.isEmpty {
             lines.append("")
-            lines.append("## Decisions that bind this session")
+            lines.append("## Decisions that bind this role")
             for d in decisions.prefix(maxDecisions) {
                 let id = d.id.map { "\($0): " } ?? ""
                 lines.append("- \(id)\(shorten(d.title ?? d.decision ?? ""))")
