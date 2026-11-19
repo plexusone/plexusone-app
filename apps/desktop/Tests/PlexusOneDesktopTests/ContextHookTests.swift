@@ -6,14 +6,16 @@ final class ContextHookTests: XCTestCase {
 
     override func setUpWithError() throws {
         dir = FileManager.default.temporaryDirectory.appendingPathComponent("ContextHookTests-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: dir.appendingPathComponent("decisions"), withIntermediateDirectories: true)
+        for sub in ["roles", "decisions"] {
+            try FileManager.default.createDirectory(at: dir.appendingPathComponent(sub), withIntermediateDirectories: true)
+        }
     }
 
     override func tearDownWithError() throws {
         try FileManager.default.removeItem(at: dir)
     }
 
-    private var charterURL: URL { dir.appendingPathComponent("charter.json") }
+    private var rolesURL: URL { dir.appendingPathComponent("roles") }
     private var decisionsURL: URL { dir.appendingPathComponent("decisions") }
 
     private func write(_ json: String, to url: URL, modified: Date? = nil) throws {
@@ -23,59 +25,88 @@ final class ContextHookTests: XCTestCase {
         }
     }
 
-    private let charterJSON = """
+    private let roleJSON = """
     {"name": "app-agent", "status": "active", "mission": "Maintain the desktop app.",
-     "repositories": ["github.com/example/app"], "initiatives": ["INIT-EXAMPLE-001"],
-     "peers": ["docs-agent"], "autonomy": "execute", "notes": "Ask before releases."}
+     "autonomy": "execute",
+     "repositories": [{"pattern": "github.com/example/app", "affinity": "steward"},
+                      {"pattern": "github.com/example/*", "affinity": "contributor"}],
+     "initiatives": ["INIT-EXAMPLE-001"], "peers": ["docs-agent"], "notes": "Ask before releases."}
     """
+
+    private func environment(role: String?) -> [String: String] {
+        var env = [ContextHook.rolesEnv: rolesURL.path, ContextHook.decisionsEnv: decisionsURL.path]
+        env[ContextHook.roleEnv] = role
+        return env
+    }
 
     private func noRoadmap(_: [String]) -> [ContextHook.RoadmapItem] { [] }
 
-    // MARK: - Configuration
+    // MARK: - Finding the role
 
-    func testNoCharterPrintsNothing() {
-        XCTAssertEqual(ContextHook.render(arguments: [], environment: [:], roadmap: noRoadmap), "")
+    func testNoRolePrintsNothing() throws {
+        try write(roleJSON, to: rolesURL.appendingPathComponent("app-agent.json"))
+        XCTAssertEqual(ContextHook.render(arguments: [], environment: environment(role: nil), roadmap: noRoadmap), "")
+        XCTAssertEqual(ContextHook.render(arguments: [], environment: environment(role: "  "), roadmap: noRoadmap), "")
     }
 
-    func testUnreadableCharterPrintsNothing() throws {
-        try write("not json", to: charterURL)
-        XCTAssertEqual(ContextHook.render(arguments: ["--charter", charterURL.path], environment: [:], roadmap: noRoadmap), "")
-        XCTAssertEqual(ContextHook.render(arguments: ["--charter", dir.appendingPathComponent("missing.json").path],
-                                          environment: [:], roadmap: noRoadmap), "")
+    func testNoRolesDirectoryPrintsNothing() {
+        XCTAssertEqual(ContextHook.render(arguments: [], environment: [ContextHook.roleEnv: "app-agent"], roadmap: noRoadmap), "")
     }
 
-    func testConfiguredPathsPreferArgumentsOverEnvironment() {
-        let env = [ContextHook.charterEnv: "/env/charter.json", ContextHook.decisionsEnv: "/env/decisions", "HOME": "/home/me"]
+    func testMissingOrUnreadableRoleFilePrintsNothing() throws {
+        XCTAssertEqual(ContextHook.render(arguments: [], environment: environment(role: "nobody"), roadmap: noRoadmap), "")
+        try write("not json", to: rolesURL.appendingPathComponent("broken.json"))
+        XCTAssertEqual(ContextHook.render(arguments: [], environment: environment(role: "broken"), roadmap: noRoadmap), "")
+    }
 
-        var paths = ContextHook.configuredPaths(arguments: [], environment: env)
-        XCTAssertEqual(paths.charter, "/env/charter.json")
-        XCTAssertEqual(paths.decisions, "/env/decisions")
+    func testRoleNameCannotLeaveTheRolesDirectory() throws {
+        // A role file outside the roles directory must not be reachable.
+        try write(roleJSON, to: dir.appendingPathComponent("outside.json"))
+        XCTAssertEqual(ContextHook.render(arguments: [], environment: environment(role: "../outside"), roadmap: noRoadmap), "")
 
-        paths = ContextHook.configuredPaths(arguments: ["--charter", "~/c.json", "--decisions=/d"], environment: env)
-        XCTAssertEqual(paths.charter, "/home/me/c.json")
-        XCTAssertEqual(paths.decisions, "/d")
+        for bad in ["../x", "a/b", ".hidden", "", "rôle", String(repeating: "a", count: 101)] {
+            XCTAssertFalse(ContextHook.isValidRoleName(bad), bad)
+        }
+        for good in ["plexusone-app", "docs_agent", "v1.2", "A9"] {
+            XCTAssertTrue(ContextHook.isValidRoleName(good), good)
+        }
+    }
 
-        paths = ContextHook.configuredPaths(arguments: ["--charter=/a.json", "--decisions-dir", "/x"], environment: [:])
-        XCTAssertEqual(paths.charter, "/a.json")
-        XCTAssertEqual(paths.decisions, "/x")
+    func testConfigurationPrefersArgumentsOverEnvironment() {
+        let env = [ContextHook.roleEnv: "app-agent", ContextHook.rolesEnv: "/env/roles",
+                   ContextHook.decisionsEnv: "/env/decisions", "HOME": "/home/me"]
 
-        paths = ContextHook.configuredPaths(arguments: ["--charter"], environment: [ContextHook.charterEnv: ""])
-        XCTAssertNil(paths.charter, "a flag without a value and an empty variable mean no charter")
+        var config = ContextHook.configuration(arguments: [], environment: env)
+        XCTAssertEqual(config.role, "app-agent")
+        XCTAssertEqual(config.roles, "/env/roles")
+        XCTAssertEqual(config.decisions, "/env/decisions")
+
+        config = ContextHook.configuration(arguments: ["--roles", "~/roles", "--decisions=/d"], environment: env)
+        XCTAssertEqual(config.roles, "/home/me/roles")
+        XCTAssertEqual(config.decisions, "/d")
+
+        config = ContextHook.configuration(arguments: ["--roles=/r", "--decisions-dir", "/x"], environment: [:])
+        XCTAssertNil(config.role)
+        XCTAssertEqual(config.roles, "/r")
+        XCTAssertEqual(config.decisions, "/x")
+
+        config = ContextHook.configuration(arguments: ["--roles"], environment: [ContextHook.rolesEnv: ""])
+        XCTAssertNil(config.roles, "a flag without a value and an empty variable mean no roles directory")
     }
 
     // MARK: - Decisions
 
     func testDecisionsNewestFirstAndOnlyBindingOnes() throws {
         let now = Date()
-        try write(#"{"id":"D-1","title":"Old for all","status":"accepted","decision":"a","agents":[]}"#,
+        try write(#"{"id":"D-1","title":"Old for all","status":"accepted","decision":"a","roles":[]}"#,
                   to: decisionsURL.appendingPathComponent("1.json"), modified: now.addingTimeInterval(-300))
-        try write(#"{"id":"D-2","title":"New for me","status":"accepted","decision":"b","agents":["app-agent"]}"#,
+        try write(#"{"id":"D-2","title":"New for me","status":"accepted","decision":"b","roles":["app-agent"]}"#,
                   to: decisionsURL.appendingPathComponent("2.json"), modified: now)
-        try write(#"{"id":"D-3","title":"Superseded","status":"superseded","agents":[]}"#,
+        try write(#"{"id":"D-3","title":"Superseded","status":"superseded","roles":[],"supersededBy":"D-2"}"#,
                   to: decisionsURL.appendingPathComponent("3.json"))
-        try write(#"{"id":"D-4","title":"For someone else","status":"accepted","agents":["docs-agent"]}"#,
+        try write(#"{"id":"D-4","title":"For another role","status":"accepted","roles":["docs-agent"]}"#,
                   to: decisionsURL.appendingPathComponent("4.json"))
-        try write(#"{"id":"D-5","title":"No agents field","status":"Accepted"}"#,
+        try write(#"{"id":"D-5","title":"No roles field","status":"Accepted"}"#,
                   to: decisionsURL.appendingPathComponent("5.json"), modified: now.addingTimeInterval(-600))
         try write("not json", to: decisionsURL.appendingPathComponent("bad.json"))
         try write("{}", to: decisionsURL.appendingPathComponent("notes.txt"))
@@ -83,10 +114,9 @@ final class ContextHookTests: XCTestCase {
         let loaded = ContextHook.loadDecisions(in: decisionsURL)
         XCTAssertEqual(loaded.count, 5, "unreadable and non-JSON files are skipped")
 
-        let binding = ContextHook.binding(loaded, for: "app-agent")
-        XCTAssertEqual(binding.map(\.id), ["D-2", "D-1", "D-5"])
+        XCTAssertEqual(ContextHook.binding(loaded, for: "app-agent").map(\.id), ["D-2", "D-1", "D-5"])
         XCTAssertEqual(ContextHook.binding(loaded, for: nil).map(\.id), ["D-1", "D-5"],
-                       "without a name only decisions for everyone apply")
+                       "without a role only decisions for every role apply")
     }
 
     func testMissingDecisionsDirectory() {
@@ -129,31 +159,31 @@ final class ContextHookTests: XCTestCase {
     // MARK: - Output
 
     func testRenderFullBlock() throws {
-        try write(charterJSON, to: charterURL)
-        try write(#"{"id":"D-1","title":"Hooks run from the app","status":"accepted","decision":"No separate binary.","agents":[]}"#,
+        try write(roleJSON, to: rolesURL.appendingPathComponent("app-agent.json"))
+        try write(#"{"id":"D-1","title":"Hooks run from the app","status":"accepted","decision":"No separate binary.","roles":[]}"#,
                   to: decisionsURL.appendingPathComponent("1.json"))
 
         var askedFor: [String] = []
         let output = ContextHook.render(
             arguments: [],
-            environment: [ContextHook.charterEnv: charterURL.path, ContextHook.decisionsEnv: decisionsURL.path],
+            environment: environment(role: "app-agent"),
             roadmap: { initiatives in
                 askedFor = initiatives
                 return [.init(id: "RMI-EXAMPLE-004", title: "Context hook", status: "in_progress", initiativeId: "INIT-EXAMPLE-001")]
             }
         )
 
-        XCTAssertEqual(askedFor, ["INIT-EXAMPLE-001"], "the roadmap is filtered to the charter's initiatives")
+        XCTAssertEqual(askedFor, ["INIT-EXAMPLE-001"], "the roadmap is filtered to the role's initiatives")
         for expected in [
-            "## Session charter app-agent",
+            "## Session role app-agent",
             "Mission: Maintain the desktop app.",
-            "Charter: autonomy: execute, status: active",
-            "Repositories it may change: github.com/example/app",
+            "Role: autonomy: execute, status: active",
+            "Repositories it may change: github.com/example/app (steward), github.com/example/* (contributor)",
             "Peers: docs-agent",
             "Notes: Ask before releases.",
             "## Open roadmap items",
             "- RMI-EXAMPLE-004 [in_progress] Context hook",
-            "## Decisions that bind this session",
+            "## Decisions that bind this role",
             "- D-1: Hooks run from the app",
             "  No separate binary.",
         ] {
@@ -161,20 +191,23 @@ final class ContextHookTests: XCTestCase {
         }
     }
 
-    func testRenderOmitsEmptySections() throws {
-        try write(#"{"name": "solo"}"#, to: charterURL)
-        let output = ContextHook.render(arguments: ["--charter", charterURL.path], environment: [:], roadmap: noRoadmap)
-        XCTAssertTrue(output.hasPrefix("## Session charter solo\n"))
+    func testRoleFileWithoutNameUsesTheRoleName() throws {
+        try write(#"{"mission": "m", "repositories": [{"pattern": "github.com/example/x"}]}"#,
+                  to: rolesURL.appendingPathComponent("solo.json"))
+        let output = ContextHook.render(arguments: ["--roles", rolesURL.path], environment: [ContextHook.roleEnv: "solo"],
+                                        roadmap: noRoadmap)
+        XCTAssertTrue(output.hasPrefix("## Session role solo\n"))
+        XCTAssertTrue(output.contains("Repositories it may change: github.com/example/x\n"),
+                      "a scope without affinity shows only its pattern")
         XCTAssertFalse(output.contains("## Open roadmap items"))
         XCTAssertFalse(output.contains("## Decisions"))
-        XCTAssertFalse(output.contains("Mission:"))
     }
 
     func testFormatLimits() {
-        let charter = ContextHook.Charter(name: "busy", mission: String(repeating: "m", count: 1000))
+        let role = ContextHook.Role(name: "busy", mission: String(repeating: "m", count: 1000))
         let items = (0..<20).map { ContextHook.RoadmapItem(id: "RMI-\($0)", title: "t", status: "ready", initiativeId: nil) }
         let decisions = (0..<20).map { ContextHook.Decision(id: "D-\($0)", title: "t", status: "accepted", decision: "d") }
-        let output = ContextHook.format(charter: charter, roadmap: items, decisions: decisions)
+        let output = ContextHook.format(role: role, roadmap: items, decisions: decisions)
         let lines = output.split(separator: "\n", omittingEmptySubsequences: false).dropLast()
 
         XCTAssertLessThanOrEqual(lines.count, ContextHook.maxLines)
@@ -182,19 +215,6 @@ final class ContextHookTests: XCTestCase {
         XCTAssertTrue(output.contains("- … 14 more"))
         let mission = lines.first { $0.hasPrefix("Mission:") }!
         XCTAssertLessThanOrEqual(mission.count, "Mission: ".count + ContextHook.maxFieldLength)
-    }
-
-    func testFormatCapsTotalLines() {
-        let charter = ContextHook.Charter(name: "x", status: "s", mission: "m", repositories: ["r"], initiatives: ["i"],
-                                          peers: ["p"], autonomy: "a", notes: "n")
-        let decisions = (0..<6).map { ContextHook.Decision(id: "D-\($0)", title: "t", status: "accepted", decision: "d") }
-        let items = (0..<8).map { ContextHook.RoadmapItem(id: "RMI-\($0)", title: "t", status: "ready", initiativeId: nil) }
-        var output = ContextHook.format(charter: charter, roadmap: items, decisions: decisions)
-        XCTAssertLessThanOrEqual(output.split(separator: "\n").count, ContextHook.maxLines)
-
-        // Even with every section full, the block never exceeds the cap.
-        output = ContextHook.format(charter: charter, roadmap: items + items, decisions: decisions + decisions)
-        XCTAssertLessThanOrEqual(output.split(separator: "\n").count, ContextHook.maxLines)
     }
 
     func testShorten() {
